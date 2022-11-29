@@ -4,17 +4,14 @@
 void Engine::initGlfw()
 {
 	glfwInit();
-	// set OpenGL ver
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	// core profile: excudes backwards-compatible features we no longer need
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
 int Engine::createWindow()
 {
-	window = glfwCreateWindow(windowsWidth, windowsHeight, "LearnOpenGL", NULL, NULL);
+	window = glfwCreateWindow(WINDOWS_WIDTH, WINDOWS_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		LogWarn("Failed to create GLFW window");
@@ -38,12 +35,12 @@ int Engine::initGlad()
 
 void Engine::createViewport()
 {
-	glViewport(0, 0, windowsWidth, windowsHeight);
+	glViewport(0, 0, WINDOWS_WIDTH, WINDOWS_HEIGHT);
 }
 
 void Engine::initInput()
 {
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 }
 
@@ -77,11 +74,11 @@ void Engine::renderLoop()
 		processInput(window);
 
 		// engine update
-		/*Engine::instance()->Update(inputList, deltaTime);
-		Engine::instance()->Draw();*/
+		fluidScene->Update(inputList, deltaTime);
 		// draw
-		glClearColor(175.f / 255.f, 88.f / 255.f, 6.f / 255.f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		fluidScene->Draw();
 
 		// read: double buffers to prevent flickering issues due to physical constraints of drawing a buffer to screen
 		// resulting in flickering
@@ -148,12 +145,6 @@ void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 Engine::Engine()
 {
-	deltaTime = lastFrame = 0.f;
-
-	for (int i = 0; i < INPUT_TOTAL; ++i)
-	{
-		inputList[i] = false;
-	}
 }
 
 Engine::~Engine()
@@ -170,7 +161,13 @@ void Engine::Init()
 	initInput();
 	initOpenGLSettings();
 	LogInfo("OSEngine initialized");
-	//Engine::instance()->Init();
+	deltaTime = lastFrame = 0.f;
+	for (int i = 0; i < INPUT_TOTAL; ++i)
+	{
+		inputList[i] = false;
+	}
+	fluidScene = new FluidScene();
+	fluidScene->Init();
 }
 
 void Engine::Run()
@@ -180,5 +177,6 @@ void Engine::Run()
 
 void Engine::Exit()
 {
+	delete fluidScene;
 	terminateOpenGL();
 }

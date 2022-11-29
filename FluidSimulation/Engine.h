@@ -1,8 +1,11 @@
 #pragma once
-#include "Utility.h"
+#include "FluidScene.h"
 
 class Engine {
+	FluidScene* fluidScene;
+
 	GLFWwindow* window;
+
 	bool inputList[INPUT_TOTAL];
 	float deltaTime, lastFrame;
 
