@@ -1,5 +1,6 @@
 #pragma once
 #include "Mesh.h"
+#include "GridMesh.h"
 
 class MeshBuilder {
 
