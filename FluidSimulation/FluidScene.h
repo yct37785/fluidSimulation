@@ -1,10 +1,14 @@
 #pragma once
 #include "MeshBuilder.h"
 #include "Shader.h"
+#include "FluidGrid.h"
 
 class FluidScene
 {
+	// fluid
 	int xCellsCount, yCellsCount;
+	FluidGrid* fluidGrid;
+	// rendering/update
 	glm::mat4 viewMat, projMat;
 	float cursorPosX, cursorPosY = 0.f;
 	int cursorCellX, cursorCellY = 0;

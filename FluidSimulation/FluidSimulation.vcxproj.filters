@@ -28,6 +28,9 @@
     <Filter Include="Mesh\GridMesh">
       <UniqueIdentifier>{a1ebd6b4-2d95-43ad-b506-6619e079ad90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid">
+      <UniqueIdentifier>{1286a649-735c-48b6-91ec-b1015b4fe09e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -60,6 +63,9 @@
     <ClCompile Include="GridMesh.cpp">
       <Filter>Mesh\GridMesh</Filter>
     </ClCompile>
+    <ClCompile Include="FluidGrid.cpp">
+      <Filter>Fluid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -82,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="GridMesh.h">
       <Filter>Mesh\GridMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="FluidGrid.h">
+      <Filter>Fluid</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

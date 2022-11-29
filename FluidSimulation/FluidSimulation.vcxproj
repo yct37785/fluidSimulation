@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="FluidGrid.cpp" />
     <ClCompile Include="FluidScene.cpp" />
     <ClCompile Include="FluidSimulation.cpp" />
     <ClCompile Include="glad.c" />
@@ -145,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="FluidGrid.h" />
     <ClInclude Include="FluidScene.h" />
     <ClInclude Include="GridMesh.h" />
     <ClInclude Include="Mesh.h" />

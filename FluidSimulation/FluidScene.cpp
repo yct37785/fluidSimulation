@@ -9,6 +9,7 @@ FluidScene::~FluidScene()
 	delete quadMesh;
 	delete gridMesh;
 	delete shader;
+	delete fluidGrid;
 }
 
 void FluidScene::Init()
@@ -21,6 +22,7 @@ void FluidScene::Init()
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
+	fluidGrid = new FluidGrid(xCellsCount, yCellsCount);
 }
 
 void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
