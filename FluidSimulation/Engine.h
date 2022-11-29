@@ -2,14 +2,16 @@
 #include "FluidScene.h"
 
 class Engine {
-	FluidScene* fluidScene;
+	static Engine* engine;
+	static GLFWwindow* window;
 
-	GLFWwindow* window;
+	FluidScene* fluidScene;
 
 	bool inputList[INPUT_TOTAL];
 	float deltaTime, lastFrame;
 
 	// init
+	Engine();
 	void initGlfw();
 	int createWindow();
 	int initGlad();
@@ -29,8 +31,8 @@ class Engine {
 	static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 public:
-	Engine();
 	~Engine();
+	static Engine* instance();
 
 	void Init();
 	void Run();

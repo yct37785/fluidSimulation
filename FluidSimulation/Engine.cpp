@@ -1,12 +1,17 @@
 #include "Engine.h"
 #include <STB/stb_image.h>
+Engine* Engine::engine = NULL;
+GLFWwindow* Engine::window = NULL;
 
 void Engine::initGlfw()
 {
 	glfwInit();
+	// set OpenGL ver
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	// core profile: excudes backwards-compatible features we no longer need
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
 int Engine::createWindow()
@@ -93,6 +98,7 @@ int Engine::terminateOpenGL()
 {
 	glfwDestroyWindow(window);
 	glfwTerminate();
+	delete Engine::instance();
 	return 1;
 }
 
@@ -100,6 +106,7 @@ void Engine::framebuffer_size_callback(GLFWwindow* window, int width, int height
 {
 	glViewport(0, 0, width, height);
 	//Engine::instance()->onWindowSizeUpdate(width, height);
+	engine->fluidScene->windowsResize(width, height);
 }
 
 void Engine::processInput(GLFWwindow* window)
@@ -140,7 +147,7 @@ void Engine::processInput(GLFWwindow* window)
 
 void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	//Engine::instance()->onMouseUpdate(xpos, ypos);
+	engine->fluidScene->mouseCallback(xpos, ypos);
 }
 
 Engine::Engine()
@@ -149,6 +156,15 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+}
+
+Engine* Engine::instance()
+{
+	if (!engine)
+	{
+		engine = new Engine();
+	}
+	return engine;
 }
 
 void Engine::Init()

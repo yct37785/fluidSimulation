@@ -32,9 +32,6 @@ using namespace std;
 #define PI 3.141592653589793
 const static int WINDOWS_WIDTH = 1280;
 const static int WINDOWS_HEIGHT = 720;
-const static int X_CELLS_COUNT = 200;
-const static int Y_CELLS_COUNT = 112;
-
 // general
 string fileToShaderString(string filename);
 

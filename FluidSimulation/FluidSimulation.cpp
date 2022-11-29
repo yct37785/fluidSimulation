@@ -7,10 +7,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-    Engine engine;
-    engine.Init();
-    engine.Run();
-    engine.Exit();
+    Engine::instance() ->Init();
+    Engine::instance()->Run();
+    Engine::instance()->Exit();
 
     // display memory leak report
     _CrtDumpMemoryLeaks();

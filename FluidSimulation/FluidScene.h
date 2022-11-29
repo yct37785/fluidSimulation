@@ -4,7 +4,10 @@
 
 class FluidScene
 {
-	glm::mat4 viewMat, projMat, cursorPosMat;
+	int xCellsCount, yCellsCount;
+	glm::mat4 viewMat, projMat;
+	float cursorPosX, cursorPosY = 0.f;
+	int cursorCellX, cursorCellY = 0;
 	Mesh* quadMesh;
 	Shader* shader;
 
@@ -16,6 +19,6 @@ public:
 	void Update(bool inputList[INPUT_TOTAL], float deltaTime);
 	void Draw();
 
-	void windowsResize();
-	void mouse_callback(double xpos, double ypos);
+	void windowsResize(int width, int height);
+	void mouseCallback(double xpos, double ypos);
 };

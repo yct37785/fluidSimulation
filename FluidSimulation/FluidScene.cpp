@@ -12,11 +12,11 @@ FluidScene::~FluidScene()
 
 void FluidScene::Init()
 {
+	xCellsCount = 200;
+	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
+	yCellsCount = (int)accurateYSpaceHeight + 1;
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-	projMat = glm::frustum(0.f, (float)X_CELLS_COUNT, 0.f, (float)Y_CELLS_COUNT, 3.f, 7.f);
-	cursorPosMat = glm::translate(glm::mat4(1.f), glm::vec3(50.f, 50.f, 0.f));
-	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(10.f, 10.f, 1.f));
-	cursorPosMat = cursorPosMat * scale;
+	projMat = glm::frustum(0.f, (float)xCellsCount, 0.f, accurateYSpaceHeight, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
 }
@@ -29,20 +29,30 @@ void FluidScene::Draw()
 {
 	glUseProgram(shader->getProgram());
 
-	glm::mat4 mvMat = glm::mat4(1.f);
+	glm::mat4 mvMat = projMat * viewMat;
+
+	glm::mat4 cursorMat = mvMat * 
+		glm::translate(glm::mat4(1.f), glm::vec3(cursorPosX, cursorPosY, 0.f)) * 
+		glm::scale(glm::mat4(1.f), glm::vec3(10.f, 10.f, 1.f));
 
 	int mvpHandle = glGetUniformLocation(shader->getProgram(), "uMVPMatrix");
-	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvMat));
+	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(cursorMat));
 
 	glBindVertexArray(quadMesh->getVAO());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadMesh->getEBO());
 	glDrawElements(GL_TRIANGLES, quadMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
 }
 
-void FluidScene::windowsResize()
+void FluidScene::windowsResize(int width, int height)
 {
 }
 
-void FluidScene::mouse_callback(double xpos, double ypos)
+void FluidScene::mouseCallback(double xpos, double ypos)
 {
+	float gridSize = (float)WINDOWS_WIDTH / (float)xCellsCount;
+	cursorPosX = (float)xpos / gridSize;
+	cursorPosY = ((float)WINDOWS_HEIGHT - (float)ypos) / gridSize;
+	cursorCellX = (int)cursorPosX;
+	cursorCellY = (int)cursorPosY;
+
 }
