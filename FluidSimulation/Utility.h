@@ -30,8 +30,8 @@
 using namespace std;
 // defines
 #define PI 3.141592653589793
-const static int WINDOWS_WIDTH = 512;
-const static int WINDOWS_HEIGHT = 720;
+const static int WINDOWS_WIDTH = 900;
+const static int WINDOWS_HEIGHT = 900;
 // general
 string fileToShaderString(string filename);
 

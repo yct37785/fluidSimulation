@@ -1,27 +1,34 @@
 #pragma once
-#include "Utility.h"
+#include "MeshBuilder.h"
 
 class FluidGrid
 {
+	GridMesh* gridMesh;
 	int xCellsCount, yCellsCount;
 	int xBorderCount, yBorderCount;
 
+	// debug
+	Mesh* triangleMesh;
+
 	// quantities
 	// per MAC specifications, velocity indices are off by -1/2
-	glm::vec2** pressure;
-	glm::vec2** velocity;
+	float** pField;
+	float** uField;
+	float** vField;
 
 	// tracker
-	glm::vec2 maxVelocity;
+	glm::vec2 maxU;
+
+	//utils
+	glm::vec2 getInterVelocity(float x, float y);
 
 	// updates
 	float getDeltaTime();
-
-	//utils
 
 public:
 	FluidGrid(int xCellsCount, int yCellsCount);
 	~FluidGrid();
 
-	void Update();
+	void Update(float deltaTime);
+	void Draw(int mvpHandle, glm::mat4& mvMat);
 };

@@ -7,26 +7,25 @@ FluidScene::FluidScene()
 FluidScene::~FluidScene()
 {
 	delete quadMesh;
-	delete gridMesh;
 	delete shader;
 	delete fluidGrid;
 }
 
 void FluidScene::Init()
 {
-	xCellsCount = 100;
+	xCellsCount = 6;
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
 	yCellsCount = (int)accurateYSpaceHeight + 1;
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 	projMat = glm::frustum(0.f, (float)xCellsCount, 0.f, accurateYSpaceHeight, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
-	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
 	fluidGrid = new FluidGrid(xCellsCount, yCellsCount);
 }
 
 void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
+	fluidGrid->Update(deltaTime);
 }
 
 void FluidScene::Draw()
@@ -40,13 +39,11 @@ void FluidScene::Draw()
 		glm::translate(glm::mat4(1.f), glm::vec3(cursorPosX, cursorPosY, 0.f)) * 
 		glm::scale(glm::mat4(1.f), glm::vec3(10.f, 10.f, 1.f));
 
-	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvMat));
-	glBindVertexArray(gridMesh->getVAO());
-	glDrawElements(GL_TRIANGLES, gridMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
-
-	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(cursorMat));
+	/*glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(cursorMat));
 	glBindVertexArray(quadMesh->getVAO());
-	glDrawElements(GL_TRIANGLES, quadMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, quadMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);*/
+
+	fluidGrid->Draw(mvpHandle, mvMat);
 }
 
 void FluidScene::windowsResize(int width, int height)

@@ -13,7 +13,6 @@ class FluidScene
 	float cursorPosX, cursorPosY = 0.f;
 	int cursorCellX, cursorCellY = 0;
 	Mesh* quadMesh;
-	GridMesh* gridMesh;
 	Shader* shader;
 
 public:
