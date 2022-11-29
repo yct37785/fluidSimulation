@@ -11,7 +11,10 @@ protected:
 	vector<int> indices;
     int usage;
 
+	void initMesh(vector<float>& vertices, vector<int>& indices, int usage);
+
 public:
+	Mesh();
 	Mesh(vector<float>& vertices, vector<int>& indices, int usage);
 	~Mesh();
 
