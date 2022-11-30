@@ -1,9 +1,9 @@
 #include "FluidGrid.h"
 // defines
-const float G = -9.81f;	// gravity = -9.81m/s^2
-const float DEN = 1000.f;	// water density = 1000 kh/m^3
-const float Kcfl = 1.f;
-const float X = 1.f;	// width/height of a grid cell
+const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
+const float DEN = 1.f;	// water density = 1000 kh/m^3, but here we set it to 1
+const float Kcfl = 1.f;	// timestep scale, 1 - 5
+const float H = 1.f;	// width/height of a grid cell
 
 FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 {
@@ -17,6 +17,10 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	for (int y = 0; y < yCellsCount; ++y)
 	{
 		gridCells[y] = new MACCell[xCellsCount];
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			gridCells[y][x].setPos(x, y);
+		}
 	}
 
 	maxU = glm::vec2(0.f, 0.f);
@@ -33,28 +37,29 @@ FluidGrid::~FluidGrid()
 	delete triangleMesh;
 }
 
-glm::vec2 FluidGrid::getInterVelocity(float x, float y)
+glm::vec2 FluidGrid::getVelocityBilinear(float x, float y)
 {
-	// u: (conceptual) i - 1/2 = (indice) i
-	glm::vec2 u = glm::vec2();
-	int xMin = floor(x);
-	int xMax = x + 1;
-	int yMin = floor(y);
-	int yMax = y + 1;
-	// u
-	return u;
+	return glm::vec2();
 }
 
-float FluidGrid::getDeltaTime()
+float FluidGrid::getTimeStep()
 {
-	float maxVelocityScalar = glm::length(maxU);
-	float u_max = maxVelocityScalar + sqrt(abs(Kcfl * X * G));
-	return Kcfl * X / u_max;
+	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
+	float u_max = glm::length(maxU) + sqrt(abs(H * G));
+	return Kcfl * H / u_max;
 }
 
 void FluidGrid::Update(float deltaTime)
 {
-	float timestep = getDeltaTime() * deltaTime * 60.f;	// mul with offset for fps
+	// time step
+	float timestep = getTimeStep() * deltaTime * 20.f;
+	// update cell states with marker particles
+
+	// advect velocity field through itself (velocity at boundaries will be 0)
+
+	// apply external forces
+
+	// pressure update
 }
 
 
@@ -64,7 +69,7 @@ void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			gridCells[y][x].Draw(mvMat, mvpHandle, triangleMesh, (float)x, (float)y);
+			gridCells[y][x].Draw(mvMat, mvpHandle, triangleMesh);
 		}
 	}
 	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvMat));

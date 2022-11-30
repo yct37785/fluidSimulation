@@ -4,10 +4,8 @@
 class FluidGrid
 {
 	GridMesh* gridMesh;
-	int xCellsCount, yCellsCount;
-
-	// debug
 	Mesh* triangleMesh;
+	int xCellsCount, yCellsCount;
 
 	// quantities
 	MACCell** gridCells;
@@ -16,10 +14,10 @@ class FluidGrid
 	glm::vec2 maxU;
 
 	//utils
-	glm::vec2 getInterVelocity(float x, float y);
+	glm::vec2 getVelocityBilinear(float x, float y);
 
 	// updates
-	float getDeltaTime();
+	float getTimeStep();
 
 public:
 	FluidGrid(int xCellsCount, int yCellsCount);
