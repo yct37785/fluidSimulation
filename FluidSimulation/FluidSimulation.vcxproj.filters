@@ -66,6 +66,9 @@
     <ClCompile Include="FluidGrid.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
+    <ClCompile Include="MACCell.cpp">
+      <Filter>Fluid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -90,6 +93,9 @@
       <Filter>Mesh\GridMesh</Filter>
     </ClInclude>
     <ClInclude Include="FluidGrid.h">
+      <Filter>Fluid</Filter>
+    </ClInclude>
+    <ClInclude Include="MACCell.h">
       <Filter>Fluid</Filter>
     </ClInclude>
   </ItemGroup>

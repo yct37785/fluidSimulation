@@ -39,10 +39,6 @@ void FluidScene::Draw()
 		glm::translate(glm::mat4(1.f), glm::vec3(cursorPosX, cursorPosY, 0.f)) * 
 		glm::scale(glm::mat4(1.f), glm::vec3(10.f, 10.f, 1.f));
 
-	/*glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(cursorMat));
-	glBindVertexArray(quadMesh->getVAO());
-	glDrawElements(GL_TRIANGLES, quadMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);*/
-
 	fluidGrid->Draw(mvpHandle, mvMat);
 }
 

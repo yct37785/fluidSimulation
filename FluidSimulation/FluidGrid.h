@@ -1,20 +1,16 @@
 #pragma once
-#include "MeshBuilder.h"
+#include "MACCell.h"
 
 class FluidGrid
 {
 	GridMesh* gridMesh;
 	int xCellsCount, yCellsCount;
-	int xBorderCount, yBorderCount;
 
 	// debug
 	Mesh* triangleMesh;
 
 	// quantities
-	// per MAC specifications, velocity indices are off by -1/2
-	float** pField;
-	float** uField;
-	float** vField;
+	MACCell** gridCells;
 
 	// tracker
 	glm::vec2 maxU;

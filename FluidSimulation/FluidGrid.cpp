@@ -12,32 +12,11 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
-	this->xBorderCount = xCellsCount + 1;
-	this->yBorderCount = yCellsCount + 1;
 
-	pField = new float*[yCellsCount];
+	gridCells = new MACCell*[yCellsCount];
 	for (int y = 0; y < yCellsCount; ++y)
 	{
-		pField[y] = new float[xCellsCount];
-
-		for (int x = 0; x < xCellsCount; ++x)
-		{
-			pField[y][x] = 1.f;
-		}
-	}
-
-	uField = new float*[yBorderCount];
-	vField = new float*[yBorderCount];
-	for (int y = 0; y < yBorderCount; ++y)
-	{
-		uField[y] = new float[xBorderCount];
-		vField[y] = new float[xBorderCount];
-
-		for (int x = 0; x < xBorderCount; ++x)
-		{
-			uField[y][x] = x % 2 ? 1.f : -2.f;
-			vField[y][x] = y % 2 ? 2.f : -1.f;
-		}
+		gridCells[y] = new MACCell[xCellsCount];
 	}
 
 	maxU = glm::vec2(0.f, 0.f);
@@ -47,16 +26,9 @@ FluidGrid::~FluidGrid()
 {
 	for (int y = 0; y < yCellsCount; ++y)
 	{
-		delete[] pField[y];
+		delete[] gridCells[y];
 	}
-	for (int y = 0; y < yBorderCount; ++y)
-	{
-		delete[] uField[y];
-		delete[] vField[y];
-	}
-	delete[] pField;
-	delete[] uField;
-	delete[] vField;
+	delete[] gridCells;
 	delete gridMesh;
 	delete triangleMesh;
 }
@@ -65,6 +37,11 @@ glm::vec2 FluidGrid::getInterVelocity(float x, float y)
 {
 	// u: (conceptual) i - 1/2 = (indice) i
 	glm::vec2 u = glm::vec2();
+	int xMin = floor(x);
+	int xMax = x + 1;
+	int yMin = floor(y);
+	int yMax = y + 1;
+	// u
 	return u;
 }
 
@@ -83,28 +60,11 @@ void FluidGrid::Update(float deltaTime)
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	for (int y = 0; y < yBorderCount; ++y)
+	for (int y = 0; y < yCellsCount; ++y)
 	{
-		for (int x = 0; x < xBorderCount; ++x)
+		for (int x = 0; x < xCellsCount; ++x)
 		{
-			float u = uField[y][x];
-			float v = vField[y][x];
-			// u
-			glm::mat4 mvpMat = mvMat *
-				glm::translate(glm::mat4(1.f), glm::vec3((float)x, (float)y + 0.5f, 0.f)) *
-				glm::rotate(glm::mat4(1.f), u >= 0.f ? 0.f : 3.14159f, glm::vec3(0.f, 0.f, 1.f)) *
-				glm::scale(glm::mat4(1.f), glm::vec3(u, u, 1.f));
-			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
-			glBindVertexArray(triangleMesh->getVAO());
-			glDrawElements(GL_TRIANGLES, triangleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
-			// v
-			mvpMat = mvMat *
-				glm::translate(glm::mat4(1.f), glm::vec3((float)x + 0.5f, (float)y, 0.f)) *
-				glm::rotate(glm::mat4(1.f), v >= 0.f ? 1.5708f : -1.5708f, glm::vec3(0.f, 0.f, 1.f)) *
-				glm::scale(glm::mat4(1.f), glm::vec3(v, v, 1.f));
-			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
-			glBindVertexArray(triangleMesh->getVAO());
-			glDrawElements(GL_TRIANGLES, triangleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
+			gridCells[y][x].Draw(mvMat, mvpHandle, triangleMesh, (float)x, (float)y);
 		}
 	}
 	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvMat));
