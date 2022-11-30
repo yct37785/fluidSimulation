@@ -16,7 +16,18 @@ void MACCell::setPos(int posX, int posY)
 
 void MACCell::Advect(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep)
 {
-	// bilinear interpolate
+	/*
+	ux |
+	   |____
+	     uy
+	*/
+	glm::vec2 ux_pos((float)posX - 0.5f, (float)posY);	// i-1/2,j
+	glm::vec2 uy_pos((float)posX, (float)posY - 0.5f);	// i,j-1/2
+	// backwards particle trace: pos_prev = pos_curr + t * u_curr
+	glm::vec2 ux_posPrev = ux_pos - H * timestep;
+	glm::vec2 uy_posPrev = uy_pos - H * timestep;
+	// bilinear interpolate velocity component value at prevPos
+
 }
 
 void MACCell::postUpdate()
@@ -30,8 +41,8 @@ void MACCell::Draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	float x = (float)posX;
 	float y = (float)posY;
 	// get angular dir of velocity from lesser faces
-	float angleRad = (float)atan2(-cv.ux, cv.uy);
-	float scale = glm::vec2(cv.ux, cv.uy).length();
+	float angleRad = (float)atan2(-cv.u.x, cv.u.y);
+	float scale = glm::vec2(cv.u.x, cv.u.y).length();
 	// u
 	glm::mat4 mvpMat = mvMat *
 		glm::translate(glm::mat4(1.f), glm::vec3(x + 0.5f, y + 0.5f, 0.f)) *

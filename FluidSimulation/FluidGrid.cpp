@@ -1,9 +1,4 @@
 #include "FluidGrid.h"
-// defines
-const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
-const float DEN = 1.f;	// water density = 1000 kh/m^3, but here we set it to 1
-const float Kcfl = 1.f;	// timestep scale, 1 - 5
-const float H = 1.f;	// width/height of a grid cell
 
 FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 {

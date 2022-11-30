@@ -1,5 +1,10 @@
 #pragma once
 #include "MeshBuilder.h"
+// defines
+const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
+const float DEN = 1.f;	// water density = 1000 kh/m^3, but here we set it to 1
+const float Kcfl = 1.f;	// timestep scale, 1 - 5
+const float H = 1.f;	// width/height of a grid cell
 
 // store values in one struct for easier management
 struct MACValues
@@ -8,11 +13,13 @@ struct MACValues
 	// center of grid cell
 	float p;
 	// minimal faces (i-1, j-1)
-	float ux, uy;
+	glm::vec2 u;
 
 	MACValues()
 	{
-		p = ux = uy = 1.f;
+		p = 1.f;
+		u.x = 1.f;
+		u.y = 1.f;
 		state = 0;
 	}
 
@@ -20,8 +27,7 @@ struct MACValues
 	{
 		state = c.state;
 		p = c.p;
-		ux = c.ux;
-		uy = c.uy;
+		u = c.u;
 		return *this;
 	}
 };
