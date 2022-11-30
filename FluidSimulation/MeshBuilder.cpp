@@ -31,11 +31,11 @@ Mesh* MeshBuilder::CreateMesh(string type)
 	else if (type == "triangle")
 	{
 		vector<float> vertices{
-		0.0f,  0.15f,  // top
+		0.0f,  0.25f,  // top
 		1.f, 0.f, 0.f,
-		-0.05f, -0.15f,  // bottom left
+		-0.025f, -0.05f,  // bottom left
 		1.f, 0.f, 0.f,
-		0.05f, -0.15f,  // bottom right
+		0.025f, -0.05f,  // bottom right
 		1.f, 0.f, 0.f,
 		};
 		vector<int> indices{  // note that we start from 0!

@@ -16,12 +16,13 @@ struct MACValues
 		state = 0;
 	}
 
-	MACValues operator=(const MACValues& c)
+	MACValues& operator=(const MACValues& c)
 	{
 		state = c.state;
 		p = c.p;
 		ux = c.ux;
 		uy = c.uy;
+		return *this;
 	}
 };
 

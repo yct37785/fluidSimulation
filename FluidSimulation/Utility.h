@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <random>
 #include <map>
+#include <math.h>
 // Core C++, OpenGL, texture and any other platform specific libs
 // memory leak detection
 #define _CRTDBG_MAP_ALLOC
