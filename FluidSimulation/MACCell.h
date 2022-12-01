@@ -41,7 +41,7 @@ class MACCell
 
 	// utilities
 	//static bool isBoundaryFace(float x, float y, int xCellsCount, int yCellsCount);
-	static glm::vec2 getVelocityAtPt(MACCell** gridCells, glm::vec2 pos, int xCellsCount, int yCellsCount, float timestep);
+	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount, float timestep);
 
 public:
 	MACCell();
@@ -57,4 +57,5 @@ public:
 
 	float ux();
 	float uy();
+	float u(char comp);
 };
