@@ -2,7 +2,8 @@
 #include "MeshBuilder.h"
 // defines
 const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
-const float DEN = 1.f;	// water density = 1000 kh/m^3, but here we set it to 1
+const float DEN_WATER = 1000.f;	// water density = 1000 kg/m^3
+const float DEN_AIR = 1.f;	// air density = 1 kg/m^3
 const float Kcfl = 1.f;	// timestep scale, 1 - 5
 const float H = 1.f;	// width/height of a grid cell
 
@@ -38,14 +39,22 @@ class MACCell
 	MACValues cv;	// curr values
 	int posX, posY;
 
+	// utilities
+	//static bool isBoundaryFace(float x, float y, int xCellsCount, int yCellsCount);
+	static glm::vec2 getVelocityAtPt(MACCell** gridCells, glm::vec2 pos, int xCellsCount, int yCellsCount, float timestep);
+
 public:
 	MACCell();
 	~MACCell();
 
 	void setPos(int posX, int posY);
 
-	void Advect(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep);
+	void AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep);
+	void applySolidVelocities();
 	void postUpdate();
 
 	void Draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
+
+	float ux();
+	float uy();
 };

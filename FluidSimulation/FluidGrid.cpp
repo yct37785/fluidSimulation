@@ -47,7 +47,7 @@ float FluidGrid::getTimeStep()
 void FluidGrid::Update(float deltaTime)
 {
 	// time step
-	float timestep = getTimeStep() * deltaTime * 20.f;
+	float timestep = getTimeStep() * deltaTime * 60.f;
 	// update cell states with marker particles
 
 	for (int y = 0; y < yCellsCount; ++y)
@@ -55,16 +55,17 @@ void FluidGrid::Update(float deltaTime)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// advect velocity field through itself (velocity at boundaries will be 0)
-			gridCells[y][x].Advect(gridCells, xCellsCount, yCellsCount, timestep);
+			gridCells[y][x].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
 			// apply external forces
 		}
 	}
+	//gridCells[3][3].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
 	for (int y = 0; y < yCellsCount; ++y)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// pressure update
-
+			
 			// post update
 			gridCells[y][x].postUpdate();
 		}
