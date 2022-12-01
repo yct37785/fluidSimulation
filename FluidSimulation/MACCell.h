@@ -19,8 +19,8 @@ struct MACValues
 	MACValues()
 	{
 		p = 1.f;
-		u.x = 1.f;
-		u.y = 1.f;
+		u.x = (float)rand() / 2.f * (rand() % 2 ? -1.f : 1.f);
+		u.y = (float)rand() / 2.f * (rand() % 2 ? -1.f : 1.f);
 		state = 0;
 	}
 
@@ -40,8 +40,9 @@ class MACCell
 	int posX, posY;
 
 	// utilities
+	static bool withinBounds(float v, float maxv);
 	//static bool isBoundaryFace(float x, float y, int xCellsCount, int yCellsCount);
-	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount, float timestep);
+	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount);
 
 public:
 	MACCell();
@@ -57,5 +58,5 @@ public:
 
 	float ux();
 	float uy();
-	float u(char comp);
+	float u(char comp, int x, int y);
 };
