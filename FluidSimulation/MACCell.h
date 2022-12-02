@@ -41,13 +41,23 @@ class MACCell
 
 	// utilities
 	static bool withinBounds(float v, float maxv);
-	//static bool isBoundaryFace(float x, float y, int xCellsCount, int yCellsCount);
+	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
+		glm::vec2& pos, int comp, glm::vec2& q11, glm::vec2& q21, glm::vec2& q12, glm::vec2& q22);
+	static void getHalfIndicesCoords(float pos, float& minv, float& maxv);
+	static float getVelCompAtPt(MACCell** gridCells, MACCell& currCell, int xCellsCount, int yCellsCount);
+
 	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount);
+
+	// unit tests
+	static void UT_bilinearInterpolate();
+	static void UT_getHalfIndicesCoords();
+	static void UT_getVelCompAtPt();
 
 public:
 	MACCell();
 	~MACCell();
 
+	void setValues(int posX, int posY, glm::vec2 u, float p, int state);
 	void setPos(int posX, int posY, int xCellsCount, int yCellsCount);
 
 	void AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep);
@@ -56,7 +66,11 @@ public:
 
 	void Draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
 
+	int pos_x();
+	int pos_y();
 	float ux();
 	float uy();
 	float u(char comp);
+
+	static void runUT();
 };

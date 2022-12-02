@@ -2,6 +2,8 @@
 
 FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 {
+	MACCell::runUT();
+
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	triangleMesh = MeshBuilder::CreateMesh("triangle");
 
@@ -55,11 +57,11 @@ void FluidGrid::Update(float deltaTime)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// advect velocity field through itself (velocity at boundaries will be 0)
-			gridCells[y][x].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
+			// gridCells[y][x].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
 			// apply external forces
 		}
 	}
-	// gridCells[3][3].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
+	gridCells[3][3].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
 	for (int y = 0; y < yCellsCount; ++y)
 	{
 		for (int x = 0; x < xCellsCount; ++x)

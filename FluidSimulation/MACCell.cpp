@@ -8,17 +8,94 @@ MACCell::~MACCell()
 {
 }
 
-// is a given face pos at the boundary (half indices)
-//bool MACCell::isBoundaryFace(float x, float y, int xCellsCount, int yCellsCount)
-//{
-//	return (x <= -0.5f || x >= (float)xCellsCount + 0.5f) ||
-//		(y <= -0.5f || y >= (float)yCellsCount + 0.5f);
-//}
-
 bool MACCell::withinBounds(float v, float maxv)
 {
 	return v >= 0.f && v < maxv;
 }
+
+float MACCell::bilinearInterpolate(float x1, float x2, float y1, float y2,
+	glm::vec2& pos, int comp, glm::vec2& q11, glm::vec2& q21, glm::vec2& q12, glm::vec2& q22)
+{
+	float h = x2 - x1;
+	float r1 = q11[comp] * (x2 - pos.x) / h + q21[comp] * (pos.x - x1) / h;
+	float r2 = q12[comp] * (x2 - pos.x) / h + q22[comp] * (pos.x - x1) / h;
+	return r1 * (y2 - pos.y) / (y2 - y1) + r2 * (pos.y - y1) / (y2 - y1);
+}
+
+void MACCell::UT_bilinearInterpolate()
+{
+	glm::vec2 pos(2.3f, 2.4f);
+	float x1 = 2.f, x2 = 3.f, y1 = 2.f, y2 = 3.f;
+	glm::vec2 q11(22.f, 0.f);
+	glm::vec2 q21(23.f, 0.f);
+	glm::vec2 q12(32.f, 0.f);
+	glm::vec2 q22(33.f, 0.f);
+	float v = bilinearInterpolate(x1, x2, y1, y2, pos, 0, q11, q21, q12, q22);
+	if (v == 26.3f)
+		cout << "UT: bilinearInterpolate success" << endl;
+	else
+		cout << "UT: bilinearInterpolate fail" << endl;
+}
+
+void MACCell::getHalfIndicesCoords(float pos, float& minv, float& maxv)
+{
+	// over floor
+	if (pos - floor(pos) <= 0.5f)
+	{
+		minv = floor(pos) - 0.5f;
+		maxv = floor(pos) + 0.5f;
+	}
+	// below floor
+	else
+	{
+		minv = ceil(pos) - 0.5f;
+		maxv = ceil(pos) + 0.5f;
+	}
+}
+
+void MACCell::UT_getHalfIndicesCoords()
+{
+	int successTestCount = 0;
+	float minv = 0.f, maxv = 0.f;
+	// v(2.1): 1.5 < x < 2.5
+	MACCell::getHalfIndicesCoords(2.1f, minv, maxv);
+	if (minv == 1.5f && maxv == 2.5f)
+		successTestCount++;
+	// v(2.9): 2.5 < x < 3.5
+	MACCell::getHalfIndicesCoords(2.9f, minv, maxv);
+	if (minv == 2.5f && maxv == 3.5f)
+		successTestCount++;
+	if (successTestCount == 2)
+		cout << "UT: getHalfIndicesCoords success" << endl;
+	else
+		cout << "UT: getHalfIndicesCoords fail" << endl;
+}
+
+float MACCell::getVelCompAtPt(MACCell** gridCells, MACCell& currCell, int xCellsCount, int yCellsCount)
+{
+	float x1, y1, x2, y2;
+	MACCell::getHalfIndicesCoords((float)currCell.pos_x(), x1, x2);
+	MACCell::getHalfIndicesCoords((float)currCell.pos_y(), y1, y2);
+	cout << x1 << ", " << x2 << endl;
+	cout << y1 << ", " << y2 << endl;
+	return 0.f;
+}
+
+void MACCell::UT_getVelCompAtPt()
+{
+	// create a 2 * 2 grid
+	int xCellsCount = 2, yCellsCount = 2;
+	MACCell** gridCells = new MACCell*[yCellsCount];
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		gridCells[y] = new MACCell[xCellsCount];
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+
+		}
+	}
+}
+
 
 // pos: half-indices
 float MACCell::getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount)
@@ -74,6 +151,16 @@ float MACCell::getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char com
 	return r1 * (y2 - pos.y) / (y2 - y1) + r2 * (pos.y - y1) / (y2 - y1);
 }
 
+void MACCell::setValues(int posX, int posY, glm::vec2 u, float p, int state)
+{
+	this->posX = posX;
+	this->posY = posY;
+	cv.u = u;
+	cv.p = p;
+	cv.state = state;
+	pv = cv;
+}
+
 void MACCell::setPos(int posX, int posY, int xCellsCount, int yCellsCount)
 {
 	this->posX = posX;
@@ -111,7 +198,7 @@ void MACCell::AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, 
 	ux_vel.y = (gridCells[posY][posX].uy() + gridCells[posY1][posX].uy()
 		+ gridCells[posY][posX1].uy() + gridCells[posY1][posX1].uy()) / 4.f;
 	glm::vec2 ux_prevpos = currPosUx - ux_vel * 0.f;
-	cout << currPosUx.x << ", " << currPosUx.y << ", " << ux_prevpos.x << ", " << ux_prevpos.y << endl;
+	// cout << currPosUx.x << ", " << currPosUx.y << ", " << ux_prevpos.x << ", " << ux_prevpos.y << endl;
 	cv.u.x = getVelocityCompAtPt(gridCells, ux_prevpos, 'x', xCellsCount, yCellsCount);
 	// velocity at i,j-1/2
 	// ux.y = j-1/2
@@ -170,6 +257,16 @@ void MACCell::Draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	glDrawElements(GL_TRIANGLES, triangleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
 }
 
+int MACCell::pos_x()
+{
+	return posX;
+}
+
+int MACCell::pos_y()
+{
+	return posY;
+}
+
 float MACCell::ux()
 {
 	return pv.u.x;
@@ -184,4 +281,10 @@ float MACCell::u(char comp)
 {
 	if (comp == 'x') return pv.u.x;
 	return pv.u.y;
+}
+
+void MACCell::runUT()
+{
+	UT_bilinearInterpolate();
+	UT_getHalfIndicesCoords();
 }
