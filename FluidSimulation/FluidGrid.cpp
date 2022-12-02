@@ -35,40 +35,16 @@ float FluidGrid::getTimeStep()
 
 void FluidGrid::Update(float deltaTime)
 {
-	// time step
-	float timestep = getTimeStep() * deltaTime * 1.f;
-	// update cell states with marker particles
-
-	//for (int y = 0; y < yCellsCount; ++y)
-	//{
-	//	for (int x = 0; x < xCellsCount; ++x)
-	//	{
-	//		// advect velocity field through itself (velocity at boundaries will be 0)
-	//		// gridCells[y][x].AdvectSelf(gridCells, xCellsCount, yCellsCount, timestep);
-	//		// apply external forces
-	//	}
-	//}
-	//for (int y = 0; y < yCellsCount; ++y)
-	//{
-	//	for (int x = 0; x < xCellsCount; ++x)
-	//	{
-	//		// pressure update
-	//		
-	//		// post update
-	//	}
-	//}
+	float t = getTimeStep() * deltaTime * 1.f;
+	uField->advectSelf(t);
+	// more stuff
+	uField->postUpdate();
 }
 
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	//for (int y = 0; y < yCellsCount; ++y)
-	//{
-	//	for (int x = 0; x < xCellsCount; ++x)
-	//	{
-	//		// gridCells[y][x].Draw(mvMat, mvpHandle, triangleMesh);
-	//	}
-	//}
+	uField->draw(mvMat, mvpHandle, triangleMesh);
 	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvMat));
 	glBindVertexArray(gridMesh->getVAO());
 	glDrawElements(GL_TRIANGLES, gridMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);

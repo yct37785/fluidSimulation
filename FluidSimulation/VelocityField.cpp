@@ -138,6 +138,53 @@ void VelocityField::UT_getVelCompAtPt()
 		cout << "UT: getVelCompAtPt fail" << endl;
 }
 
+void VelocityField::advectSelf(float t)
+{
+	// get vel at pos(x',y'), trace backwards, get vel at that pos, then apply to (x',y')
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			glm::vec2 prevPos = glm::vec2((float)x, (float)y) - prev[y][x] * t;
+			float xcomp = getVelCompAtPt(prevPos, 0);
+			float ycomp = getVelCompAtPt(prevPos, 1);
+			curr[y][x] = glm::vec2(xcomp, ycomp);
+		}
+	}
+}
+
+void VelocityField::postUpdate()
+{
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			prev[y][x] = curr[y][x];
+		}
+	}
+}
+
+void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
+{
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			// get angular dir of velocity from lesser faces
+			float angleRad = (float)atan2(-curr[y][x].x, curr[y][x].y);
+			float scale = glm::length(curr[y][x]);
+			// u
+			glm::mat4 mvpMat = mvMat *
+				glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f)) *
+				glm::rotate(glm::mat4(1.f), angleRad, glm::vec3(0.f, 0.f, 1.f)) *
+				glm::scale(glm::mat4(1.f), glm::vec3(scale, scale, 1.f));
+			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
+			glBindVertexArray(triangleMesh->getVAO());
+			glDrawElements(GL_TRIANGLES, triangleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
+		}
+	}
+}
+
 glm::vec2 VelocityField::getVelAtPos(glm::vec2 pos)
 {
 	return glm::vec2();
