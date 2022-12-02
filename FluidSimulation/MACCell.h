@@ -19,8 +19,8 @@ struct MACValues
 	MACValues()
 	{
 		p = 1.f;
-		u.x = (float)rand() / 2.f * (rand() % 2 ? -1.f : 1.f);
-		u.y = (float)rand() / 2.f * (rand() % 2 ? -1.f : 1.f);
+		u.x = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
+		u.y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
 		state = 0;
 	}
 
@@ -48,7 +48,7 @@ public:
 	MACCell();
 	~MACCell();
 
-	void setPos(int posX, int posY);
+	void setPos(int posX, int posY, int xCellsCount, int yCellsCount);
 
 	void AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep);
 	void applySolidVelocities();
@@ -58,5 +58,5 @@ public:
 
 	float ux();
 	float uy();
-	float u(char comp, int x, int y);
+	float u(char comp);
 };

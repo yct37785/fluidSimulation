@@ -14,7 +14,7 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 		gridCells[y] = new MACCell[xCellsCount];
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			gridCells[y][x].setPos(x, y);
+			gridCells[y][x].setPos(x, y, xCellsCount, yCellsCount);
 		}
 	}
 

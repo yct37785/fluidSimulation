@@ -54,30 +54,38 @@ float MACCell::getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char com
 	int y1_idx = (int)ceil(y1);
 	int x2_idx = (int)ceil(x2);
 	int y2_idx = (int)ceil(y2);
-	// cout << x1 << ", " << x2 << ", " << y1 << ", " << y2 << " s: " << ceil(-1.5) << endl;
+	// cout << x1 << ", " << x2 << ", " << y1 << ", " << y2 << endl;
 	float q11, q21, q12, q22;
 	withinBounds(x1_idx, (float)xCellsCount);
 	if (!withinBounds(x1_idx, xCellsCount) || !withinBounds(y1_idx, yCellsCount)) q11 = 0.f;
 	else
-		q11 = gridCells[y1_idx][x1_idx].u(comp, x1_idx, y1_idx) * (x2 - pos.x) / (x2 - x1);
+		q11 = gridCells[y1_idx][x1_idx].u(comp) * (x2 - pos.x) / 1.f;
 	if (!withinBounds(x2_idx, xCellsCount) || !withinBounds(y1_idx, yCellsCount)) q21 = 0.f;
 	else
-		q21 = gridCells[y1_idx][x2_idx].u(comp, x2_idx, y1_idx) * (pos.x - x1) / (x2 - x1);
+		q21 = gridCells[y1_idx][x2_idx].u(comp) * (pos.x - x1) / 1.f;
 	if (!withinBounds(x1_idx, xCellsCount) || !withinBounds(y2_idx, yCellsCount)) q12 = 0.f;
 	else
-		q12 = gridCells[y2_idx][x1_idx].u(comp, x1_idx, y2_idx) * (x2 - pos.x) / (x2 - x1);
+		q12 = gridCells[y2_idx][x1_idx].u(comp) * (x2 - pos.x) / 1.f;
 	if (!withinBounds(x2_idx, xCellsCount) || !withinBounds(y2_idx, yCellsCount)) q22 = 0.f;
 	else
-		q22 = gridCells[y2_idx][x2_idx].u(comp, x2_idx, y2_idx) * (pos.x - x1) / (x2 - x1);
+		q22 = gridCells[y2_idx][x2_idx].u(comp) * (pos.x - x1) / 1.f;
 	float r1 = q11 + q21;
 	float r2 = q12 + q22;
 	return r1 * (y2 - pos.y) / (y2 - y1) + r2 * (pos.y - y1) / (y2 - y1);
 }
 
-void MACCell::setPos(int posX, int posY)
+void MACCell::setPos(int posX, int posY, int xCellsCount, int yCellsCount)
 {
 	this->posX = posX;
 	this->posY = posY;
+	if (posX == 0 || posX == xCellsCount)
+	{
+		pv.u.x = cv.u.x = 0.f;
+	}
+	if (posY == 0 || posY == yCellsCount)
+	{
+		pv.u.y = cv.u.y = 0.f;
+	}
 }
 
 void MACCell::AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep)
@@ -96,14 +104,14 @@ void MACCell::AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, 
 	// half indices
 	// velocity at i-1/2,j
 	// ux.x = i-1/2
+	glm::vec2 currPosUx((float)posX - 0.5f, (float)posY);
 	glm::vec2 ux_vel;
 	ux_vel.x = cv.u.x;
 	// ux.y = j: y(i,j-1/2 + i,j+1/2 + i+1,j-1/2 + i+1,j+1/2) / 4
 	ux_vel.y = (gridCells[posY][posX].uy() + gridCells[posY1][posX].uy()
 		+ gridCells[posY][posX1].uy() + gridCells[posY1][posX1].uy()) / 4.f;
-	glm::vec2 ux_prevpos = glm::vec2((float)posX - 0.5f, (float)posY) - ux_vel * timestep;
-	/*cout << "Before: " << (float)posX - 0.5f << ", " << (float)posY << endl;
-	cout << "After: " << ux_prevpos.x << ", " << ux_prevpos.y << endl;*/
+	glm::vec2 ux_prevpos = currPosUx - ux_vel * 0.f;
+	cout << currPosUx.x << ", " << currPosUx.y << ", " << ux_prevpos.x << ", " << ux_prevpos.y << endl;
 	cv.u.x = getVelocityCompAtPt(gridCells, ux_prevpos, 'x', xCellsCount, yCellsCount);
 	// velocity at i,j-1/2
 	// ux.y = j-1/2
@@ -112,8 +120,25 @@ void MACCell::AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, 
 	// ux.x = i: x(i-1/2,j + i+1/2,j + i-1/2,j+1 + i+1/2,j+1) / 4
 	uy_vel.x = (gridCells[posY][posX].ux() + gridCells[posY][posX1].ux()
 		+ gridCells[posY1][posX].ux() + gridCells[posY1][posX1].ux()) / 4.f;
-	glm::vec2 uy_prevpos = glm::vec2((float)posX, (float)posY - 0.5f) - uy_vel * timestep;
-	cv.u.y = getVelocityCompAtPt(gridCells, uy_prevpos, 'y', xCellsCount, yCellsCount);
+	glm::vec2 uy_prevpos = glm::vec2((float)posX, (float)posY - 0.5f) - uy_vel * 0.f;
+	//cv.u.y = getVelocityCompAtPt(gridCells, uy_prevpos, 'y', xCellsCount, yCellsCount);
+	
+	//// rk2
+	//glm::vec2 posux((float)xCellsCount - 0.5f, (float)yCellsCount);
+	//glm::vec2 V = ux_vel;
+	//V = glm::vec2(((float)xCellsCount - 0.5f) - 0.5f * timestep * V.x, ((float)yCellsCount) - 0.5f * timestep * V.y);
+	//V.x = getVelocityCompAtPt(gridCells, posux, 'x', xCellsCount, yCellsCount);
+	//V.y = getVelocityCompAtPt(gridCells, posux, 'y', xCellsCount, yCellsCount);
+	//posux = posux + timestep * V;
+	//cv.u.x = getVelocityCompAtPt(gridCells, posux, 'y', xCellsCount, yCellsCount);
+
+	//glm::vec2 posuy((float)xCellsCount, (float)yCellsCount - 0.5f);
+	//V = uy_vel;
+	//V = glm::vec2(((float)xCellsCount) - 0.5f * timestep * V.x, ((float)yCellsCount - 0.5f) - 0.5f * timestep * V.y);
+	//V.x = getVelocityCompAtPt(gridCells, posuy, 'x', xCellsCount, yCellsCount);
+	//V.y = getVelocityCompAtPt(gridCells, posuy, 'y', xCellsCount, yCellsCount);
+	//posuy = posuy + timestep * V;
+	//cv.u.y = getVelocityCompAtPt(gridCells, posuy, 'y', xCellsCount, yCellsCount);
 }
 
 void MACCell::applySolidVelocities()
@@ -134,7 +159,7 @@ void MACCell::Draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	float y = (float)posY;
 	// get angular dir of velocity from lesser faces
 	float angleRad = (float)atan2(-cv.u.x, cv.u.y);
-	float scale = glm::vec2(cv.u.x, cv.u.y).length();
+	float scale = glm::length(cv.u);
 	// u
 	glm::mat4 mvpMat = mvMat *
 		glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f)) *
@@ -155,7 +180,7 @@ float MACCell::uy()
 	return pv.u.y;
 }
 
-float MACCell::u(char comp, int x, int y)
+float MACCell::u(char comp)
 {
 	if (comp == 'x') return pv.u.x;
 	return pv.u.y;
