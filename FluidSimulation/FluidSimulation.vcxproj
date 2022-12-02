@@ -144,6 +144,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="VelocityField.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Utility.h" />
+    <ClInclude Include="VelocityField.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 #pragma once
-#include "MACCell.h"
+#include "VelocityField.h"
 
 class FluidGrid
 {
@@ -8,7 +8,7 @@ class FluidGrid
 	int xCellsCount, yCellsCount;
 
 	// quantities
-	MACCell** gridCells;
+	VelocityField* uField;
 
 	// tracker
 	glm::vec2 maxU;

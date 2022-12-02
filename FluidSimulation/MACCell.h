@@ -1,11 +1,5 @@
 #pragma once
 #include "MeshBuilder.h"
-// defines
-const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
-const float DEN_WATER = 1000.f;	// water density = 1000 kg/m^3
-const float DEN_AIR = 1.f;	// air density = 1 kg/m^3
-const float Kcfl = 1.f;	// timestep scale, 1 - 5
-const float H = 1.f;	// width/height of a grid cell
 
 // store values in one struct for easier management
 struct MACValues
