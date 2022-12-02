@@ -2,14 +2,7 @@
 #include "MeshBuilder.h"
 
 /*
-* Full indices
-* x comp at cell[0] min face is stored at curr[0,0]
-* y comp at cell[0] min face is stored at curr[0,0]
-* - By principle velocity field is stored in a staggered formation, -0.5 -> totalCells - 0.5, and
-vel.x is stored in (i-1/2,j) while vel.y is stored in (i,j-1/2)
-* So any pos values passed into vel_space will be offseted by (0.5, 0,5)
-* - Eg: I want to find the velocity at world_space(5.6, 6.2), in vel_space it will be derive velocity at (6.1, 6.7)
-* - Eg: I want to find the velocity at world_space(1.5, 1.5), in vel_space it will be derive velocity at (0.0, 0.0)
+* Full indices, we won't be doing staggered grids until we can get a basic simulator running
 */
 class VelocityField
 {

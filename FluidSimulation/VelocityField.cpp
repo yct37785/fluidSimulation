@@ -12,8 +12,14 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 		curr[y] = new glm::vec2[xCellsCount];
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			curr[y][x].x = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
-			curr[y][x].y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
+			if (x == 0 || x == xCellsCount - 1)
+				curr[y][x].x = 0.f;
+			else
+				curr[y][x].x = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
+			if (y == 0 || y == yCellsCount - 1)
+				curr[y][x].y = 0.f;
+			else
+				curr[y][x].y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -115,19 +121,18 @@ void VelocityField::UT_getVelCompAtPt()
 	if (vel.x == v)
 		successTestCount++;
 	// test 2: interpolated value
-	glm::vec2 q11(22.f, 0.f);
-	glm::vec2 q21(23.f, 0.f);
-	glm::vec2 q12(32.f, 0.f);
-	glm::vec2 q22(33.f, 0.f);
-	vf.setVelByIdx(glm::vec2(22.f, 0.f), 3, 3);
-	vf.setVelByIdx(glm::vec2(23.f, 0.f), 4, 3);
-	vf.setVelByIdx(glm::vec2(32.f, 0.f), 3, 4);
-	vf.setVelByIdx(glm::vec2(33.f, 0.f), 4, 4);
+	vf.setVelByIdx(glm::vec2(22.f, 22.f), 3, 3);
+	vf.setVelByIdx(glm::vec2(23.f, 32.f), 4, 3);
+	vf.setVelByIdx(glm::vec2(32.f, 23.f), 3, 4);
+	vf.setVelByIdx(glm::vec2(33.f, 33.f), 4, 4);
 	v = vf.getVelCompAtPt(glm::vec2(3.3f, 3.4f), 0);
 	if (v == 26.3f)
 		successTestCount++;
-
-	if (successTestCount == 2)
+	// test 3: y comp
+	v = vf.getVelCompAtPt(glm::vec2(3.4f, 3.3f), 1);
+	if (v == 26.3f)
+		successTestCount++;
+	if (successTestCount == 3)
 		cout << "UT: getVelCompAtPt success" << endl;
 	else
 		cout << "UT: getVelCompAtPt fail" << endl;
