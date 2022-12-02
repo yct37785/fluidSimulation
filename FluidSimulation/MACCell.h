@@ -46,14 +46,14 @@ class MACCell
 	static bool withinBounds(float v, float maxv);
 	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
 		glm::vec2& pos, int comp, glm::vec2 q11, glm::vec2 q21, glm::vec2 q12, glm::vec2 q22);
-	static void getHalfIndicesCoords(float pos, float& minv, float& maxv);
+	static void getIndicesCoords(float pos, float& minv, float& maxv);
 	static float getVelCompAtPt(MACCell** gridCells, glm::vec2 pos, int comp, int xCellsCount, int yCellsCount);
 
 	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount);
 
 	// unit tests
 	static void UT_bilinearInterpolate();
-	static void UT_getHalfIndicesCoords();
+	static void UT_getIndicesCoords();
 	static void UT_getVelCompAtPt();
 
 public:

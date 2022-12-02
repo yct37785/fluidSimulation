@@ -38,33 +38,23 @@ void MACCell::UT_bilinearInterpolate()
 		cout << "UT: bilinearInterpolate fail" << endl;
 }
 
-void MACCell::getHalfIndicesCoords(float pos, float& minv, float& maxv)
+void MACCell::getIndicesCoords(float pos, float& minv, float& maxv)
 {
-	// over floor
-	if (pos - floor(pos) <= 0.5f)
-	{
-		minv = floor(pos) - 0.5f;
-		maxv = floor(pos) + 0.5f;
-	}
-	// below floor
-	else
-	{
-		minv = ceil(pos) - 0.5f;
-		maxv = ceil(pos) + 0.5f;
-	}
+	minv = (int)floor(pos);
+	maxv = (int)ceil(pos);
 }
 
-void MACCell::UT_getHalfIndicesCoords()
+void MACCell::UT_getIndicesCoords()
 {
 	int successTestCount = 0;
 	float minv = 0.f, maxv = 0.f;
-	// v(2.1): 1.5 < x < 2.5
-	MACCell::getHalfIndicesCoords(2.1f, minv, maxv);
-	if (minv == 1.5f && maxv == 2.5f)
+	// v(2.1): 2 - 3
+	MACCell::getIndicesCoords(2.1f, minv, maxv);
+	if (minv == 2.f && maxv == 3.f)
 		successTestCount++;
-	// v(2.9): 2.5 < x < 3.5
-	MACCell::getHalfIndicesCoords(2.9f, minv, maxv);
-	if (minv == 2.5f && maxv == 3.5f)
+	// v(1.9): 1 - 2
+	MACCell::getIndicesCoords(1.9f, minv, maxv);
+	if (minv == 1.f && maxv == 2.f)
 		successTestCount++;
 	if (successTestCount == 2)
 		cout << "UT: getHalfIndicesCoords success" << endl;
@@ -72,27 +62,26 @@ void MACCell::UT_getHalfIndicesCoords()
 		cout << "UT: getHalfIndicesCoords fail" << endl;
 }
 
+// full indices
 float MACCell::getVelCompAtPt(MACCell** gridCells, glm::vec2 pos, int comp, int xCellsCount, int yCellsCount)
 {
 	// get indices
 	float x1, x2, y1, y2;
-	MACCell::getHalfIndicesCoords(pos.x, x1, x2);
-	MACCell::getHalfIndicesCoords(pos.y, y1, y2);
-	int x1_idx = (int)ceil(x1), x2_idx = (int)ceil(x2), y1_idx = (int)ceil(y1), y2_idx = (int)ceil(y2);
-	/*cout << "X: " << x1 << ", " << x2 << " -> " << x1_idx << ", " << x2_idx << endl;
-	cout << "Y: " << y1 << ", " << y2 << " -> " << y1_idx << ", " << y2_idx << endl;*/
+	MACCell::getIndicesCoords(pos.x, x1, x2);
+	MACCell::getIndicesCoords(pos.y, y1, y2);
 	// bilinear interpolate with surrounding 4 cells
-	float v = bilinearInterpolate(x1, x2, y1, y2, pos, comp, gridCells[y1_idx][x1_idx].u(),
-		gridCells[y1_idx][x2_idx].u(), gridCells[y2_idx][x1_idx].u(), gridCells[y2_idx][x2_idx].u());
+	float v = bilinearInterpolate(x1, x2, y1, y2, pos, comp, gridCells[(int)y1][(int)x1].u(),
+		gridCells[(int)y1][(int)x2].u(), gridCells[(int)y2][(int)x1].u(), gridCells[(int)y2][(int)x2].u());
 	// boundary
 	return v;
 }
 
 void MACCell::UT_getVelCompAtPt()
 {
+	int successTestCount = 0;
 	glm::vec2 vel;
 	// create a grid
-	int xCellsCount = 4, yCellsCount = 4;
+	int xCellsCount = 11, yCellsCount = 11;
 	MACCell** gridCells = new MACCell*[yCellsCount];
 	for (int y = 0; y < yCellsCount; ++y)
 	{
@@ -102,23 +91,24 @@ void MACCell::UT_getVelCompAtPt()
 			gridCells[y][x].setPos(x, y, xCellsCount, yCellsCount);
 		}
 	}
-	// test 1: manually set surround cells of (i,j), find y at (i-1/2,j)
-	glm::vec2 test1_pos(2.3f, 2.4f);
-	float x1 = 2.f, x2 = 3.f, y1 = 2.f, y2 = 3.f;
-	glm::vec2 q11(22.f, 0.f);
-	glm::vec2 q21(23.f, 0.f);
-	glm::vec2 q12(32.f, 0.f);
-	glm::vec2 q22(33.f, 0.f);
+	// test 1: manually set surround cells of (i,j), find y = (x + .3f, y + .4f)
+	float test1_y_1 = 26.3f;
 	gridCells[1][1].setU(glm::vec2(0.f, 22.f));
 	gridCells[1][2].setU(glm::vec2(0.f, 23.f));
 	gridCells[2][1].setU(glm::vec2(0.f, 32.f));
 	gridCells[2][2].setU(glm::vec2(0.f, 33.f));
-	float test1_y_2 = getVelCompAtPt(gridCells, glm::vec2(1.f - 0.5f, 1.f), 1, xCellsCount, yCellsCount);
-	//// test 1: vel.y at (i: 1-1/2, j: 1)
-	//float test1_y_1 = (gridCells[1][1].uy() + gridCells[1][2].uy()
-	//	+ gridCells[2][1].uy() + gridCells[2][2].uy()) / 4.f;
-	//float test1_y_2 = getVelCompAtPt(gridCells, glm::vec2(0.5f, 1.f), 1, xCellsCount, yCellsCount);
-	//cout << test1_y_1 << ", " << test1_y_2 << endl;
+	float test1_y_2 = getVelCompAtPt(gridCells, glm::vec2(1.3f, 1.4f), 1, xCellsCount, yCellsCount);
+	if (test1_y_1 == test1_y_2)
+		successTestCount++;
+	// test 2: find y at (i-1/2,j)
+	// ux.y = j: y(i,j-1/2 + i,j+1/2 + i+1,j-1/2 + i+1,j+1/2) / 4
+	float test2_y_1 = (gridCells[7][7].uy() + gridCells[7][8].uy() + gridCells[8][7].uy() + gridCells[8][8].uy()) / 4.f;
+	float test2_y_2 = getVelCompAtPt(gridCells, glm::vec2(7.001f, 7.001f), 1, xCellsCount, yCellsCount);
+	cout << test2_y_1 << ", " << test2_y_2 << endl;
+	if (successTestCount == 1)
+		cout << "UT: getVelCompAtPt success" << endl;
+	else
+		cout << "UT: getVelCompAtPt fail" << endl;
 }
 
 
@@ -313,6 +303,6 @@ glm::vec2 MACCell::u()
 void MACCell::runUT()
 {
 	UT_bilinearInterpolate();
-	UT_getHalfIndicesCoords();
+	UT_getIndicesCoords();
 	UT_getVelCompAtPt();
 }
