@@ -33,6 +33,9 @@ struct MACValues
 	}
 };
 
+/*
+* boundary: (cell 0 min face) -> (cell cellCount - 1 min face)
+*/
 class MACCell
 {
 	MACValues pv;	// prev values
@@ -42,9 +45,9 @@ class MACCell
 	// utilities
 	static bool withinBounds(float v, float maxv);
 	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
-		glm::vec2& pos, int comp, glm::vec2& q11, glm::vec2& q21, glm::vec2& q12, glm::vec2& q22);
+		glm::vec2& pos, int comp, glm::vec2 q11, glm::vec2 q21, glm::vec2 q12, glm::vec2 q22);
 	static void getHalfIndicesCoords(float pos, float& minv, float& maxv);
-	static float getVelCompAtPt(MACCell** gridCells, MACCell& currCell, int xCellsCount, int yCellsCount);
+	static float getVelCompAtPt(MACCell** gridCells, glm::vec2 pos, int comp, int xCellsCount, int yCellsCount);
 
 	static float getVelocityCompAtPt(MACCell** gridCells, glm::vec2& pos, char comp, int xCellsCount, int yCellsCount);
 
@@ -57,8 +60,8 @@ public:
 	MACCell();
 	~MACCell();
 
-	void setValues(int posX, int posY, glm::vec2 u, float p, int state);
 	void setPos(int posX, int posY, int xCellsCount, int yCellsCount);
+	void setU(glm::vec2 new_u);
 
 	void AdvectSelf(MACCell** gridCells, int xCellsCount, int yCellsCount, float timestep);
 	void applySolidVelocities();
@@ -71,6 +74,7 @@ public:
 	float ux();
 	float uy();
 	float u(char comp);
+	glm::vec2 u();
 
 	static void runUT();
 };
