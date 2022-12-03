@@ -20,7 +20,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 				curr[y][x].y = 0.f;
 			else
 				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-			//curr[y][x].x = curr[y][x].y = 0.f;
+			// curr[y][x].x = curr[y][x].y = 0.f;
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -224,7 +224,9 @@ glm::vec2 VelocityField::getMaxU()
 
 glm::vec2 VelocityField::getVelAtPos(glm::vec2 pos)
 {
-	return glm::vec2();
+	float x = getVelCompAtPt(pos, 0);
+	float y = getVelCompAtPt(pos, 1);
+	return glm::vec2(x, y);
 }
 
 void VelocityField::setVelByIdx(glm::vec2 vel, int x, int y)

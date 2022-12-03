@@ -28,6 +28,24 @@ Mesh* MeshBuilder::CreateMesh(string type)
 		};
 		return new Mesh(vertices, indices, GL_STATIC_DRAW);
 	}
+	else if (type == "blue_quad")
+	{
+		vector<float> vertices{
+		0.1f,  0.1f,  // top right
+		0.f, 0.f, 1.f,
+		0.1f, -0.1f,  // bottom right
+		0.f, 0.f, 1.f,
+		-0.1f, -0.1f,  // bottom left
+		0.f, 0.f, 1.f,
+		-0.1f,  0.1f,   // top left
+		0.f, 0.f, 1.f,
+		};
+		vector<int> indices{  // note that we start from 0!
+			0, 1, 3,   // first triangle
+			1, 2, 3    // second triangle
+		};
+		return new Mesh(vertices, indices, GL_STATIC_DRAW);
+	}
 	else if (type == "triangle")
 	{
 		vector<float> vertices{

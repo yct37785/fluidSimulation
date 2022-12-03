@@ -5,12 +5,14 @@ class FluidGrid
 {
 	GridMesh* gridMesh;
 	Mesh* triangleMesh;
+	Mesh* markerMesh;
 	int xCellsCount, yCellsCount;
 
 	// quantities
 	VelocityField* uField;
 
 	// marker
+	vector<glm::vec2> markers;
 
 	//utils
 	glm::vec2 getVelocityBilinear(float x, float y);
