@@ -10,8 +10,6 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 
 	uField = new VelocityField(xCellsCount, yCellsCount);
 	uField->runUT();
-
-	maxU = glm::vec2(0.f, 0.f);
 }
 
 FluidGrid::~FluidGrid()
@@ -29,6 +27,7 @@ glm::vec2 FluidGrid::getVelocityBilinear(float x, float y)
 float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
+	glm::vec2 maxU = uField->getMaxU();
 	float u_max = glm::length(maxU) + sqrt(abs(H * G));
 	return Kcfl * H / u_max;
 }
@@ -37,9 +36,10 @@ void FluidGrid::Update(float deltaTime)
 {
 	float t = getTimeStep() * deltaTime * 1.f;
 	uField->advectSelf(t);
-	glm::vec2 extForces(0.f, -0.981f);
-	uField->applyExternalForces(extForces, t);
+	/*glm::vec2 extForces(0.f, -0.981f);
+	uField->applyExternalForces(extForces, t);*/
 	// more stuff
+	// update prev value with curr value
 	uField->postUpdate();
 }
 

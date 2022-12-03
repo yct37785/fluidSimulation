@@ -10,8 +10,7 @@ class FluidGrid
 	// quantities
 	VelocityField* uField;
 
-	// tracker
-	glm::vec2 maxU;
+	// marker
 
 	//utils
 	glm::vec2 getVelocityBilinear(float x, float y);

@@ -12,15 +12,15 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 		curr[y] = new glm::vec2[xCellsCount];
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			/*if (x == 0 || x == xCellsCount - 1)
+			if (x == 0 || x == xCellsCount - 1)
 				curr[y][x].x = 0.f;
 			else
-				curr[y][x].x = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
+				curr[y][x].x = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
 			if (y == 0 || y == yCellsCount - 1)
 				curr[y][x].y = 0.f;
 			else
-				curr[y][x].y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);*/
-			curr[y][x].x = curr[y][x].y = 0.f;
+				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
+			//curr[y][x].x = curr[y][x].y = 0.f;
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -122,7 +122,7 @@ void VelocityField::UT_getVelCompAtPt()
 	int successTestCount = 0;
 	VelocityField vf(5, 5);
 	// test 1: value at exact grid point
-	glm::vec2 vel = vf.getVelByIdx(3, 3);
+	glm::vec2 vel = vf.prev[3][3];
 	float v = vf.getVelCompAtPt(glm::vec2(3.f, 3.f), 0);
 	if (vel.x == v)
 		successTestCount++;
@@ -166,7 +166,7 @@ void VelocityField::applyExternalForces(glm::vec2 F, float t)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			if (y > 0)
-				curr[y][x] += F * t;
+				curr[y][x].y = max(-0.981f, curr[y][x].y - 0.981f * t);
 		}
 	}
 }
@@ -203,14 +203,28 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	}
 }
 
+glm::vec2 VelocityField::getMaxU()
+{
+	float maxLen = 0.f;
+	glm::vec2 maxU(0.f, 0.f);
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			float dist = glm::length(curr[y][x]);
+			if (dist > maxLen)
+			{
+				maxLen = dist;
+				maxU = curr[y][x];
+			}
+		}
+	}
+	return maxU;
+}
+
 glm::vec2 VelocityField::getVelAtPos(glm::vec2 pos)
 {
 	return glm::vec2();
-}
-
-glm::vec2 VelocityField::getVelByIdx(int x, int y)
-{
-	return prev[y][x];
 }
 
 void VelocityField::setVelByIdx(glm::vec2 vel, int x, int y)

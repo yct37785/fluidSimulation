@@ -31,8 +31,8 @@ public:
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
 
+	glm::vec2 getMaxU();
 	glm::vec2 getVelAtPos(glm::vec2 pos);
-	glm::vec2 getVelByIdx(int x, int y);
 	void setVelByIdx(glm::vec2 vel, int x, int y);
 
 	static void runUT();
