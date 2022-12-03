@@ -12,14 +12,15 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 		curr[y] = new glm::vec2[xCellsCount];
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			if (x == 0 || x == xCellsCount - 1)
+			/*if (x == 0 || x == xCellsCount - 1)
 				curr[y][x].x = 0.f;
 			else
 				curr[y][x].x = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
 			if (y == 0 || y == yCellsCount - 1)
 				curr[y][x].y = 0.f;
 			else
-				curr[y][x].y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);
+				curr[y][x].y = (float)rand() / (RAND_MAX / 2.f) * (rand() % 2 ? -1.f : 1.f);*/
+			curr[y][x].x = curr[y][x].y = 0.f;
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -107,6 +108,11 @@ float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 	int x1, x2, y1, y2;
 	VelocityField::getIndicesCoords(pos.x, x1, x2);
 	VelocityField::getIndicesCoords(pos.y, y1, y2);
+	// [Colin and Adrian 2009] clamping exceeding boundary cases for advection is fine
+	x1 = max(0, x1);
+	x2 = min(xCellsCount - 1, x2);
+	y1 = max(0, y1);
+	y2 = min(yCellsCount - 1, y2);
 	// bilinear interpolate with surrounding 4 cells
 	return bilinearInterpolate(x1, x2, y1, y2, pos, comp, curr[y1][x1], curr[y1][x2], curr[y2][x1], curr[y2][x2]);
 }
@@ -149,6 +155,18 @@ void VelocityField::advectSelf(float t)
 			float xcomp = getVelCompAtPt(prevPos, 0);
 			float ycomp = getVelCompAtPt(prevPos, 1);
 			curr[y][x] = glm::vec2(xcomp, ycomp);
+		}
+	}
+}
+
+void VelocityField::applyExternalForces(glm::vec2 F, float t)
+{
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
+			if (y > 0)
+				curr[y][x] += F * t;
 		}
 	}
 }

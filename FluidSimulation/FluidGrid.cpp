@@ -37,6 +37,8 @@ void FluidGrid::Update(float deltaTime)
 {
 	float t = getTimeStep() * deltaTime * 1.f;
 	uField->advectSelf(t);
+	glm::vec2 extForces(0.f, -0.981f);
+	uField->applyExternalForces(extForces, t);
 	// more stuff
 	uField->postUpdate();
 }

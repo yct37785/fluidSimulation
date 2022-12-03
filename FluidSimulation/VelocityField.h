@@ -26,6 +26,7 @@ public:
 	~VelocityField();
 
 	void advectSelf(float t);
+	void applyExternalForces(glm::vec2 F, float t);
 	void postUpdate();
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
