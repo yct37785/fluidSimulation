@@ -37,15 +37,20 @@ VelocityField::~VelocityField()
 	delete[] curr;
 }
 
+bool VelocityField::outOfRange(int x, int y, int maxx, int maxy)
+{
+	return x < 0 || x >= maxx || y < 0 || y >= maxy;
+}
+
 float VelocityField::bilinearInterpolate(float x1, float x2, float y1, float y2,
-	glm::vec2& pos, int comp, glm::vec2 q11, glm::vec2 q21, glm::vec2 q12, glm::vec2 q22)
+	glm::vec2& pos, float q11, float q21, float q12, float q22)
 {
 	float hx = x2 - x1;
 	float hy = y2 - y1;
 	float x_1 = x2 == pos.x || hx == 0.f ? 1.f : (x2 - pos.x) / hx;
 	float x_2 = pos.x == x1 || hx == 0.f ? 0.f : (pos.x - x1) / hx;
-	float r1 = q11[comp] * x_1 + q21[comp] * x_2;
-	float r2 = q12[comp] * x_1 + q22[comp] * x_2;
+	float r1 = q11 * x_1 + q21 * x_2;
+	float r2 = q12 * x_1 + q22 * x_2;
 	float y_1 = y2 == pos.y || hy == 0.f ? 1.f : (y2 - pos.y) / hy;
 	float y_2 = pos.y == y1 || hy == 0.f ? 0.f : (pos.y - y1) / hy;
 	return r1 * y_1 + r2 * y_2;
@@ -57,26 +62,56 @@ void VelocityField::UT_bilinearInterpolate()
 	// test 1
 	glm::vec2 pos(2.3f, 2.4f);
 	float x1 = 2.f, x2 = 3.f, y1 = 2.f, y2 = 3.f;
-	glm::vec2 q11(22.f, 0.f);
-	glm::vec2 q21(23.f, 0.f);
-	glm::vec2 q12(32.f, 0.f);
-	glm::vec2 q22(33.f, 0.f);
-	float v = bilinearInterpolate(x1, x2, y1, y2, pos, 0, q11, q21, q12, q22);
+	float v = bilinearInterpolate(x1, x2, y1, y2, pos, 22.f, 23.f, 32.f, 33.f);
 	if (v == 26.3f)
 		successCount++;
 	// test 2: inverse of test 1
 	pos = glm::vec2(2.4f, 2.3f);
-	q11 = glm::vec2(22.f, 0.f);
-	q21 = glm::vec2(32.f, 0.f);
-	q12 = glm::vec2(23.f, 0.f);
-	q22 = glm::vec2(33.f, 0.f);
-	v = bilinearInterpolate(x1, x2, y1, y2, pos, 0, q11, q21, q12, q22);
+	v = bilinearInterpolate(x1, x2, y1, y2, pos, 22.f, 32.f, 23.f, 33.f);
 	if (v == 26.3f)
 		successCount++;
-	if (successCount == 2)
+	// test 3
+	pos = glm::vec2(0.f, 0.f);
+	x1 = 0.f, x2 = 0.5f, y1 = 0.f, y2 = 1.f;
+	v = bilinearInterpolate(x1, x2, y1, y2, pos, 0.f, 20.f, 0.f, 20.f);
+	if (v == 0.f)
+		successCount++;
+	if (successCount == 3)
 		cout << "UT: bilinearInterpolate success" << endl;
 	else
 		cout << "UT: bilinearInterpolate fail" << endl;
+}
+
+void VelocityField::getHalfIndicesCoords(float pos, float& minv, float& maxv)
+{
+	if (pos - floor(pos) > 0.5f)
+	{
+		minv = floor(pos) + 0.5f;
+		maxv = ceil(pos) + 0.5f;
+	}
+	else
+	{
+		minv = floor(pos) - 0.5f;
+		maxv = floor(pos) + 0.5f;
+	}
+}
+
+void VelocityField::UT_getHalfIndicesCoords()
+{
+	int successTestCount = 0;
+	float minv = 0.f, maxv = 0.f;
+	// v(2.1): 1.5 - 2.5
+	VelocityField::getHalfIndicesCoords(2.1f, minv, maxv);
+	if (minv == 1.5f && maxv == 2.5f)
+		successTestCount++;
+	// v(1.9): 1.5 - 2.5
+	VelocityField::getHalfIndicesCoords(1.9f, minv, maxv);
+	if (minv == 1.5f && maxv == 2.5f)
+		successTestCount++;
+	if (successTestCount == 2)
+		cout << "UT: getHalfIndicesCoords success" << endl;
+	else
+		cout << "UT: getHalfIndicesCoords fail" << endl;
 }
 
 void VelocityField::getIndicesCoords(float pos, int& minv, int& maxv)
@@ -98,23 +133,110 @@ void VelocityField::UT_getIndicesCoords()
 	if (minv == 1 && maxv == 2)
 		successTestCount++;
 	if (successTestCount == 2)
-		cout << "UT: getHalfIndicesCoords success" << endl;
+		cout << "UT: getIndicesCoords success" << endl;
 	else
-		cout << "UT: getHalfIndicesCoords fail" << endl;
+		cout << "UT: getIndicesCoords fail" << endl;
+}
+
+// param pos will be in idx space, i.e. pos(1.f) corr. to MAC_space(0.5f), or edge of a MAC cell
+// and pos(1.5f) corr. to MAC_space(1.f), or middle of a MAC cell
+void VelocityField::getIndices(glm::vec2 pos, char comp, int xCellsCount, int yCellsCount, int& x1, int& x2, int& y1, int& y2)
+{
+	// ----y+1/2----
+	// |           |
+	// |           |
+	// x-1/2       x+1/2
+	// |           |
+	// |           |
+	// ----y-1/2----
+
+	// ----uy+1----
+	// |           |
+	// |           |
+	// x           x+1
+	// |           |
+	// |           |
+	// -----uy-----
+
+	// Ex: given idx space pos(1.7, 1.7), derive bilinear coords for x and y comp
+	// pos(1.7, 1.7) -> MAC_space(1.2, 1.2)
+	// X: x1 = 0.5 (1), x2 = 1.5 (2), y1 = 1 (1), y2 = 2 (2)
+	// Y: x1 = 1 (1), x2 = 2 (2), y1 = 0.5 (1), y2 = 1.5 (2)
+
+	glm::vec2 offsetPos = pos - 0.0f;
+	if (comp == 'x')
+	{
+		float hfi_x1, hfi_x2;
+		getHalfIndicesCoords(offsetPos.x - 0.5f, hfi_x1, hfi_x2);
+		x1 = int(hfi_x1 + 0.5f);
+		x2 = int(hfi_x2 + 0.5f);
+		getIndicesCoords(offsetPos.y - 0.5f, y1, y2);
+	}
+	else if (comp == 'y')
+	{
+		float hfi_y1, hfi_y2;
+		getHalfIndicesCoords(offsetPos.y - 0.5f, hfi_y1, hfi_y2);
+		y1 = int(hfi_y1 + 0.5f);
+		y2 = int(hfi_y2 + 0.5f);
+		getIndicesCoords(offsetPos.x - 0.5f, x1, x2);
+	}
+}
+
+void VelocityField::UT_getIndices()
+{
+	bool fail = false;
+	int x1, x2, y1, y2;
+	// test 1: middle
+	getIndices(glm::vec2(1.7f, 1.7f), 'x', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 1 && x2 == 2 && y1 == 1 && y2 == 2))
+		fail = true;
+	getIndices(glm::vec2(1.7f, 1.7f), 'y', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 1 && x2 == 2 && y1 == 1 && y2 == 2))
+		fail = true;
+	// test 2: lower corner
+	getIndices(glm::vec2(0.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 0 && x2 == 1 && y1 == 0 && y2 == 0))
+		fail = true;
+	getIndices(glm::vec2(0.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 0 && x2 == 0 && y1 == 0 && y2 == 1))
+		fail = true;
+	// test 3: lower center
+	getIndices(glm::vec2(5.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 5 && x2 == 6 && y1 == 0 && y2 == 0))
+		fail = true;
+	getIndices(glm::vec2(5.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
+	if (!(x1 == 4 && x2 == 5 && y1 == 0 && y2 == 1))
+		fail = true;
+
+	if (!fail)
+		cout << "UT: getIndices success" << endl;
+	else
+		cout << "UT: getIndices fail" << endl;
 }
 
 float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 {
 	int x1, x2, y1, y2;
-	VelocityField::getIndicesCoords(pos.x, x1, x2);
-	VelocityField::getIndicesCoords(pos.y, y1, y2);
-	// [Colin and Adrian 2009] clamping exceeding boundary cases for advection is fine
-	x1 = max(0, x1);
-	x2 = min(xCellsCount - 1, x2);
-	y1 = max(0, y1);
-	y2 = min(yCellsCount - 1, y2);
+	getIndicesCoords(pos.x, x1, x2);
+	getIndicesCoords(pos.y, y1, y2);
+	// VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
+	/*cout << "1: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;
+	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
+	cout << "2: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;*/
+	//if vel faces boundary
+	float q11 = outOfRange(x1, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x1][comp];
+	float q21 = outOfRange(x2, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x2][comp];
+	float q12 = outOfRange(x1, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x1][comp];
+	float q22 = outOfRange(x2, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x2][comp];
+	// no need to clamp index, clamp boundary values to 0 is fine
+	/*x1 = min(max(0, x1), xCellsCount - 1);
+	x2 = min(max(0, x2), yCellsCount - 1);
+	y1 = min(max(0, y1), xCellsCount - 1);
+	y2 = min(max(0, y2), yCellsCount - 1);*/
 	// bilinear interpolate with surrounding 4 cells
-	return bilinearInterpolate(x1, x2, y1, y2, pos, comp, curr[y1][x1], curr[y1][x2], curr[y2][x1], curr[y2][x2]);
+	return bilinearInterpolate(x1, x2, y1, y2, pos, q11, q21, q12, q22);
+	/*return bilinearInterpolate(x1, x2, y1, y2, pos, curr[y1][x1][comp], curr[y1][x2][comp], 
+		curr[y2][x1][comp], curr[y2][x2][comp]);*/
 }
 
 void VelocityField::UT_getVelCompAtPt()
@@ -166,7 +288,7 @@ void VelocityField::applyExternalForces(glm::vec2 F, float t)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			if (y > 0)
-				curr[y][x].y = max(-0.981f, curr[y][x].y - 0.981f * t);
+				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 		}
 	}
 }
@@ -237,6 +359,8 @@ void VelocityField::setVelByIdx(glm::vec2 vel, int x, int y)
 void VelocityField::runUT()
 {
 	UT_bilinearInterpolate();
+	UT_getHalfIndicesCoords();
 	UT_getIndicesCoords();
+	UT_getIndices();
 	UT_getVelCompAtPt();
 }

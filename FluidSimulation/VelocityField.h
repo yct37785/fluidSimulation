@@ -2,7 +2,11 @@
 #include "MeshBuilder.h"
 
 /*
-* Full indices, we won't be doing staggered grids until we can get a basic simulator running
+* Staggered positioning:
+* - x comps are stored starting from (x: 0, y: 1/2)
+* - y comps are stored starting from (x: 1/2, y: 0)
+* Advection stage:
+* - backward trace must be applied per velocity component pos
 */
 class VelocityField
 {
@@ -11,14 +15,20 @@ class VelocityField
 	int xCellsCount, yCellsCount;
 
 	// utilities
-	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
-		glm::vec2& pos, int comp, glm::vec2 q11, glm::vec2 q21, glm::vec2 q12, glm::vec2 q22);
+	static bool outOfRange(int x, int y, int maxx, int maxy);
+	static float bilinearInterpolate(float x1, float x2, float y1, float y2, 
+		glm::vec2& pos, float q11, float q21, float q12, float q22);
+	static void getHalfIndicesCoords(float pos, float& minv, float& maxv);
 	static void getIndicesCoords(float pos, int& minv, int& maxv);
+	static void getIndices(glm::vec2 pos, char comp, int xCellsCount, int yCellsCount,
+		int& x1, int& x2, int& y1, int& y2);
 	float getVelCompAtPt(glm::vec2 pos, int comp);
 
 	// unit tests
 	static void UT_bilinearInterpolate();
+	static void UT_getHalfIndicesCoords();
 	static void UT_getIndicesCoords();
+	static void UT_getIndices();
 	static void UT_getVelCompAtPt();
 
 public:
