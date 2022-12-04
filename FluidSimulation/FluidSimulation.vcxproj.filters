@@ -72,6 +72,9 @@
     <ClCompile Include="VelocityField.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
+    <ClCompile Include="PressureSolve.cpp">
+      <Filter>Fluid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -102,6 +105,9 @@
       <Filter>Fluid</Filter>
     </ClInclude>
     <ClInclude Include="VelocityField.h">
+      <Filter>Fluid</Filter>
+    </ClInclude>
+    <ClInclude Include="PressureSolve.h">
       <Filter>Fluid</Filter>
     </ClInclude>
   </ItemGroup>

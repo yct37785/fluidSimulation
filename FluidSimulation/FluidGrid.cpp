@@ -14,7 +14,7 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 
 	for (float y = 10.f; y < 12.5f; y += 0.5f)
 	{
-		for (float x = 5.f; x < 15.f; x += 0.5f)
+		for (float x = 1.f; x < 14.f; x += 0.5f)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -45,13 +45,12 @@ float FluidGrid::getTimeStep()
 
 void FluidGrid::Update(float deltaTime)
 {
-	float t = getTimeStep() * deltaTime * 1.f;
+	cellTypes.clear();
+	float t = getTimeStep() * deltaTime * 20.f;
+	// advection + external forces
 	uField->advectSelf(t);
-	glm::vec2 extForces(0.f, -9.81f);
-	uField->applyExternalForces(extForces, t);
-	// more stuff
-	// update prev value with curr value
-	uField->postUpdate();
+	uField->applyExternalForces(t);
+	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// move particles through velocity field
 	for (int i = 0; i < markers.size(); ++i)
 	{

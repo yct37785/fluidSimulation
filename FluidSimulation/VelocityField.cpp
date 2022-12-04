@@ -225,10 +225,10 @@ float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 	cout << "2: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;*/
 	//if vel faces boundary
 	// no need to clamp index, clamp boundary values to 0 is fine
-	float q11 = outOfRange(x1, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x1][comp];
-	float q21 = outOfRange(x2, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x2][comp];
-	float q12 = outOfRange(x1, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x1][comp];
-	float q22 = outOfRange(x2, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x2][comp];
+	float q11 = outOfRange(x1, y1, xCellsCount, yCellsCount) ? 0.f : prev[y1][x1][comp];
+	float q21 = outOfRange(x2, y1, xCellsCount, yCellsCount) ? 0.f : prev[y1][x2][comp];
+	float q12 = outOfRange(x1, y2, xCellsCount, yCellsCount) ? 0.f : prev[y2][x1][comp];
+	float q22 = outOfRange(x2, y2, xCellsCount, yCellsCount) ? 0.f : prev[y2][x2][comp];
 	// bilinear interpolate with surrounding 4 cells
 	return bilinearInterpolate(x1, x2, y1, y2, pos, q11, q21, q12, q22);
 }
@@ -275,12 +275,13 @@ void VelocityField::advectSelf(float t)
 	}
 }
 
-void VelocityField::applyExternalForces(glm::vec2 F, float t)
+void VelocityField::applyExternalForces(float t)
 {
 	for (int y = 0; y < yCellsCount; ++y)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
+			// hardcoded gravity
 			if (y > 0)
 				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 		}

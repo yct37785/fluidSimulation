@@ -31,8 +31,8 @@
 using namespace std;
 // defines
 #define PI 3.141592653589793
-const static int WINDOWS_WIDTH = 900;
-const static int WINDOWS_HEIGHT = 900;
+const static int WINDOWS_WIDTH = 800;
+const static int WINDOWS_HEIGHT = 800;
 // fluid defines
 const float G = -9.81f;	// gravity = -9.81m/s^2, adjustable depending on visual
 const float DEN_WATER = 1000.f;	// water density = 1000 kg/m^3
