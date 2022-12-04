@@ -45,7 +45,7 @@ float FluidGrid::getTimeStep()
 
 void FluidGrid::Update(float deltaTime)
 {
-	cellTypes.clear();
+	liquidCells.clear();
 	float t = getTimeStep() * deltaTime * 20.f;
 	// advection + external forces
 	uField->advectSelf(t);
@@ -56,6 +56,7 @@ void FluidGrid::Update(float deltaTime)
 	{
 		glm::vec2 vel = uField->getVelAtPos(markers[i]);
 		markers[i] += vel * t;
+		liquidCells.insert(make_pair((int)floor(markers[i].x) * (int)floor(markers[i].y), 1));
 	}
 }
 

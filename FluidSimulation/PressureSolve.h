@@ -1,5 +1,5 @@
 #pragma once
-#include "MeshBuilder.h"
+#include "VelocityField.h"
 
 class PressureSolve
 {
@@ -9,4 +9,6 @@ class PressureSolve
 public:
 	PressureSolve(int xCellsCount, int yCellsCount);
 	~PressureSolve();
+
+	void update(VelocityField& uField, map<int, int>& liquidCells);
 };
