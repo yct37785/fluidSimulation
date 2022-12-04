@@ -20,7 +20,12 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 				curr[y][x].y = 0.f;
 			else
 				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-			// curr[y][x].x = curr[y][x].y = 0.f;
+			//curr[y][x].x = curr[y][x].y = 0.f;
+			// clamp
+			if (x == 0 || x == xCellsCount - 1)
+				curr[y][x].x = 0.f;
+			if (y == 0 || y == yCellsCount - 1)
+				curr[y][x].y = 0.f;
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -138,8 +143,6 @@ void VelocityField::UT_getIndicesCoords()
 		cout << "UT: getIndicesCoords fail" << endl;
 }
 
-// param pos will be in idx space, i.e. pos(1.f) corr. to MAC_space(0.5f), or edge of a MAC cell
-// and pos(1.5f) corr. to MAC_space(1.f), or middle of a MAC cell
 void VelocityField::getIndices(glm::vec2 pos, char comp, int xCellsCount, int yCellsCount, int& x1, int& x2, int& y1, int& y2)
 {
 	// ----y+1/2----
@@ -158,27 +161,21 @@ void VelocityField::getIndices(glm::vec2 pos, char comp, int xCellsCount, int yC
 	// |           |
 	// -----uy-----
 
-	// Ex: given idx space pos(1.7, 1.7), derive bilinear coords for x and y comp
-	// pos(1.7, 1.7) -> MAC_space(1.2, 1.2)
-	// X: x1 = 0.5 (1), x2 = 1.5 (2), y1 = 1 (1), y2 = 2 (2)
-	// Y: x1 = 1 (1), x2 = 2 (2), y1 = 0.5 (1), y2 = 1.5 (2)
-
-	glm::vec2 offsetPos = pos - 0.0f;
 	if (comp == 'x')
 	{
 		float hfi_x1, hfi_x2;
-		getHalfIndicesCoords(offsetPos.x - 0.5f, hfi_x1, hfi_x2);
+		getHalfIndicesCoords(pos.x, hfi_x1, hfi_x2);
 		x1 = int(hfi_x1 + 0.5f);
 		x2 = int(hfi_x2 + 0.5f);
-		getIndicesCoords(offsetPos.y - 0.5f, y1, y2);
+		getIndicesCoords(pos.y, y1, y2);
 	}
 	else if (comp == 'y')
 	{
 		float hfi_y1, hfi_y2;
-		getHalfIndicesCoords(offsetPos.y - 0.5f, hfi_y1, hfi_y2);
+		getHalfIndicesCoords(pos.y, hfi_y1, hfi_y2);
 		y1 = int(hfi_y1 + 0.5f);
 		y2 = int(hfi_y2 + 0.5f);
-		getIndicesCoords(offsetPos.x - 0.5f, x1, x2);
+		getIndicesCoords(pos.x, x1, x2);
 	}
 }
 
@@ -188,24 +185,26 @@ void VelocityField::UT_getIndices()
 	int x1, x2, y1, y2;
 	// test 1: middle
 	getIndices(glm::vec2(1.7f, 1.7f), 'x', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 1 && x2 == 2 && y1 == 1 && y2 == 2))
+	if (!(x1 == 2 && x2 == 3 && y1 == 1 && y2 == 2))
 		fail = true;
 	getIndices(glm::vec2(1.7f, 1.7f), 'y', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 1 && x2 == 2 && y1 == 1 && y2 == 2))
+	if (!(x1 == 1 && x2 == 2 && y1 == 2 && y2 == 3))
 		fail = true;
 	// test 2: lower corner
 	getIndices(glm::vec2(0.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 0 && x2 == 1 && y1 == -1 && y2 == 0))
+	if (!(x1 == 0 && x2 == 1 && y1 == 0 && y2 == 1))
 		fail = true;
 	getIndices(glm::vec2(0.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == -1 && x2 == 0 && y1 == 0 && y2 == 1))
+	if (!(x1 == 0 && x2 == 1 && y1 == 0 && y2 == 1))
 		fail = true;
 	// test 3: lower center
+	// x: 4.5 - 5.5 (half-indices) -> 5i - 6i
 	getIndices(glm::vec2(5.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 5 && x2 == 6 && y1 == -1 && y2 == 0))
+	if (!(x1 == 5 && x2 == 6 && y1 == 0 && y2 == 1))
 		fail = true;
+	// x: 5.0 - 6.0 (half-indices) -> 5i - 6i
 	getIndices(glm::vec2(5.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 4 && x2 == 5 && y1 == 0 && y2 == 1))
+	if (!(x1 == 5 && x2 == 6 && y1 == 0 && y2 == 1))
 		fail = true;
 
 	if (!fail)
@@ -217,12 +216,8 @@ void VelocityField::UT_getIndices()
 float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 {
 	int x1, x2, y1, y2;
-	getIndicesCoords(pos.x, x1, x2);
-	getIndicesCoords(pos.y, y1, y2);
-	// VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
-	/*cout << "1: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;
 	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
-	cout << "2: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;*/
+	// cout << x1 << " " << x2 << ", " << y1 << ", " << y2 << endl;
 	//if vel faces boundary
 	// no need to clamp index, clamp boundary values to 0 is fine
 	float q11 = outOfRange(x1, y1, xCellsCount, yCellsCount) ? 0.f : prev[y1][x1][comp];
@@ -230,7 +225,13 @@ float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 	float q12 = outOfRange(x1, y2, xCellsCount, yCellsCount) ? 0.f : prev[y2][x1][comp];
 	float q22 = outOfRange(x2, y2, xCellsCount, yCellsCount) ? 0.f : prev[y2][x2][comp];
 	// bilinear interpolate with surrounding 4 cells
-	return bilinearInterpolate(x1, x2, y1, y2, pos, q11, q21, q12, q22);
+	glm::vec2 offsetPos = pos;
+	// offset pos to idx space (in line with x1, y1 etc) from half-indices space
+	if (comp == 0)
+		offsetPos = glm::vec2(pos.x + 0.5f, pos.y);
+	else if (comp == 1)
+		offsetPos = glm::vec2(pos.x, pos.y + 0.5f);
+	return bilinearInterpolate(x1, x2, y1, y2, offsetPos, q11, q21, q12, q22);
 }
 
 void VelocityField::UT_getVelCompAtPt()
@@ -239,19 +240,19 @@ void VelocityField::UT_getVelCompAtPt()
 	VelocityField vf(5, 5);
 	// test 1: value at exact grid point
 	glm::vec2 vel = vf.prev[3][3];
-	float v = vf.getVelCompAtPt(glm::vec2(3.f, 3.f), 0);
+	float v = vf.getVelCompAtPt(glm::vec2(3.5f, 3.f), 0);
 	if (vel.x == v)
 		successTestCount++;
-	// test 2: interpolated value
+	// test 2: interpolated value x comp
 	vf.setVelByIdx(glm::vec2(22.f, 22.f), 3, 3);
 	vf.setVelByIdx(glm::vec2(23.f, 32.f), 4, 3);
 	vf.setVelByIdx(glm::vec2(32.f, 23.f), 3, 4);
 	vf.setVelByIdx(glm::vec2(33.f, 33.f), 4, 4);
-	v = vf.getVelCompAtPt(glm::vec2(3.3f, 3.4f), 0);
+	v = vf.getVelCompAtPt(glm::vec2(2.8f, 3.4f), 0);
 	if (v == 26.3f)
 		successTestCount++;
 	// test 3: y comp
-	v = vf.getVelCompAtPt(glm::vec2(3.4f, 3.3f), 1);
+	v = vf.getVelCompAtPt(glm::vec2(3.4f, 2.8f), 1);
 	if (v == 26.3f)
 		successTestCount++;
 	if (successTestCount == 3)
@@ -267,10 +268,24 @@ void VelocityField::advectSelf(float t)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			glm::vec2 prevPos = glm::vec2((float)x, (float)y) - prev[y][x] * t;
+			// separately derive velocity for each component (half-indices space)
+			// x
+			glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
 			float xcomp = getVelCompAtPt(prevPos, 0);
+			// y
+			prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
 			float ycomp = getVelCompAtPt(prevPos, 1);
 			curr[y][x] = glm::vec2(xcomp, ycomp);
+			// clamp
+			if (x == 0)
+				curr[y][x].x = max(curr[y][x].x, 0.f);
+			if (y == 0) {
+				curr[y][x].y = max(curr[y][x].y, 0.f);
+			}
+			if (x == xCellsCount - 1)
+				curr[y][x].x = min(curr[y][x].x, 0.f);
+			if (y == yCellsCount - 1)
+				curr[y][x].y = min(curr[y][x].y, 0.f);
 		}
 	}
 }
