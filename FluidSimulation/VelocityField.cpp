@@ -195,14 +195,14 @@ void VelocityField::UT_getIndices()
 		fail = true;
 	// test 2: lower corner
 	getIndices(glm::vec2(0.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 0 && x2 == 1 && y1 == 0 && y2 == 0))
+	if (!(x1 == 0 && x2 == 1 && y1 == -1 && y2 == 0))
 		fail = true;
 	getIndices(glm::vec2(0.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 0 && x2 == 0 && y1 == 0 && y2 == 1))
+	if (!(x1 == -1 && x2 == 0 && y1 == 0 && y2 == 1))
 		fail = true;
 	// test 3: lower center
 	getIndices(glm::vec2(5.1f, 0.3f), 'x', 10, 10, x1, x2, y1, y2);
-	if (!(x1 == 5 && x2 == 6 && y1 == 0 && y2 == 0))
+	if (!(x1 == 5 && x2 == 6 && y1 == -1 && y2 == 0))
 		fail = true;
 	getIndices(glm::vec2(5.1f, 0.3f), 'y', 10, 10, x1, x2, y1, y2);
 	if (!(x1 == 4 && x2 == 5 && y1 == 0 && y2 == 1))
@@ -224,19 +224,13 @@ float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
 	cout << "2: " << x1 << " " << x2 << " " << y1 << " " << y2 << endl;*/
 	//if vel faces boundary
+	// no need to clamp index, clamp boundary values to 0 is fine
 	float q11 = outOfRange(x1, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x1][comp];
 	float q21 = outOfRange(x2, y1, xCellsCount, yCellsCount) ? 0.f : curr[y1][x2][comp];
 	float q12 = outOfRange(x1, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x1][comp];
 	float q22 = outOfRange(x2, y2, xCellsCount, yCellsCount) ? 0.f : curr[y2][x2][comp];
-	// no need to clamp index, clamp boundary values to 0 is fine
-	/*x1 = min(max(0, x1), xCellsCount - 1);
-	x2 = min(max(0, x2), yCellsCount - 1);
-	y1 = min(max(0, y1), xCellsCount - 1);
-	y2 = min(max(0, y2), yCellsCount - 1);*/
 	// bilinear interpolate with surrounding 4 cells
 	return bilinearInterpolate(x1, x2, y1, y2, pos, q11, q21, q12, q22);
-	/*return bilinearInterpolate(x1, x2, y1, y2, pos, curr[y1][x1][comp], curr[y1][x2][comp], 
-		curr[y2][x1][comp], curr[y2][x2][comp]);*/
 }
 
 void VelocityField::UT_getVelCompAtPt()
