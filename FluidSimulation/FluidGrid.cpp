@@ -11,6 +11,7 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 
 	uField = new VelocityField(xCellsCount, yCellsCount);
 	uField->runUT();
+	ps = new PressureSolve(xCellsCount, yCellsCount);
 
 	for (float y = 10.f; y < 12.5f; y += 0.5f)
 	{
@@ -25,6 +26,7 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 FluidGrid::~FluidGrid()
 {
 	delete uField;
+	delete ps;
 	delete gridMesh;
 	delete triangleMesh;
 	delete markerMesh;
@@ -58,6 +60,7 @@ void FluidGrid::Update(float deltaTime)
 		markers[i] += vel * t;
 		liquidCells.insert(make_pair((int)floor(markers[i].x) * (int)floor(markers[i].y), 1));
 	}
+	ps->update(*uField, liquidCells, t);
 }
 
 

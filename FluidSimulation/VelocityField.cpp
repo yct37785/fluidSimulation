@@ -21,7 +21,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 			else
 				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
 			//curr[y][x].x = curr[y][x].y = 0.f;
-			// clamp
+			// clamp if facing boundary
 			if (x == 0 || x == xCellsCount - 1)
 				curr[y][x].x = 0.f;
 			if (y == 0 || y == yCellsCount - 1)
@@ -276,7 +276,7 @@ void VelocityField::advectSelf(float t)
 			prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
 			float ycomp = getVelCompAtPt(prevPos, 1);
 			curr[y][x] = glm::vec2(xcomp, ycomp);
-			// clamp
+			// clamp if facing boundary
 			if (x == 0)
 				curr[y][x].x = max(curr[y][x].x, 0.f);
 			if (y == 0) {
@@ -359,6 +359,11 @@ glm::vec2 VelocityField::getVelAtPos(glm::vec2 pos)
 	float x = getVelCompAtPt(pos, 0);
 	float y = getVelCompAtPt(pos, 1);
 	return glm::vec2(x, y);
+}
+
+glm::vec2 VelocityField::getVelByIdx(int x, int y)
+{
+	return prev[y][x];
 }
 
 void VelocityField::setVelByIdx(glm::vec2 vel, int x, int y)
