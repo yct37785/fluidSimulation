@@ -53,10 +53,9 @@ vec CGSolver::matrixTimesVector(const matrix& A, const vec& V)     // Matrix tim
 * each row in A is of the following: [i1, v1, i2, v2 .... in, vn], where 'in' corr. to idx n and vn corr. to value n
 * since matrix A will be sparse, to save memory we only store non-zero values of each row denoted by it's index
 */
-vec CGSolver::matrixTimesVectorS(const matrix& A, const vec& V)
+void CGSolver::matrixTimesVectorS(const matrix& A, const vec& V, vec& toSet)
 {
     int n = A.size();
-    vec C(n);
     // for each row in mat
     for (int i = 0; i < n; i++)
     {
@@ -65,9 +64,8 @@ vec CGSolver::matrixTimesVectorS(const matrix& A, const vec& V)
         {
             prod += A[i][j + 1] * V[A[i][j]];
         }
-        C[i] = prod;
+        toSet[i] = prod;
     }
-    return C;
 }
 
 void CGSolver::UT_matrixTimesVector()
@@ -80,7 +78,8 @@ void CGSolver::UT_matrixTimesVector()
     vec AP = matrixTimesVector(A1, V);
     // mem optimized
     matrix A2 = { { 0, 5 }, { 1, 3 }, { 2, 6 } };
-    vec AP2 = matrixTimesVectorS(A2, V);
+    vec AP2(A2.size());
+    matrixTimesVectorS(A2, V, AP2);
     if (AP != AP2)
         success = false;
     // test 2
@@ -90,7 +89,8 @@ void CGSolver::UT_matrixTimesVector()
     AP = matrixTimesVector(A1, V);
     // mem optimized
     A2 = { { 0, 5 }, { 0, 7, 1, 3 }, { 2, 6, 3, 2 }, { 3, 8 } };
-    AP2 = matrixTimesVectorS(A2, V);
+    AP2 = vec(A2.size());
+    matrixTimesVectorS(A2, V, AP2);
     if (success)
         cout << "UT: matrixTimesVector success" << endl;
     else
@@ -109,6 +109,12 @@ vec CGSolver::vectorCombination(double a, const vec& U, double b, const vec& V) 
     return W;
 }
 
+// in place modify for U
+void CGSolver::vectorCombination_inPlace(double a, const vec& U, double b, const vec& V, vec& toSet)
+{
+    int n = U.size();
+    for (int j = 0; j < n; j++) toSet[j] = a * U[j] + b * V[j];
+}
 
 //======================================================================
 
@@ -181,34 +187,32 @@ vec CGSolver::conjugateGradientSolver(const matrix& A, const vec& B)
     return X;
 }
 
-vec CGSolver::conjugateGradientSolverS(const matrix& A, const vec& B)
+void CGSolver::conjugateGradientSolverS(const matrix& A, const vec& B, vec& X)
 {
     double TOLERANCE = 1.0e-10;
 
     int n = A.size();
-    vec X(n, 0.0);
 
     vec R = B;
     vec P = R;
     int k = 0;
-
+    vec AP(n);
     while (k < n)
     {
         vec Rold = R;                                         // Store previous residual
-        vec AP = matrixTimesVectorS(A, P);
+	    // cout << A.size() << " " << P.size() << " " << AP.size() << endl;
+        matrixTimesVectorS(A, P, AP);
 
         double alpha = innerProduct(R, R) / max(innerProduct(P, AP), NEARZERO);
-        X = vectorCombination(1.0, X, alpha, P);            // Next estimate of solution
-        R = vectorCombination(1.0, R, -alpha, AP);          // Residual 
+        vectorCombination_inPlace(1.0, X, alpha, P, X);            // Next estimate of solution
+        vectorCombination_inPlace(1.0, R, -alpha, AP, R);          // Residual 
 
         if (vectorNorm(R) < TOLERANCE) break;             // Convergence test
 
         double beta = innerProduct(R, R) / max(innerProduct(Rold, Rold), NEARZERO);
-        P = vectorCombination(1.0, R, beta, P);             // Next gradient
+        vectorCombination_inPlace(1.0, R, beta, P, P);             // Next gradient
         k++;
     }
-
-    return X;
 }
 
 
@@ -228,7 +232,8 @@ void CGSolver::UT_solveForX()
     print("B:", B);
     print("AX:", AX);
     optimizeMatrix(A);
-    X = conjugateGradientSolverS(A, B);
+    X = vec(A.size(), 0.0);
+    conjugateGradientSolverS(A, B, X);
     print("AX2:", AX);
     // larger matrix
     cout << "\nTest 2: larger matrix" << endl;
@@ -241,7 +246,8 @@ void CGSolver::UT_solveForX()
     print("B:", B);
     print("AX:", AX);
     optimizeMatrix(A);
-    X = conjugateGradientSolverS(A, B);
+    X = vec(A.size(), 0.0);
+    conjugateGradientSolverS(A, B, X);
     print("AX2:", AX);
     // larger matrix
     cout << "\nTest 3: larger matrix" << endl;
@@ -256,7 +262,8 @@ void CGSolver::UT_solveForX()
     print("B:", B);
     print("AX:", AX);
     optimizeMatrix(A);
-    X = conjugateGradientSolverS(A, B);
+    X = vec(A.size(), 0.0);
+    conjugateGradientSolverS(A, B, X);
     print("AX2:", AX);
 }
 

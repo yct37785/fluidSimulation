@@ -18,8 +18,9 @@ class CGSolver
     static void print(string title, const vec& V);
     static void print(string title, const matrix& A);
     static vec matrixTimesVector(const matrix& A, const vec& V);
-    static vec matrixTimesVectorS(const matrix& A, const vec& V);
+    static void matrixTimesVectorS(const matrix& A, const vec& V, vec& toSet);
     static vec vectorCombination(double a, const vec& U, double b, const vec& V);
+    static void vectorCombination_inPlace(double a, const vec& U, double b, const vec& V, vec& toSet);
     static double innerProduct(const vec& U, const vec& V);
     static double vectorNorm(const vec& V);
     static void optimizeMatrix(matrix& M);
@@ -30,6 +31,6 @@ class CGSolver
 
 public:
     static vec conjugateGradientSolver(const matrix& A, const vec& B);
-    static vec conjugateGradientSolverS(const matrix& A, const vec& B);
+    static void conjugateGradientSolverS(const matrix& A, const vec& B, vec& X);
     static void UT_cgsolver();
 };
