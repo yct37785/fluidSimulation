@@ -14,6 +14,7 @@ using matrix = vector<vec>;            // matrix (=collection of (row) vectors)
 
 class CGSolver
 {
+public:
     // Prototypes
     static void print(string title, const vec& V);
     static void print(string title, const matrix& A);
@@ -29,7 +30,6 @@ class CGSolver
     static void UT_matrixTimesVector();
     static void UT_solveForX();
 
-public:
     static vec conjugateGradientSolver(const matrix& A, const vec& B);
     static void conjugateGradientSolverS(const matrix& A, const vec& B, vec& X);
     static void UT_cgsolver();

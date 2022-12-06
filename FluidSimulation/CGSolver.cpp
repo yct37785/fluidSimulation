@@ -25,10 +25,9 @@ void CGSolver::print(string title, const matrix& A)
 {
     cout << title << '\n';
 
-    int m = A.size(), n = A[0].size();                      // A is an m x n matrix
-    for (int i = 0; i < m; i++)
+    for (int i = 0; i < A.size(); i++)
     {
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < A[i].size(); j++)
         {
             double x = A[i][j];   if (abs(x) < NEARZERO) x = 0.0;
             cout << x << '\t';
@@ -200,16 +199,20 @@ void CGSolver::conjugateGradientSolverS(const matrix& A, const vec& B, vec& X)
     while (k < n)
     {
         vec Rold = R;                                         // Store previous residual
-	    // cout << A.size() << " " << P.size() << " " << AP.size() << endl;
+	    // A * P
         matrixTimesVectorS(A, P, AP);
 
-        double alpha = innerProduct(R, R) / max(innerProduct(P, AP), NEARZERO);
+        // B * B
+        double ip_PAP = innerProduct(P, AP);
+        // check the diff btw B * B and 
+        double alpha = innerProduct(R, R) / abs(ip_PAP) < NEARZERO ? NEARZERO : ip_PAP;
         vectorCombination_inPlace(1.0, X, alpha, P, X);            // Next estimate of solution
-        vectorCombination_inPlace(1.0, R, -alpha, AP, R);          // Residual 
+        vectorCombination_inPlace(1.0, R, -alpha, AP, R);          // Residual
 
         if (vectorNorm(R) < TOLERANCE) break;             // Convergence test
 
-        double beta = innerProduct(R, R) / max(innerProduct(Rold, Rold), NEARZERO);
+        double ip_Rold = innerProduct(Rold, Rold);
+        double beta = innerProduct(R, R) / abs(ip_Rold) < NEARZERO ? NEARZERO : ip_Rold;
         vectorCombination_inPlace(1.0, R, beta, P, P);             // Next gradient
         k++;
     }
@@ -225,8 +228,8 @@ void CGSolver::UT_solveForX()
 
     // basic matrix
     cout << "\nTest 1: basic matrix" << endl;
-    matrix A = { { 4, 1 }, { 1, 3 } };
-    vec B = { 1, 2 };
+    matrix A = { { -4, 1 }, { 1, -3 } };
+    vec B = { -1, -2 };
     vec X = conjugateGradientSolver(A, B);
     vec AX = matrixTimesVector(A, X);
     print("B:", B);
@@ -256,6 +259,7 @@ void CGSolver::UT_solveForX()
 		{     0,    1, 8.6,   1 },
 		{     1,    0,   1, 2.5 } };
     vec x_ans = { 9.5, 1.4, 2.8, 4.5 };
+    print("A", A);
     B = matrixTimesVector(A, x_ans);
     X = conjugateGradientSolver(A, B);
     AX = matrixTimesVector(A, X);
