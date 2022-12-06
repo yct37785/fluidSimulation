@@ -20,7 +20,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 				curr[y][x].y = 0.f;
 			else
 				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-			//curr[y][x].x = curr[y][x].y = 0.f;
+			curr[y][x].x = curr[y][x].y = 0.f;
 			// clamp if facing boundary
 			if (x == 0 || x == xCellsCount - 1)
 				curr[y][x].x = 0.f;
