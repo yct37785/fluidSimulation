@@ -14,7 +14,7 @@ class FluidGrid
 
 	// marker
 	vector<glm::vec2> markers;
-	map<int, int> liquidCells;
+	bool** liquidCells;
 
 	//utils
 	glm::vec2 getVelocityBilinear(float x, float y);

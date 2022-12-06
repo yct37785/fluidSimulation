@@ -13,13 +13,16 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	uField->runUT();
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
-	for (float y = 10.f; y < 12.5f; y += 0.5f)
+	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 1.f)
 	{
-		for (float x = 1.f; x < 14.f; x += 0.5f)
+		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 1.f)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
 	}
+	liquidCells = new bool*[yCellsCount];
+	for (int i = 0; i < yCellsCount; ++i)
+		liquidCells[i] = new bool[xCellsCount];
 	cout << "Total markers: " << markers.size() << endl;
 }
 
@@ -30,6 +33,9 @@ FluidGrid::~FluidGrid()
 	delete gridMesh;
 	delete triangleMesh;
 	delete markerMesh;
+	for (int i = 0; i < yCellsCount; ++i)
+		delete[] liquidCells[i];
+	delete[] liquidCells;
 }
 
 glm::vec2 FluidGrid::getVelocityBilinear(float x, float y)
@@ -41,24 +47,32 @@ float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
 	glm::vec2 maxU = uField->getMaxU();
-	float u_max = glm::length(maxU) + sqrt(abs(H * G));
+	float u_max = sqrt(abs(H * G));
+	float dist = glm::length(maxU);
+	if (!isinf(dist))
+		u_max += dist;
 	return Kcfl * H / u_max;
 }
 
 void FluidGrid::Update(float deltaTime)
 {
-	liquidCells.clear();
 	float t = getTimeStep() * deltaTime * 20.f;
 	// advection + external forces
 	uField->advectSelf(t);
 	uField->applyExternalForces(t);
 	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// move particles through velocity field
+	for (int y = 0; y < yCellsCount; ++y)
+		for (int x = 0; x < xCellsCount; ++x)
+			liquidCells[y][x] = false;
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::vec2 vel = uField->getVelAtPos(markers[i]);
 		markers[i] += vel * t;
-		liquidCells.insert(make_pair((int)floor(markers[i].x) * (int)floor(markers[i].y), 1));
+		int xpos = (int)floor(markers[i].x);
+		int ypos = (int)floor(markers[i].y);
+		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount)
+			liquidCells[ypos][xpos] = true;
 	}
 	ps->update(*uField, liquidCells, t);
 }
