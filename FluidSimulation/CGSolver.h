@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,17 +14,22 @@ using matrix = vector<vec>;            // matrix (=collection of (row) vectors)
 
 class CGSolver
 {
-	// Prototypes
-	static void print(string title, const vec& V);
-	static void print(string title, const matrix& A);
-	static vec matrixTimesVector(const matrix& A, const vec& V);
-	static vec vectorCombination(double a, const vec& U, double b, const vec& V);
-	static double innerProduct(const vec& U, const vec& V);
-	static double vectorNorm(const vec& V);
+    // Prototypes
+    static void print(string title, const vec& V);
+    static void print(string title, const matrix& A);
+    static vec matrixTimesVector(const matrix& A, const vec& V);
+    static vec matrixTimesVectorS(const matrix& A, const vec& V);
+    static vec vectorCombination(double a, const vec& U, double b, const vec& V);
+    static double innerProduct(const vec& U, const vec& V);
+    static double vectorNorm(const vec& V);
+    static void optimizeMatrix(matrix& M);
 
-	static void UT_matrixTimesVector();
+    // UT
+    static void UT_matrixTimesVector();
+    static void UT_solveForX();
 
 public:
-	static vec conjugateGradientSolver(const matrix& A, const vec& B);
-	static void UT_cgsolver();
+    static vec conjugateGradientSolver(const matrix& A, const vec& B);
+    static vec conjugateGradientSolverS(const matrix& A, const vec& B);
+    static void UT_cgsolver();
 };
