@@ -33,9 +33,9 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 {
 	std::fill(d.begin(), d.end(), 0);
 	// const int c = t / DEN_WATER * H * H;
-	for (int y = 0; y < yCellsCount; ++y)
+	for (int y = 0; y < yCellsCount - 0; ++y)
 	{
-		for (int x = 0; x < xCellsCount; ++x)
+		for (int x = 0; x < xCellsCount - 0; ++x)
 		{
 			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
 			float scale = t / (den * H * H);
@@ -91,35 +91,40 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			float currP = 0.f;
 			if (y * xCellsCount + x - 1 >= 0)
 				currP = p[y * xCellsCount + (x - 1)];
-			nextP = isnan(nextP) || isinf(nextP) ? 0.f : nextP;
-			currP = isnan(currP) || isinf(currP) ? 0.f : currP;
 			float xDiff = (nextP - currP);
 			// y comp
 			nextP = p[y * xCellsCount + x];
 			currP = 0.f;
 			if ((y - 1) * xCellsCount + x >= 0)
 				currP = p[(y - 1) * xCellsCount + x];
-			nextP = isnan(nextP) || isinf(nextP) ? 0.f : nextP;
-			currP = isnan(currP) || isinf(currP) ? 0.f : currP;
 			float yDiff = (nextP - currP);
-			if (x == 0)
+			/*if (x == 0)
 				xDiff = 0.f;
 			else if (y == 0)
 				yDiff = 0.f;
 			else if (x == xCellsCount - 1)
 				xDiff = 0.f;
 			else if (y == yCellsCount - 1)
-				yDiff = 0.f;
+				yDiff = 0.f;*/
+			// NEEDED
+			if (x == 0)
+				xDiff = max(0.f, xDiff);
+			else if (y == 0)
+				yDiff = max(0.f, yDiff);
+			else if (x == xCellsCount - 1)
+				xDiff = min(0.f, xDiff);
+			else if (y == yCellsCount - 1)
+				yDiff = min(0.f, yDiff);
 			vel.x += xDiff;
 			vel.y += yDiff;
-			/*if (x == 0)
+			if (x == 0)
 				vel.x = max(0.f, vel.x);
 			else if (y == 0)
 				vel.y = max(0.f, vel.y);
 			else if (x == xCellsCount - 1)
 				vel.x = min(0.f, vel.x);
 			else if (y == yCellsCount - 1)
-				vel.y = min(0.f, vel.y);*/
+				vel.y = min(0.f, vel.y);
 			uField.setVelByIdx(vel, x, y);
 		}
 	}
