@@ -18,12 +18,12 @@ bool PressureSolve::isValidCell(int x, int y)
 	return x >= 0 && x < xCellsCount && y >= 0 && y < yCellsCount;
 }
 
-bool PressureSolve::addNeighborNonSolidCell(int idx, int x, int y)
+bool PressureSolve::addNeighborNonSolidCell(int idx, int x, int y, float v)
 {
 	if (isValidCell(x, y))
 	{
 		a[idx].push_back(y * xCellsCount + x);
-		a[idx].push_back(1);
+		a[idx].push_back(v);
 		return true;
 	}
 	return false;
@@ -32,7 +32,6 @@ bool PressureSolve::addNeighborNonSolidCell(int idx, int x, int y)
 void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 {
 	std::fill(d.begin(), d.end(), 0);
-	// const int c = t / DEN_WATER * H * H;
 	for (int y = 0; y < yCellsCount - 0; ++y)
 	{
 		for (int x = 0; x < xCellsCount - 0; ++x)
@@ -45,26 +44,28 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			float xdiv = 0.f;
 			if (isValidCell(x + 1, y))
 				xdiv = uField.getVelByIdx(x + 1, y).x;
-			xdiv -= uField.getVelByIdx(x, y).x;
+			if (isValidCell(x - 0, y))
+				xdiv -= uField.getVelByIdx(x - 0, y).x;
 			xdiv /= H;
 			// y axis
 			float ydiv = 0.f;
 			if (isValidCell(x, y + 1))
 				ydiv = uField.getVelByIdx(x, y + 1).y;
-			ydiv -= uField.getVelByIdx(x, y).y;
+			if (isValidCell(x, y - 0))
+				ydiv -= uField.getVelByIdx(x, y - 0).y;
 			ydiv /= H;
-			d[idx] = -(xdiv + ydiv);
+			 d[idx] = -(xdiv + ydiv);
 			// form the coefficient matrix
 			int totalNonSolidNeighbors = 0;
 			a[idx].clear();
 			// add neighboring cells coefficients
-			if (addNeighborNonSolidCell(idx, x - 1, y))
+			if (addNeighborNonSolidCell(idx, x - 1, y, scale))
 				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x + 1, y))
+			if (addNeighborNonSolidCell(idx, x + 1, y, scale))
 				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x, y - 1))
+			if (addNeighborNonSolidCell(idx, x, y - 1, scale))
 				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x, y + 1))
+			if (addNeighborNonSolidCell(idx, x, y + 1, scale))
 				totalNonSolidNeighbors++;
 			a[idx].push_back(idx);
 			a[idx].push_back(-totalNonSolidNeighbors);
@@ -84,12 +85,10 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 		for (int x = 0; x < xCellsCount - 0; ++x)
 		{
 			glm::vec2 vel = uField.getVelByIdx(x, y);
-			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
-			float scale = t / (den * H * H);
 			// x comp
 			float nextP = p[y * xCellsCount + x];
 			float currP = 0.f;
-			if (y * xCellsCount + x - 1 >= 0)
+			if (y * xCellsCount + (x - 1) >= 0)
 				currP = p[y * xCellsCount + (x - 1)];
 			float xDiff = (nextP - currP);
 			// y comp
@@ -98,6 +97,7 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			if ((y - 1) * xCellsCount + x >= 0)
 				currP = p[(y - 1) * xCellsCount + x];
 			float yDiff = (nextP - currP);
+			// will cause particles to compress
 			/*if (x == 0)
 				xDiff = 0.f;
 			else if (y == 0)
@@ -106,7 +106,7 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 				xDiff = 0.f;
 			else if (y == yCellsCount - 1)
 				yDiff = 0.f;*/
-			// NEEDED
+			// NEEDED, won't cause particles to compress
 			if (x == 0)
 				xDiff = max(0.f, xDiff);
 			else if (y == 0)

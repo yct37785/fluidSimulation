@@ -10,7 +10,7 @@ class PressureSolve
 	int xCellsCount, yCellsCount;
 
 	bool isValidCell(int x, int y);
-	bool addNeighborNonSolidCell(int idx, int x, int y);
+	bool addNeighborNonSolidCell(int idx, int x, int y, float v);
 
 public:
 	PressureSolve(int xCellsCount, int yCellsCount);
