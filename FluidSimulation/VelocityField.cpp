@@ -21,11 +21,6 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 			else
 				curr[y][x].y = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
 			curr[y][x].x = curr[y][x].y = 0.f;
-			// clamp if facing boundary
-			if (x == 0 || x == xCellsCount - 1)
-				curr[y][x].x = 0.f;
-			if (y == 0 || y == yCellsCount - 1)
-				curr[y][x].y = 0.f;
 			prev[y][x] = curr[y][x];
 		}
 	}
@@ -216,7 +211,9 @@ void VelocityField::UT_getIndices()
 float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 {
 	int x1, x2, y1, y2;
-	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
+	getIndicesCoords(pos.x, x1, x2);
+	getIndicesCoords(pos.y, y1, y2);
+	// VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
 	// cout << x1 << " " << x2 << ", " << y1 << ", " << y2 << endl;
 	//if vel faces boundary
 	// no need to clamp index, clamp boundary values to 0 is fine
@@ -282,10 +279,6 @@ void VelocityField::advectSelf(float t)
 			if (y == 0) {
 				curr[y][x].y = max(curr[y][x].y, 0.f);
 			}
-			if (x == xCellsCount - 1)
-				curr[y][x].x = min(curr[y][x].x, 0.f);
-			if (y == yCellsCount - 1)
-				curr[y][x].y = min(curr[y][x].y, 0.f);
 		}
 	}
 }
@@ -297,8 +290,7 @@ void VelocityField::applyExternalForces(float t)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// hardcoded gravity
-			if (y > 0)
-				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
+			curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 		}
 	}
 }
@@ -322,7 +314,8 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 		{
 			// get angular dir of velocity from lesser faces
 			float angleRad = (float)atan2(-curr[y][x].x, curr[y][x].y);
-			float scale = glm::length(curr[y][x]);
+			// float scale = glm::length(curr[y][x]);
+			float scale = 1.f;
 			// u
 			glm::mat4 mvpMat = mvMat *
 				glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f)) *
