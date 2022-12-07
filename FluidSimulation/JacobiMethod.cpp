@@ -22,7 +22,7 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
     int k = 1;
 
     // Iterate until the error is less than the given tolerance
-    while (1)
+    while (k < 10)
     {
         // Store the previous solution in y[]
         for (int i = 0; i < n; i++)
@@ -53,7 +53,6 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
             }*/
             x[i] = (b[i] - sum) / centerVal;
         }
-
         // Check if the error is less than the given tolerance
         if (error(x, y, n) < 0.00001)
             break;

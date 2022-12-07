@@ -57,7 +57,7 @@ float FluidGrid::getTimeStep()
 void FluidGrid::Update(float deltaTime)
 {
 	// rendering
-	gridMesh->ResetCellsColor();
+	//gridMesh->ResetCellsColor();
 	float t = getTimeStep() * deltaTime * 20.f;
 	// advection + external forces
 	uField->advectSelf(t);
@@ -76,12 +76,12 @@ void FluidGrid::Update(float deltaTime)
 		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
 		{
 			liquidCells[ypos][xpos] = true;
-			gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
+			//gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
 		}
 	}
 	ps->update(*uField, liquidCells, t);
 	// rendering
-	gridMesh->updateMesh();
+	//gridMesh->updateMesh();
 }
 
 
