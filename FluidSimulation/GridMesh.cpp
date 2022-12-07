@@ -51,3 +51,30 @@ int GridMesh::buildVertex(vector<float>& vertices, int coordsCounter, int x, int
 	vertices[coordsCounter + 4] = 0.f;
 	return coordsCounter + Mesh::COORDS_PER_VERTEX;
 }
+
+void GridMesh::ResetCellsColor()
+{
+	for (int i = 0; i < vertices.size(); i += Mesh::COORDS_PER_VERTEX)
+	{
+		vertices[i + 2] = 0.f;
+		vertices[i + 3] = 0.f;
+		vertices[i + 4] = 0.f;
+	}
+}
+
+void GridMesh::colorCell(int x, int y, float r, float g, float b)
+{
+	int i = ((y - yOffset) * xCellsCount + (x - xOffset)) * 4 * Mesh::COORDS_PER_VERTEX;
+	for (int j = i; j < i + 4 * Mesh::COORDS_PER_VERTEX; j += Mesh::COORDS_PER_VERTEX)
+	{
+		vertices[j + 2] = r / 255.f;
+		vertices[j + 3] = g / 255.f;
+		vertices[j + 4] = b / 255.f;
+	}
+}
+
+void GridMesh::updateMesh()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
+}

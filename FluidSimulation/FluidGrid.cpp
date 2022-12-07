@@ -13,9 +13,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	uField->runUT();
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
-	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 1.f)
+	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 0.5f)
 	{
-		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 1.f)
+		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 0.5f)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -56,6 +56,8 @@ float FluidGrid::getTimeStep()
 
 void FluidGrid::Update(float deltaTime)
 {
+	// rendering
+	gridMesh->ResetCellsColor();
 	float t = getTimeStep() * deltaTime * 20.f;
 	// advection + external forces
 	uField->advectSelf(t);
@@ -71,10 +73,15 @@ void FluidGrid::Update(float deltaTime)
 		markers[i] += vel * t;
 		int xpos = (int)floor(markers[i].x);
 		int ypos = (int)floor(markers[i].y);
-		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount)
+		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
+		{
 			liquidCells[ypos][xpos] = true;
+			gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
+		}
 	}
 	ps->update(*uField, liquidCells, t);
+	// rendering
+	gridMesh->updateMesh();
 }
 
 

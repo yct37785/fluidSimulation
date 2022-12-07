@@ -12,4 +12,8 @@ class GridMesh : public Mesh
 public:
 	GridMesh(int xCellsCount, int yCellsCount, int xOffset, int yOffset);
 	~GridMesh();
+
+	void ResetCellsColor();
+	void colorCell(int x, int y, float r, float g, float b);
+	void updateMesh();
 };

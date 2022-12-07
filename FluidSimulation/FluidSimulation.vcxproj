@@ -139,6 +139,7 @@
     <ClCompile Include="FluidSimulation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GridMesh.cpp" />
+    <ClCompile Include="JacobiMethod.cpp" />
     <ClCompile Include="MACCell.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="FluidGrid.h" />
     <ClInclude Include="FluidScene.h" />
     <ClInclude Include="GridMesh.h" />
+    <ClInclude Include="JacobiMethod.h" />
     <ClInclude Include="MACCell.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
