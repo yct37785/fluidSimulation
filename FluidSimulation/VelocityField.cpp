@@ -312,9 +312,10 @@ void VelocityField::advectSelf(float t)
 
 void VelocityField::applyExternalForces(float t)
 {
-	for (int y = 0; y < yCellsCount; ++y)
+	// only updated for vels bordering fluid
+	for (int y = 1; y < yCellsCount; ++y)
 	{
-		for (int x = 0; x < xCellsCount; ++x)
+		for (int x = 1; x < xCellsCount; ++x)
 		{
 			// hardcoded gravity
 			curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
