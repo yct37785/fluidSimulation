@@ -141,7 +141,6 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			// update vel
 			glm::vec2 vel = uField.getVelByIdx(x, y);
 			vel -= (t / (den * H)) * glm::vec2(xp, yp);
-			//if (liquidCells[y][x])
 			uField.setVelByIdx(vel, x, y);
 		}
 	}

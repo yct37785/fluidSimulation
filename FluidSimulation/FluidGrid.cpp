@@ -13,9 +13,10 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	uField->runUT();
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
-	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 0.5f)
+	// [Bridson 2007] 2 x 2 particles per grid cell
+	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 0.25f)
 	{
-		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 0.5f)
+		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 0.25f)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -57,7 +58,7 @@ float FluidGrid::getTimeStep()
 void FluidGrid::Update(float deltaTime)
 {
 	// rendering
-	//gridMesh->ResetCellsColor();
+	gridMesh->ResetCellsColor();
 	// calculate timestep
 	float t = getTimeStep() * deltaTime * 20.f;
 	// update liquid cells
@@ -71,7 +72,7 @@ void FluidGrid::Update(float deltaTime)
 		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
 		{
 			liquidCells[ypos][xpos] = true;
-			//gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
+			gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
 		}
 		// exceed alert
 		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
