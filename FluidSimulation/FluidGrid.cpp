@@ -87,8 +87,6 @@ void FluidGrid::Update(float deltaTime)
 	{
 		glm::vec2 vel = uField->getVelAtPos(markers[i]);
 		markers[i] += vel * t;
-		int xpos = (int)floor(markers[i].x);
-		int ypos = (int)floor(markers[i].y);
 	}
 	// rendering
 	//gridMesh->updateMesh();

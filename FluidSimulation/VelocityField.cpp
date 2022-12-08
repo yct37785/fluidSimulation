@@ -301,11 +301,16 @@ void VelocityField::advectSelf(float t)
 			//pos = pos + t * vel;
 			//curr[y][x].y = getVelCompAtPt(pos, 1);
 			// clamp if facing boundary
-			if (x == 0)
+			/*if (x == 0)
 				curr[y][x].x = max(curr[y][x].x, 0.f);
 			if (y == 0) {
 				curr[y][x].y = max(curr[y][x].y, 0.f);
-			}
+			}*/
+			/*if (x == 0)
+				curr[y][x].x = 0.f;
+			if (y == 0) {
+				curr[y][x].y = 0.f;
+			}*/
 		}
 	}
 }
