@@ -29,6 +29,53 @@ bool PressureSolve::addNeighborNonSolidCell(int idx, int x, int y, float v)
 	return false;
 }
 
+void PressureSolve::countSurroundingCellTypes(int x, int y, bool** liquidCells, int& air, int& liquid)
+{
+	air = liquid = 0;
+	// top
+	if (isValidCell(x, y + 1))
+	{
+		if (liquidCells[x][y + 1])
+			liquid += 1;
+		else
+			air += 1;
+	}
+	// bottom
+	if (isValidCell(x, y - 1))
+	{
+		if (liquidCells[x][y - 1])
+			liquid += 1;
+		else
+			air += 1;
+	}
+	// left
+	if (isValidCell(x - 1, y))
+	{
+		if (liquidCells[x - 1][y])
+			liquid += 1;
+		else
+			air += 1;
+	}
+	// right
+	if (isValidCell(x + 1, y))
+	{
+		if (liquidCells[x + 1][y])
+			liquid += 1;
+		else
+			air += 1;
+	}
+}
+
+float PressureSolve::getDerivative(VelocityField& uField, int comp, int x2, int y2, int x1, int y1)
+{
+	float v2 = 0.f, v1 = 0.f;
+	if (isValidCell(x2, y2))
+		v2 = uField.getVelByIdx(x2, y2)[comp];
+	if (isValidCell(x1, y1))
+		v1 = uField.getVelByIdx(x1, y1)[comp];
+	return (v2 - v1) / H;
+}
+
 void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 {
 	std::fill(d.begin(), d.end(), 0);
@@ -36,39 +83,24 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 	{
 		for (int x = 0; x < xCellsCount - 0; ++x)
 		{
+			// some values
 			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
-			float scale = t / (den * H * H);
+			float Patm = 1.f;
 			int idx = y * xCellsCount + x;
-			// find divergence d for p value of each cell
-			// x axis
-			float xdiv = 0.f;
-			if (isValidCell(x + 1, y))
-				xdiv = uField.getVelByIdx(x + 1, y).x;
-			if (isValidCell(x - 0, y))
-				xdiv -= uField.getVelByIdx(x - 0, y).x;
-			xdiv /= H;
-			// y axis
-			float ydiv = 0.f;
-			if (isValidCell(x, y + 1))
-				ydiv = uField.getVelByIdx(x, y + 1).y;
-			if (isValidCell(x, y - 0))
-				ydiv -= uField.getVelByIdx(x, y - 0).y;
-			ydiv /= H;
-			 d[idx] = -(xdiv + ydiv);
+			int solidNeighbors = 0, liquidNeighbors = 0, airNeighbors = 0;
+			countSurroundingCellTypes(x, y, liquidCells, airNeighbors, liquidNeighbors);
+			// find divergence for center of cell
+			float div = getDerivative(uField, 0, x + 1, y, x, y) + getDerivative(uField, 1, x, y + 1, x, y);
+			d[idx] = (div * ((den * H) / t)) - (float)airNeighbors * Patm;
 			// form the coefficient matrix
-			int totalNonSolidNeighbors = 0;
 			a[idx].clear();
-			// add neighboring cells coefficients
-			if (addNeighborNonSolidCell(idx, x - 1, y, scale))
-				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x + 1, y, scale))
-				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x, y - 1, scale))
-				totalNonSolidNeighbors++;
-			if (addNeighborNonSolidCell(idx, x, y + 1, scale))
-				totalNonSolidNeighbors++;
+			// add coefficients
+			/*addNeighborNonSolidCell(idx, x - 1, y, 1.f);
+			addNeighborNonSolidCell(idx, x + 1, y, 1.f);
+			addNeighborNonSolidCell(idx, x, y - 1, 1.f);
+			addNeighborNonSolidCell(idx, x, y + 1, 1.f);*/
 			a[idx].push_back(idx);
-			a[idx].push_back(-totalNonSolidNeighbors);
+			a[idx].push_back(-(liquidNeighbors + airNeighbors));
 		}
 	}
 	// CGSolver::print("A", a);
@@ -80,52 +112,32 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 	
 	// update velocity
 	// pressure is only applied to vel components that border fluid cells
-	for (int y = 0; y < yCellsCount - 0; ++y)
+	for (int y = 1; y < yCellsCount; ++y)
 	{
-		for (int x = 0; x < xCellsCount - 0; ++x)
+		for (int x = 1; x < xCellsCount; ++x)
 		{
+			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
+			float xp = 0.f, yp = 0.f;
+			// x
+			if (x > 0)
+			{
+				float nextP = p[y * xCellsCount + x], prevP = 0.f;
+				if (y * xCellsCount + x - 1 > 0)
+					prevP = p[y * xCellsCount + x - 1];
+				xp = (nextP - prevP) / 2.f;
+			}
+			// y
+			if (x > 0)
+			{
+				float nextP = p[y * xCellsCount + x], prevP = 0.f;
+				if ((y - 1) * xCellsCount + x > 0)
+					prevP = p[(y - 1) * xCellsCount + x];
+				yp = (nextP - prevP) / 2.f;
+			}
+			// update vel
 			glm::vec2 vel = uField.getVelByIdx(x, y);
-			// x comp
-			float nextP = p[y * xCellsCount + x];
-			float currP = 0.f;
-			if (y * xCellsCount + (x - 1) >= 0)
-				currP = p[y * xCellsCount + (x - 1)];
-			float xDiff = (nextP - currP);
-			// y comp
-			nextP = p[y * xCellsCount + x];
-			currP = 0.f;
-			if ((y - 1) * xCellsCount + x >= 0)
-				currP = p[(y - 1) * xCellsCount + x];
-			float yDiff = (nextP - currP);
-			// will cause particles to compress
-			/*if (x == 0)
-				xDiff = 0.f;
-			else if (y == 0)
-				yDiff = 0.f;
-			else if (x == xCellsCount - 1)
-				xDiff = 0.f;
-			else if (y == yCellsCount - 1)
-				yDiff = 0.f;*/
-			// NEEDED, won't cause particles to compress
-			if (x == 0)
-				xDiff = max(0.f, xDiff);
-			else if (y == 0)
-				yDiff = max(0.f, yDiff);
-			else if (x == xCellsCount - 1)
-				xDiff = min(0.f, xDiff);
-			else if (y == yCellsCount - 1)
-				yDiff = min(0.f, yDiff);
-			vel.x += xDiff;
-			vel.y += yDiff;
-			if (x == 0)
-				vel.x = max(0.f, vel.x);
-			else if (y == 0)
-				vel.y = max(0.f, vel.y);
-			else if (x == xCellsCount - 1)
-				vel.x = min(0.f, vel.x);
-			else if (y == yCellsCount - 1)
-				vel.y = min(0.f, vel.y);
-			// uField.setVelByIdx(vel, x, y);
+			vel -= (t / (den * H)) * glm::vec2(xp, yp);
+			uField.setVelByIdx(vel, x, y);
 		}
 	}
 }
