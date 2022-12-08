@@ -272,12 +272,12 @@ void VelocityField::advectSelf(float t)
 		{
 			// separately derive velocity for each component (half-indices space)
 			// x
-			//glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
-			//float xcomp = getVelCompAtPt(prevPos, 0);
-			//// y
-			//prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
-			//float ycomp = getVelCompAtPt(prevPos, 1);
-			//curr[y][x] = glm::vec2(xcomp, ycomp);
+			glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
+			float xcomp = getVelCompAtPt(prevPos, 0);
+			// y
+			prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
+			float ycomp = getVelCompAtPt(prevPos, 1);
+			curr[y][x] = glm::vec2(xcomp, ycomp);
 			// x & y
 			/*glm::vec2 prevPos = glm::vec2((float)x, (float)y) - prev[y][x] * t;
 			float xcomp = getVelCompAtPt(prevPos, 0);
@@ -285,27 +285,27 @@ void VelocityField::advectSelf(float t)
 			curr[y][x] = glm::vec2(xcomp, ycomp);*/
 			// RK2
 			// x
-			float xpos = (float)x - 0.5f;
-			float ypos = (float)y;
-			glm::vec2 pos = glm::vec2(xpos, ypos);
-			glm::vec2 vel = getVelAtPos(pos);
-			vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
-			pos = pos + t * vel;
-			curr[y][x].x = getVelCompAtPt(pos, 0);
-			// y
-			xpos = (float)x;
-			ypos = (float)y - 0.5f;
-			pos = glm::vec2(xpos, ypos);
-			vel = getVelAtPos(pos);
-			vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
-			pos = pos + t * vel;
-			curr[y][x].y = getVelCompAtPt(pos, 1);
+			//float xpos = (float)x - 0.5f;
+			//float ypos = (float)y;
+			//glm::vec2 pos = glm::vec2(xpos, ypos);
+			//glm::vec2 vel = getVelAtPos(pos);
+			//vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
+			//pos = pos + t * vel;
+			//curr[y][x].x = getVelCompAtPt(pos, 0);
+			//// y
+			//xpos = (float)x;
+			//ypos = (float)y - 0.5f;
+			//pos = glm::vec2(xpos, ypos);
+			//vel = getVelAtPos(pos);
+			//vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
+			//pos = pos + t * vel;
+			//curr[y][x].y = getVelCompAtPt(pos, 1);
 			// clamp if facing boundary
-			/*if (x == 0)
+			if (x == 0)
 				curr[y][x].x = max(curr[y][x].x, 0.f);
 			if (y == 0) {
 				curr[y][x].y = max(curr[y][x].y, 0.f);
-			}*/
+			}
 			/*if (x == 0)
 				curr[y][x].x = 0.f;
 			if (y == 0) {

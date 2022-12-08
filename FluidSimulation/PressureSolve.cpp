@@ -104,7 +104,6 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			a[idx].push_back(idx);
 			// cout << (liquidNeighbors + airNeighbors) << endl;
 			a[idx].push_back(-(liquidNeighbors + airNeighbors));
-			int solidCount = 4 - (liquidNeighbors + airNeighbors);
 		}
 	}
 	// CGSolver::print("A", a);
