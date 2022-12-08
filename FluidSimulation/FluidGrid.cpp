@@ -58,19 +58,14 @@ void FluidGrid::Update(float deltaTime)
 {
 	// rendering
 	//gridMesh->ResetCellsColor();
+	// calculate timestep
 	float t = getTimeStep() * deltaTime * 20.f;
-	// advection + external forces
-	uField->advectSelf(t);
-	uField->applyExternalForces(t);
-	uField->postUpdate();	// must be called before marker update to update prev -> curr
-	// move particles through velocity field
+	// update liquid cells
 	for (int y = 0; y < yCellsCount; ++y)
 		for (int x = 0; x < xCellsCount; ++x)
 			liquidCells[y][x] = false;
 	for (int i = 0; i < markers.size(); ++i)
 	{
-		glm::vec2 vel = uField->getVelAtPos(markers[i]);
-		markers[i] += vel * t;
 		int xpos = (int)floor(markers[i].x);
 		int ypos = (int)floor(markers[i].y);
 		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
@@ -79,12 +74,22 @@ void FluidGrid::Update(float deltaTime)
 			//gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
 		}
 		// exceed alert
-		if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
-		{
-			//cout << "Marker exceeded: " << xpos << ", " << ypos << endl;
-		}
+		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
 	}
+	// advection + external forces
+	uField->advectSelf(t);
+	uField->applyExternalForces(t);
+	uField->postUpdate();	// must be called before marker update to update prev -> curr
+	// pressure update
 	ps->update(*uField, liquidCells, t);
+	// move particles through velocity field
+	for (int i = 0; i < markers.size(); ++i)
+	{
+		glm::vec2 vel = uField->getVelAtPos(markers[i]);
+		markers[i] += vel * t;
+		int xpos = (int)floor(markers[i].x);
+		int ypos = (int)floor(markers[i].y);
+	}
 	// rendering
 	//gridMesh->updateMesh();
 }
