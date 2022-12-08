@@ -78,7 +78,7 @@ void FluidGrid::Update(float deltaTime)
 	}
 	// advection + external forces
 	uField->advectSelf(t);
-	uField->applyExternalForces(t);
+	uField->applyExternalForces(t, liquidCells);
 	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
 	ps->update(*uField, liquidCells, t);
@@ -95,7 +95,7 @@ void FluidGrid::Update(float deltaTime)
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	 //uField->draw(mvMat, mvpHandle, triangleMesh);
+	//uField->draw(mvMat, mvpHandle, triangleMesh);
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(markers[i].x, markers[i].y, 0.f));

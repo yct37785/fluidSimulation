@@ -36,7 +36,7 @@ public:
 	~VelocityField();
 
 	void advectSelf(float t);
-	void applyExternalForces(float t);
+	void applyExternalForces(float t, bool** liquidCells);
 	void postUpdate();
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);

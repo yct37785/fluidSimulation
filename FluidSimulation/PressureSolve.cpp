@@ -95,12 +95,16 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			// form the coefficient matrix
 			a[idx].clear();
 			// add coefficients
-			/*addNeighborNonSolidCell(idx, x - 1, y, 1.f);
-			addNeighborNonSolidCell(idx, x + 1, y, 1.f);
-			addNeighborNonSolidCell(idx, x, y - 1, 1.f);
-			addNeighborNonSolidCell(idx, x, y + 1, 1.f);*/
+			// why when using 1.f for coefficient Jacobi Method won't converge
+			// https://stackoverflow.com/questions/24730993/jacobi-iteration-doesnt-end
+			addNeighborNonSolidCell(idx, x - 1, y, 0.99f);
+			addNeighborNonSolidCell(idx, x + 1, y, 0.99f);
+			addNeighborNonSolidCell(idx, x, y - 1, 0.99f);
+			addNeighborNonSolidCell(idx, x, y + 1, 0.99f);
 			a[idx].push_back(idx);
+			// cout << (liquidNeighbors + airNeighbors) << endl;
 			a[idx].push_back(-(liquidNeighbors + airNeighbors));
+			int solidCount = 4 - (liquidNeighbors + airNeighbors);
 		}
 	}
 	// CGSolver::print("A", a);
@@ -137,6 +141,7 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			// update vel
 			glm::vec2 vel = uField.getVelByIdx(x, y);
 			vel -= (t / (den * H)) * glm::vec2(xp, yp);
+			//if (liquidCells[y][x])
 			uField.setVelByIdx(vel, x, y);
 		}
 	}

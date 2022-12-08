@@ -216,8 +216,8 @@ void VelocityField::UT_getIndices()
 float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 {
 	int x1, x2, y1, y2;
-	/*getIndicesCoords(pos.x, x1, x2);
-	getIndicesCoords(pos.y, y1, y2);*/
+	getIndicesCoords(pos.x, x1, x2);
+	getIndicesCoords(pos.y, y1, y2);
 	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
 	// cout << x1 << " " << x2 << ", " << y1 << ", " << y2 << endl;
 	//if vel faces boundary
@@ -272,34 +272,34 @@ void VelocityField::advectSelf(float t)
 		{
 			// separately derive velocity for each component (half-indices space)
 			// x
-			glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
-			float xcomp = getVelCompAtPt(prevPos, 0);
-			// y
-			prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
-			float ycomp = getVelCompAtPt(prevPos, 1);
-			curr[y][x] = glm::vec2(xcomp, ycomp);
+			//glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
+			//float xcomp = getVelCompAtPt(prevPos, 0);
+			//// y
+			//prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
+			//float ycomp = getVelCompAtPt(prevPos, 1);
+			//curr[y][x] = glm::vec2(xcomp, ycomp);
 			// x & y
 			/*glm::vec2 prevPos = glm::vec2((float)x, (float)y) - prev[y][x] * t;
 			float xcomp = getVelCompAtPt(prevPos, 0);
 			float ycomp = getVelCompAtPt(prevPos, 1);
 			curr[y][x] = glm::vec2(xcomp, ycomp);*/
 			// RK2
-			//// x
-			//float xpos = (float)x - 0.5f;
-			//float ypos = (float)y;
-			//glm::vec2 pos = glm::vec2(xpos, ypos);
-			//glm::vec2 vel = getVelAtPos(pos);
-			//vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
-			//pos = pos + t * vel;
-			//curr[y][x].x = getVelCompAtPt(pos, 0);
-			//// y
-			//xpos = (float)x;
-			//ypos = (float)y - 0.5f;
-			//pos = glm::vec2(xpos, ypos);
-			//vel = getVelAtPos(pos);
-			//vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
-			//pos = pos + t * vel;
-			//curr[y][x].y = getVelCompAtPt(pos, 1);
+			// x
+			float xpos = (float)x - 0.5f;
+			float ypos = (float)y;
+			glm::vec2 pos = glm::vec2(xpos, ypos);
+			glm::vec2 vel = getVelAtPos(pos);
+			vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
+			pos = pos + t * vel;
+			curr[y][x].x = getVelCompAtPt(pos, 0);
+			// y
+			xpos = (float)x;
+			ypos = (float)y - 0.5f;
+			pos = glm::vec2(xpos, ypos);
+			vel = getVelAtPos(pos);
+			vel = getVelAtPos(glm::vec2(xpos + 0.5f * t * vel.x, ypos + 0.5f * t * vel.y));
+			pos = pos + t * vel;
+			curr[y][x].y = getVelCompAtPt(pos, 1);
 			// clamp if facing boundary
 			/*if (x == 0)
 				curr[y][x].x = max(curr[y][x].x, 0.f);
@@ -315,15 +315,16 @@ void VelocityField::advectSelf(float t)
 	}
 }
 
-void VelocityField::applyExternalForces(float t)
+void VelocityField::applyExternalForces(float t, bool** liquidCells)
 {
 	// only updated for vels bordering fluid
-	for (int y = 1; y < yCellsCount; ++y)
+	for (int y = 0; y < yCellsCount; ++y)
 	{
-		for (int x = 1; x < xCellsCount; ++x)
+		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// hardcoded gravity
-			curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
+			if (liquidCells[y][x] && y > 0)
+				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 		}
 	}
 }
