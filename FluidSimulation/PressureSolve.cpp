@@ -130,7 +130,7 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 				xp = (nextP - prevP) / 2.f;
 			}
 			// y
-			if (x > 0)
+			if (y > 0)
 			{
 				float nextP = p[y * xCellsCount + x], prevP = 0.f;
 				if ((y - 1) * xCellsCount + x > 0)
