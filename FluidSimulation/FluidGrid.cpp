@@ -90,7 +90,7 @@ void FluidGrid::Update(float deltaTime)
 		markers[i] += vel * t;
 	}
 	// rendering
-	//gridMesh->updateMesh();
+	gridMesh->updateMesh();
 }
 
 

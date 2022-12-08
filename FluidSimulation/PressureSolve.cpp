@@ -115,9 +115,9 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 	
 	// update velocity
 	// pressure is only applied to vel components that border fluid cells
-	for (int y = 1; y < yCellsCount; ++y)
+	for (int y = 0; y < yCellsCount; ++y)
 	{
-		for (int x = 1; x < xCellsCount; ++x)
+		for (int x = 0; x < xCellsCount; ++x)
 		{
 			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
 			float xp = 0.f, yp = 0.f;

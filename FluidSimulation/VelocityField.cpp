@@ -37,6 +37,11 @@ VelocityField::~VelocityField()
 	delete[] curr;
 }
 
+bool VelocityField::isLiquidCell(int x, int y, bool** liquidCells)
+{
+	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells[y][x];
+}
+
 bool VelocityField::outOfRange(int x, int y, int maxx, int maxy)
 {
 	return x < 0 || x >= maxx || y < 0 || y >= maxy;
@@ -306,11 +311,6 @@ void VelocityField::advectSelf(float t)
 			if (y == 0) {
 				curr[y][x].y = max(curr[y][x].y, 0.f);
 			}
-			/*if (x == 0)
-				curr[y][x].x = 0.f;
-			if (y == 0) {
-				curr[y][x].y = 0.f;
-			}*/
 		}
 	}
 }
@@ -322,9 +322,12 @@ void VelocityField::applyExternalForces(float t, bool** liquidCells)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			// hardcoded gravity
-			if (liquidCells[y][x] && y > 0)
+			// borders fluid
+			if (liquidCells[y][x] || isLiquidCell(x, y - 1, liquidCells) || isLiquidCell(x, y + 1, liquidCells))
 				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
+			// do clamp (should't have to as pressure update will)
+			/*if (y == 0)
+				curr[y][x].y = max(curr[y][x].y, 0.f);*/
 		}
 	}
 }
