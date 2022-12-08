@@ -125,7 +125,7 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 				vel.x = min(0.f, vel.x);
 			else if (y == yCellsCount - 1)
 				vel.y = min(0.f, vel.y);
-			uField.setVelByIdx(vel, x, y);
+			// uField.setVelByIdx(vel, x, y);
 		}
 	}
 }
