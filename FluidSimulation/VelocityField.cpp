@@ -323,7 +323,7 @@ void VelocityField::applyExternalForces(float t, bool** liquidCells)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// borders fluid
-			if (liquidCells[y][x] || isLiquidCell(x, y - 1, liquidCells) || isLiquidCell(x, y + 1, liquidCells))
+			if (liquidCells[y][x] || isLiquidCell(x, y - 1, liquidCells))
 				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 			// do clamp (should't have to as pressure update will)
 			/*if (y == 0)
