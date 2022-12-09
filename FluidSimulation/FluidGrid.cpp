@@ -14,9 +14,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	for (float y = 0.f + (float)yCellsCount * 0.6f; y < (float)yCellsCount * 0.9f; y += 0.25f)
+	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * 0.05f; x < (float)xCellsCount * 0.95f; x += 0.25f)
+		for (float x = 0.f + (float)xCellsCount * H * 0.05f; x < (float)xCellsCount * H * 0.95f; x += 0.25f * H)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -67,8 +67,8 @@ void FluidGrid::Update(float deltaTime)
 			liquidCells[y][x] = false;
 	for (int i = 0; i < markers.size(); ++i)
 	{
-		int xpos = (int)floor(markers[i].x);
-		int ypos = (int)floor(markers[i].y);
+		int xpos = (int)floor(markers[i].x / H);
+		int ypos = (int)floor(markers[i].y / H);
 		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
 		{
 			liquidCells[ypos][xpos] = true;

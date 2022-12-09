@@ -220,9 +220,8 @@ void VelocityField::UT_getIndices()
 // pos will be in half-indices: -0.5 -> total - 0.5
 float VelocityField::getVelCompAtPt(glm::vec2 pos, int comp)
 {
+	pos /= H;
 	int x1, x2, y1, y2;
-	getIndicesCoords(pos.x, x1, x2);
-	getIndicesCoords(pos.y, y1, y2);
 	VelocityField::getIndices(pos, comp == 0 ? 'x' : 'y', xCellsCount, yCellsCount, x1, x2, y1, y2);
 	// cout << x1 << " " << x2 << ", " << y1 << ", " << y2 << endl;
 	//if vel faces boundary
@@ -275,12 +274,13 @@ void VelocityField::advectSelf(float t)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
+			float xpos = (float)x * H, ypos = (float)y * H;
 			// separately derive velocity for each component (half-indices space)
 			// x
-			glm::vec2 prevPos = glm::vec2((float)x - 0.5f, (float)y) - prev[y][x] * t;
+			glm::vec2 prevPos = glm::vec2((float)xpos - Hoffset, (float)ypos) - prev[y][x] * t;
 			float xcomp = getVelCompAtPt(prevPos, 0);
 			// y
-			prevPos = glm::vec2((float)x, (float)y - 0.5f) - prev[y][x] * t;
+			prevPos = glm::vec2((float)xpos, (float)ypos - Hoffset) - prev[y][x] * t;
 			float ycomp = getVelCompAtPt(prevPos, 1);
 			curr[y][x] = glm::vec2(xcomp, ycomp);
 			// x & y
@@ -306,11 +306,11 @@ void VelocityField::advectSelf(float t)
 			//pos = pos + t * vel;
 			//curr[y][x].y = getVelCompAtPt(pos, 1);
 			// clamp if facing boundary
-			if (x == 0)
+			/*if (x == 0)
 				curr[y][x].x = max(curr[y][x].x, 0.f);
 			if (y == 0) {
 				curr[y][x].y = max(curr[y][x].y, 0.f);
-			}
+			}*/
 		}
 	}
 }
@@ -323,7 +323,7 @@ void VelocityField::applyExternalForces(float t, bool** liquidCells)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// borders fluid
-			if (liquidCells[y][x] || isLiquidCell(x, y - 1, liquidCells))
+			if (liquidCells[y][x])
 				curr[y][x].y = max(-9.81f, curr[y][x].y - 0.981f * t);
 			// do clamp (should't have to as pressure update will)
 			/*if (y == 0)
@@ -351,8 +351,8 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 		{
 			// get angular dir of velocity from lesser faces
 			float angleRad = (float)atan2(-curr[y][x].x, curr[y][x].y);
-			// float scale = glm::length(curr[y][x]);
-			float scale = 1.f;
+			float scale = glm::length(curr[y][x]);
+			// float scale = 1.f;
 			// u
 			glm::mat4 mvpMat = mvMat *
 				glm::translate(glm::mat4(1.f), glm::vec3(x, y, 0.f)) *

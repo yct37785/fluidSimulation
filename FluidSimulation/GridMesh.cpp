@@ -43,8 +43,8 @@ GridMesh::~GridMesh()
 int GridMesh::buildVertex(vector<float>& vertices, int coordsCounter, int x, int y, int cellCounter)
 {
 	// x, y, r, g, b
-	vertices[coordsCounter + 0] = (float)x;
-	vertices[coordsCounter + 1] = (float)y;
+	vertices[coordsCounter + 0] = (float)x * H;
+	vertices[coordsCounter + 1] = (float)y * H;
 	vertices[coordsCounter + 2] = 0.f;
 	//vertices[coordsCounter + 3] = cellCounter % 2 ? 1.f : 0.f;
 	vertices[coordsCounter + 3] = 0.f;

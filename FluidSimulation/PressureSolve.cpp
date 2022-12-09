@@ -79,9 +79,9 @@ float PressureSolve::getDerivative(VelocityField& uField, int comp, int x2, int 
 void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 {
 	std::fill(d.begin(), d.end(), 0);
-	for (int y = 0; y < yCellsCount - 0; ++y)
+	for (int y = 0; y < yCellsCount; ++y)
 	{
-		for (int x = 0; x < xCellsCount - 0; ++x)
+		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// some values
 			float den = liquidCells[y][x] ? DEN_WATER : DEN_AIR;
@@ -97,10 +97,10 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 			// add coefficients
 			// why when using 1.f for coefficient Jacobi Method won't converge
 			// https://stackoverflow.com/questions/24730993/jacobi-iteration-doesnt-end
-			addNeighborNonSolidCell(idx, x - 1, y, 0.99f);
-			addNeighborNonSolidCell(idx, x + 1, y, 0.99f);
-			addNeighborNonSolidCell(idx, x, y - 1, 0.99f);
-			addNeighborNonSolidCell(idx, x, y + 1, 0.99f);
+			addNeighborNonSolidCell(idx, x - 1, y, 1.f);
+			addNeighborNonSolidCell(idx, x + 1, y, 1.f);
+			addNeighborNonSolidCell(idx, x, y - 1, 1.f);
+			addNeighborNonSolidCell(idx, x, y + 1, 1.f);
 			a[idx].push_back(idx);
 			// cout << (liquidNeighbors + airNeighbors) << endl;
 			a[idx].push_back(-(liquidNeighbors + airNeighbors));
@@ -138,8 +138,23 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 				yp = (nextP - prevP) / 2.f;
 			}
 			// update vel
+			glm::vec2 offset = (t / (den * H)) * glm::vec2(xp, yp);
+			uField.setVelByIdx(uField.getVelByIdx(x, y) - offset, x, y);
+		}
+	}
+	// clamp vel comps facing solid/boundary
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		for (int x = 0; x < xCellsCount; ++x)
+		{
 			glm::vec2 vel = uField.getVelByIdx(x, y);
-			vel -= (t / (den * H)) * glm::vec2(xp, yp);
+			// clamp vels that point into solids/boundaries
+			if (x == 0)
+				vel.x = max(vel.x, 0.f);
+			if (y == 0) {
+				vel.y = max(vel.y, 0.f);
+			}
+			// set
 			uField.setVelByIdx(vel, x, y);
 		}
 	}

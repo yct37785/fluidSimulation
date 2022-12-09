@@ -31,13 +31,13 @@ Mesh* MeshBuilder::CreateMesh(string type)
 	else if (type == "blue_quad")
 	{
 		vector<float> vertices{
-		0.1f,  0.1f,  // top right
+		0.1f * H,  0.1f * H,  // top right
 		0.f, 0.f, 1.f,
-		0.1f, -0.1f,  // bottom right
+		0.1f * H, -0.1f * H,  // bottom right
 		0.f, 0.f, 1.f,
-		-0.1f, -0.1f,  // bottom left
+		-0.1f * H, -0.1f * H,  // bottom left
 		0.f, 0.f, 1.f,
-		-0.1f,  0.1f,   // top left
+		-0.1f * H,  0.1f * H,   // top left
 		0.f, 0.f, 1.f,
 		};
 		vector<int> indices{  // note that we start from 0!

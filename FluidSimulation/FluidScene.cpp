@@ -17,7 +17,7 @@ void FluidScene::Init()
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
 	yCellsCount = (int)accurateYSpaceHeight + 1;
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-	projMat = glm::frustum(-1.f, (float)xCellsCount + 1.f, -1.f, accurateYSpaceHeight + 1.f, 3.f, 7.f);
+	projMat = glm::frustum(-H, (float)xCellsCount * H + H, -H, accurateYSpaceHeight * H + H, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
 	fluidGrid = new FluidGrid(xCellsCount, yCellsCount);
