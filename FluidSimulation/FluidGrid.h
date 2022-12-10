@@ -1,5 +1,6 @@
 #pragma once
-#include "PressureSolve.h"
+#include "PressureSolve2.h"
+#include "VelocityField2.h"
 
 class FluidGrid
 {
@@ -9,8 +10,8 @@ class FluidGrid
 	int xCellsCount, yCellsCount;
 
 	// quantities
-	VelocityField* uField;
-	PressureSolve* ps;
+	VelocityField2* uField2;
+	PressureSolve2* ps2;
 
 	// marker
 	vector<glm::vec2> markers;

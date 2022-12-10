@@ -4,33 +4,37 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 {
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	triangleMesh = MeshBuilder::CreateMesh("triangle");
-	markerMesh = MeshBuilder::CreateMesh("blue_quad");
+	markerMesh = MeshBuilder::CreateMesh("blue_marker");
 
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
 
-	uField = new VelocityField(xCellsCount, yCellsCount);
-	uField->runUT();
-	ps = new PressureSolve(xCellsCount, yCellsCount);
+	uField2 = new VelocityField2(xCellsCount, yCellsCount);
+	// uField->runUT();
+	ps2 = new PressureSolve2(xCellsCount, yCellsCount);
 
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)
+	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.8f; y += 0.25f * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * H * 0.05f; x < (float)xCellsCount * H * 0.9f; x += 0.25f * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.25f * H)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
 	}
 	liquidCells = new bool*[yCellsCount];
-	for (int i = 0; i < yCellsCount; ++i)
-		liquidCells[i] = new bool[xCellsCount];
+	for (int y = 0; y < yCellsCount; ++y)
+	{
+		liquidCells[y] = new bool[xCellsCount];
+		for (int x = 0; x < xCellsCount; ++x)
+			liquidCells[y][x] = false;
+	}
 	cout << "Total markers: " << markers.size() << endl;
 }
 
 FluidGrid::~FluidGrid()
 {
-	delete uField;
-	delete ps;
+	delete uField2;
+	delete ps2;
 	delete gridMesh;
 	delete triangleMesh;
 	delete markerMesh;
@@ -47,7 +51,7 @@ glm::vec2 FluidGrid::getVelocityBilinear(float x, float y)
 float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
-	glm::vec2 maxU = uField->getMaxU();
+	glm::vec2 maxU = uField2->getMaxU();
 	float u_max = sqrt(abs(H * G));
 	float dist = glm::length(maxU);
 	if (!isinf(dist))
@@ -57,11 +61,12 @@ float FluidGrid::getTimeStep()
 
 void FluidGrid::Update(float deltaTime)
 {
-	// rendering
 	gridMesh->ResetCellsColor();
-	// calculate timestep
-	float t = getTimeStep() * deltaTime * 20.f;
-	// update liquid cells
+	// timestep
+	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
+	// 7f multiplier is sweet spot
+	float t = getTimeStep() * deltaTime * 7.f;
+	// fluid cells update
 	for (int y = 0; y < yCellsCount; ++y)
 		for (int x = 0; x < xCellsCount; ++x)
 			liquidCells[y][x] = false;
@@ -77,26 +82,27 @@ void FluidGrid::Update(float deltaTime)
 		// exceed alert
 		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
 	}
-	// advection + external forces
-	uField->advectSelf(t);
-	uField->applyExternalForces(t, liquidCells);
-	uField->postUpdate();	// must be called before marker update to update prev -> curr
+	// advect + external forces
+	uField2->advectSelf(t);
+	uField2->applyExternalForces(t, liquidCells);
+	uField2->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
-	ps->update(*uField, liquidCells, t);
+	ps2->update(*uField2, liquidCells, t);
+	uField2->postUpdate();	// must be called before marker update to update prev -> curr
 	// move particles through velocity field
 	for (int i = 0; i < markers.size(); ++i)
 	{
-		glm::vec2 vel = uField->getVelAtPos(markers[i]);
+		glm::vec2 vel = uField2->getVelAtPos(markers[i]);
 		markers[i] += vel * t;
 	}
 	// rendering
-	// gridMesh->updateMesh();
+	//gridMesh->updateMesh();
 }
 
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	uField->draw(mvMat, mvpHandle, triangleMesh);
+	uField2->draw(mvMat, mvpHandle, triangleMesh);
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(markers[i].x, markers[i].y, 0.f));
