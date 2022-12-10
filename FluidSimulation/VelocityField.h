@@ -21,8 +21,7 @@ class VelocityField
 		glm::vec2& pos, float q11, float q21, float q12, float q22);
 	static void getHalfIndicesCoords(float pos, float& minv, float& maxv);
 	static void getIndicesCoords(float pos, int& minv, int& maxv);
-	static void getIndices(glm::vec2 pos, char comp, int xCellsCount, int yCellsCount,
-		int& x1, int& x2, int& y1, int& y2);
+	static void getIndices(glm::vec2 pos, char comp, int& x1, int& x2, int& y1, int& y2);
 	float getVelCompAtPt(glm::vec2 pos, int comp);
 
 	// unit tests

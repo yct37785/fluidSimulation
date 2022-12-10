@@ -16,7 +16,7 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	// [Bridson 2007] 2 x 2 particles per grid cell
 	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * H * 0.05f; x < (float)xCellsCount * H * 0.95f; x += 0.25f * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.05f; x < (float)xCellsCount * H * 0.9f; x += 0.25f * H)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -90,13 +90,13 @@ void FluidGrid::Update(float deltaTime)
 		markers[i] += vel * t;
 	}
 	// rendering
-	gridMesh->updateMesh();
+	// gridMesh->updateMesh();
 }
 
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	//uField->draw(mvMat, mvpHandle, triangleMesh);
+	uField->draw(mvMat, mvpHandle, triangleMesh);
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(markers[i].x, markers[i].y, 0.f));
