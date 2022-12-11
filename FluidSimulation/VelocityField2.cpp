@@ -155,6 +155,10 @@ void VelocityField2::advectSelf(float t)
 				// no slip
 				if (x == 0 || x == xCellsCount)
 					x_curr[y][x] = 0.f;
+				/*if (x == 0)
+					x_curr[y][x] = max(0.f, x_curr[y][x]);
+				if (x == xCellsCount)
+					x_curr[y][x] = min(0.f, x_curr[y][x]);*/
 			}
 			// y
 			if (x < xCellsCount)
@@ -166,6 +170,10 @@ void VelocityField2::advectSelf(float t)
 				// no slip
 				if (y == 0 || y == yCellsCount)
 					y_curr[y][x] = 0.f;
+				/*if (y == 0)
+					y_curr[y][x] = max(0.f, y_curr[y][x]);
+				if (y == yCellsCount)
+					y_curr[y][x] = min(0.f, y_curr[y][x]);*/
 			}
 		}
 	}
@@ -202,6 +210,8 @@ void VelocityField2::applyExternalForces(float t, bool** liquidCells)
 	// clamp
 	for (int x = 0; x < xCellsCount; ++x)
 		y_curr[0][x] = 0.f;
+	/*for (int x = 0; x < xCellsCount; ++x)
+		y_curr[0][x] = max(0.f, y_curr[0][x]);*/
 }
 
 void VelocityField2::postUpdate()
@@ -228,8 +238,8 @@ void VelocityField2::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 		{
 			// get angular dir of velocity from lesser faces
 			float angleRad = (float)atan2(-x_curr[y][x], y_curr[y][x]);
-			float scale = glm::length(glm::vec2(x_curr[y][x], y_curr[y][x]));
-			//float scale = 1.f;
+			//float scale = glm::length(glm::vec2(x_curr[y][x], y_curr[y][x]));
+			float scale = 1.f;
 			// u
 			glm::mat4 mvpMat = mvMat *
 				glm::translate(glm::mat4(1.f), glm::vec3(x + Hoffset, y + Hoffset, 0.f)) *
