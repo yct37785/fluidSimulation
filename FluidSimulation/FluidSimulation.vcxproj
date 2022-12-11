@@ -141,12 +141,10 @@
     <ClCompile Include="JacobiMethod.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
-    <ClCompile Include="PressureSolve.cpp" />
     <ClCompile Include="PressureSolve2.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Utility.cpp" />
-    <ClCompile Include="VelocityField.cpp" />
     <ClCompile Include="VelocityField2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,11 +155,9 @@
     <ClInclude Include="JacobiMethod.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
-    <ClInclude Include="PressureSolve.h" />
     <ClInclude Include="PressureSolve2.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Utility.h" />
-    <ClInclude Include="VelocityField.h" />
     <ClInclude Include="VelocityField2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
