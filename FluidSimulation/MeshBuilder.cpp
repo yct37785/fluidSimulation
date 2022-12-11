@@ -32,13 +32,13 @@ Mesh* MeshBuilder::CreateMesh(string type)
 	{
 		vector<float> vertices{
 		0.1f * H,  0.1f * H,  // top right
-		0.f, 0.f, 1.f,
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
 		0.1f * H, -0.1f * H,  // bottom right
-		0.f, 0.f, 1.f,
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
 		-0.1f * H, -0.1f * H,  // bottom left
-		0.f, 0.f, 1.f,
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
 		-0.1f * H,  0.1f * H,   // top left
-		0.f, 0.f, 1.f,
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
 		};
 		vector<int> indices{  // note that we start from 0!
 			0, 1, 3,   // first triangle

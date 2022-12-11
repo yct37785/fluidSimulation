@@ -8,6 +8,8 @@ class FluidScene
 	// fluid
 	int xCellsCount, yCellsCount;
 	FluidGrid* fluidGrid;
+	// state
+	bool unfreezeFluid;
 	// rendering/update
 	glm::mat4 viewMat, projMat;
 	float cursorPosX, cursorPosY = 0.f;

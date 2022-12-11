@@ -118,7 +118,9 @@ void Engine::processInput(GLFWwindow* window)
 	}
 
 	// set input
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+		inputList[INPUT_UNFREEZE_FLUID] = true;
+	} if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		inputList[INPUT_FWD] = true;
 	} if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		inputList[INPUT_BWD] = true;

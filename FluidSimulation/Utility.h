@@ -51,6 +51,7 @@ void generateTexture(string src, unsigned int& texture);
 
 // enum
 enum INPUT_TYPES {
+	INPUT_UNFREEZE_FLUID,
 	INPUT_FWD,
 	INPUT_BWD,
 	INPUT_LEFT,

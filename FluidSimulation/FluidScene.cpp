@@ -13,6 +13,7 @@ FluidScene::~FluidScene()
 
 void FluidScene::Init()
 {
+	unfreezeFluid = false;
 	xCellsCount = 15;
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
 	yCellsCount = (int)accurateYSpaceHeight + 1;
@@ -25,7 +26,10 @@ void FluidScene::Init()
 
 void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
-	fluidGrid->Update(deltaTime);
+	if (inputList[INPUT_UNFREEZE_FLUID])
+		unfreezeFluid = true;
+	if (unfreezeFluid)
+		fluidGrid->Update(deltaTime);
 }
 
 void FluidScene::Draw()
