@@ -18,9 +18,9 @@ bool PressureSolve2::isValidCell(int x, int y)
 	return x >= 0 && x < xCellsCount && y >= 0 && y < yCellsCount;
 }
 
-bool PressureSolve2::addNeighborNonSolidCell(int idx, int x, int y, float v)
+bool PressureSolve2::addNeighborLiquidCell(int idx, int x, int y, float v, bool** liquidCells)
 {
-	if (isValidCell(x, y))
+	if (isValidCell(x, y) && liquidCells[y][x])
 	{
 		a[idx].push_back(y * xCellsCount + x);
 		a[idx].push_back(v);
@@ -93,14 +93,15 @@ void PressureSolve2::update(VelocityField2& uField, bool** liquidCells, float t)
 			float div = getDerivative(uField, 'x', x + 1, y, x, y) + getDerivative(uField, 'y', x, y + 1, x, y);
 			// store divergence to D
 			a[idx].clear();
-			d[idx] = (div * ((den * H) / t)) - (float)airNeighbors * Patm;
+			// DO NOT ADD ATMOSPHERIC PRESSURE
+			d[idx] = (div * ((den * H) / t));
 			// add coefficients
 			// why when using 1.f for coefficient Jacobi Method won't converge
 			// https://stackoverflow.com/questions/24730993/jacobi-iteration-doesnt-end
-			addNeighborNonSolidCell(idx, x - 1, y, 1.f);
-			addNeighborNonSolidCell(idx, x + 1, y, 1.f);
-			addNeighborNonSolidCell(idx, x, y - 1, 1.f);
-			addNeighborNonSolidCell(idx, x, y + 1, 1.f);
+			addNeighborLiquidCell(idx, x - 1, y, 1.f, liquidCells);
+			addNeighborLiquidCell(idx, x + 1, y, 1.f, liquidCells);
+			addNeighborLiquidCell(idx, x, y - 1, 1.f, liquidCells);
+			addNeighborLiquidCell(idx, x, y + 1, 1.f, liquidCells);
 			a[idx].push_back(idx);
 			a[idx].push_back(-(liquidNeighbors + airNeighbors));
 		}

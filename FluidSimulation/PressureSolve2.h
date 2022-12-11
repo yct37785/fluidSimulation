@@ -10,7 +10,7 @@ class PressureSolve2
 	int xCellsCount, yCellsCount;
 
 	bool isValidCell(int x, int y);
-	bool addNeighborNonSolidCell(int idx, int x, int y, float v);
+	bool addNeighborLiquidCell(int idx, int x, int y, float v, bool** liquidCells);
 	void countSurroundingCellTypes(int x, int y, bool** liquidCells, int& air, int& liquid);
 	float getDerivative(VelocityField2& uField, char comp, int x2, int y2, int x1, int y1);
 
