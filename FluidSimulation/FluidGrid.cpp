@@ -14,9 +14,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	ps2 = new PressureSolve2(xCellsCount, yCellsCount);
 
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.8f; y += 0.4f * H)
+	for (float y = 0.f + (float)yCellsCount * H * 0.5f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.4f * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.25f * H)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
@@ -77,7 +77,7 @@ void FluidGrid::Update(float deltaTime)
 		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
 		{
 			liquidCells[ypos][xpos] = true;
-			gridMesh->colorCell(xpos, ypos, 0.f, 255.f, 153.f);
+			gridMesh->colorCell(xpos, ypos, 255.f, 255.f, 230.f);
 		}
 		// exceed alert
 		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
@@ -102,7 +102,7 @@ void FluidGrid::Update(float deltaTime)
 
 void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	uField2->draw(mvMat, mvpHandle, triangleMesh);
+	//uField2->draw(mvMat, mvpHandle, triangleMesh);
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(markers[i].x, markers[i].y, 0.f));

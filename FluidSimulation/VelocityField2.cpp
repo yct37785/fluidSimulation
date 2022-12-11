@@ -181,8 +181,8 @@ void VelocityField2::advectSelf(float t)
 
 void VelocityField2::applyExternalForces(float t, bool** liquidCells)
 {
-	float maxGravityAcc = 9.81f * 0.5f;
-	float gravScale = 1.f;
+	float maxGravityAcc = 9.81f;
+	float gravScale = 0.5f;
 	map<int, bool> updatedVels;
 	// only updated for vels bordering fluid (both x and y)
 	for (int y = 0; y < yCellsCount; ++y)
@@ -195,11 +195,14 @@ void VelocityField2::applyExternalForces(float t, bool** liquidCells)
 				if (!updatedVels.count(y * xCellsCount + x))
 				{
 					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 9.81f * gravScale * t);
+					// if no acc. then will have no splashes
+					//y_curr[y][x] = -maxGravityAcc;
 					updatedVels.insert(pair<int, bool>(y * xCellsCount + x, true));
 				}
 				if (!updatedVels.count((y + 1) * xCellsCount + x))
 				{
 					y_curr[y + 1][x] = max(-maxGravityAcc, y_curr[y + 1][x] - 9.81f * gravScale * t);
+					//y_curr[y + 1][x] = -maxGravityAcc;
 					updatedVels.insert(pair<int, bool>((y + 1) * xCellsCount + x, true));
 				}
 				/*y_curr[y][x - 1] = max(-9.81f, y_curr[y + 1][x] - 0.981f * t);

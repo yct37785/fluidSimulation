@@ -45,10 +45,18 @@ int GridMesh::buildVertex(vector<float>& vertices, int coordsCounter, int x, int
 	// x, y, r, g, b
 	vertices[coordsCounter + 0] = (float)x * H;
 	vertices[coordsCounter + 1] = (float)y * H;
-	vertices[coordsCounter + 2] = 0.f;
-	//vertices[coordsCounter + 3] = cellCounter % 2 ? 1.f : 0.f;
-	vertices[coordsCounter + 3] = 0.f;
-	vertices[coordsCounter + 4] = 0.f;
+	if (cellCounter % 2)
+	{
+		vertices[coordsCounter + 2] = 51.f / 255.f;
+		vertices[coordsCounter + 3] = 153.f / 255.f;
+		vertices[coordsCounter + 4] = 51.f / 255.f;
+	}
+	else
+	{
+		vertices[coordsCounter + 2] = 0.f;
+		vertices[coordsCounter + 3] = 0.f;
+		vertices[coordsCounter + 4] = 0.f;
+	}
 	return coordsCounter + Mesh::COORDS_PER_VERTEX;
 }
 

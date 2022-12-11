@@ -23,7 +23,7 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
 
     // Iterate until the error is less than the given tolerance
     // 30 seems to be the sweet spot
-    while (k < 100)
+    while (1)
     {
         // Store the previous solution in y[]
         for (int i = 0; i < n; i++)
