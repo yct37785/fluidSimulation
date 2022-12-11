@@ -14,9 +14,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	ps2 = new PressureSolve2(xCellsCount, yCellsCount);
 
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.8f; y += 0.25f * H)
+	for (float y = 0.f + (float)yCellsCount * H * 0.6f; y < (float)yCellsCount * H * 0.8f; y += 0.4f * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.25f * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.4f * H)
 		{
 			markers.push_back(glm::vec2(x, y));
 		}
