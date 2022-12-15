@@ -1,6 +1,6 @@
-#include "PressureSolve2.h"
+#include "PressureSolve.h"
 
-PressureSolve2::PressureSolve2(int xCellsCount, int yCellsCount)
+PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
 {
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
@@ -9,16 +9,16 @@ PressureSolve2::PressureSolve2(int xCellsCount, int yCellsCount)
 	a.resize(xCellsCount * yCellsCount);
 }
 
-PressureSolve2::~PressureSolve2()
+PressureSolve::~PressureSolve()
 {
 }
 
-bool PressureSolve2::isValidCell(int x, int y)
+bool PressureSolve::isValidCell(int x, int y)
 {
 	return x >= 0 && x < xCellsCount && y >= 0 && y < yCellsCount;
 }
 
-bool PressureSolve2::addNeighborLiquidCell(int idx, int x, int y, float v, bool** liquidCells)
+bool PressureSolve::addNeighborLiquidCell(int idx, int x, int y, float v, bool** liquidCells)
 {
 	if (isValidCell(x, y) && liquidCells[y][x])
 	{
@@ -29,7 +29,7 @@ bool PressureSolve2::addNeighborLiquidCell(int idx, int x, int y, float v, bool*
 	return false;
 }
 
-void PressureSolve2::countSurroundingCellTypes(int x, int y, bool** liquidCells, int& air, int& liquid)
+void PressureSolve::countSurroundingCellTypes(int x, int y, bool** liquidCells, int& air, int& liquid)
 {
 	air = liquid = 0;
 	// top
@@ -66,7 +66,7 @@ void PressureSolve2::countSurroundingCellTypes(int x, int y, bool** liquidCells,
 	}
 }
 
-float PressureSolve2::getDerivative(VelocityField2& uField, char comp, int x2, int y2, int x1, int y1)
+float PressureSolve::getDerivative(VelocityField& uField, char comp, int x2, int y2, int x1, int y1)
 {
 	float v2 = 0.f, v1 = 0.f;
 	v2 = uField.getCompByIdx(x2, y2, comp);
@@ -74,7 +74,7 @@ float PressureSolve2::getDerivative(VelocityField2& uField, char comp, int x2, i
 	return (v2 - v1) / H;
 }
 
-void PressureSolve2::update(VelocityField2& uField, bool** liquidCells, float t)
+void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 {
 	std::fill(d.begin(), d.end(), 0);
 	std::fill(p.begin(), p.end(), 0);

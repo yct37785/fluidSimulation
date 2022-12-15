@@ -1,8 +1,8 @@
 #pragma once
-#include "VelocityField2.h"
+#include "VelocityField.h"
 #include "JacobiMethod.h";
 
-class PressureSolve2
+class PressureSolve
 {
 	vec d;
 	vec p;
@@ -12,11 +12,11 @@ class PressureSolve2
 	bool isValidCell(int x, int y);
 	bool addNeighborLiquidCell(int idx, int x, int y, float v, bool** liquidCells);
 	void countSurroundingCellTypes(int x, int y, bool** liquidCells, int& air, int& liquid);
-	float getDerivative(VelocityField2& uField, char comp, int x2, int y2, int x1, int y1);
+	float getDerivative(VelocityField& uField, char comp, int x2, int y2, int x1, int y1);
 
 public:
-	PressureSolve2(int xCellsCount, int yCellsCount);
-	~PressureSolve2();
+	PressureSolve(int xCellsCount, int yCellsCount);
+	~PressureSolve();
 
-	void update(VelocityField2& uField, bool** liquidCells, float t);
+	void update(VelocityField& uField, bool** liquidCells, float t);
 };

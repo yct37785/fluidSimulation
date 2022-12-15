@@ -1,6 +1,6 @@
-#include "VelocityField2.h"
+#include "VelocityField.h"
 
-VelocityField2::VelocityField2(int xCellsCount, int yCellsCount)
+VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 {
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
@@ -32,7 +32,7 @@ VelocityField2::VelocityField2(int xCellsCount, int yCellsCount)
 	yMarker = MeshBuilder::CreateMesh("yellow_marker");
 }
 
-VelocityField2::~VelocityField2()
+VelocityField::~VelocityField()
 {
 	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
@@ -52,19 +52,19 @@ VelocityField2::~VelocityField2()
 	delete yMarker;
 }
 
-bool VelocityField2::outOfRange(int x, int y, int maxx, int maxy)
+bool VelocityField::outOfRange(int x, int y, int maxx, int maxy)
 {
 	return x < 0 || x >= maxx || y < 0 || y >= maxy;
 }
 
-void VelocityField2::getIndicesCoords(float pos, int& minv, int& maxv)
+void VelocityField::getIndicesCoords(float pos, int& minv, int& maxv)
 {
 	// eg. 0.2 -> idx(-1, 0)
 	minv = (int)floor(pos);
 	maxv = (int)ceil(pos);
 }
 
-float VelocityField2::bilinearInterpolate(float x1, float x2, float y1, float y2,
+float VelocityField::bilinearInterpolate(float x1, float x2, float y1, float y2,
 	glm::vec2& pos, float q11, float q21, float q12, float q22)
 {
 	float hx = x2 - x1;
@@ -78,7 +78,7 @@ float VelocityField2::bilinearInterpolate(float x1, float x2, float y1, float y2
 	return r1 * y_1 + r2 * y_2;
 }
 
-float VelocityField2::getVelCompAtPos(glm::vec2& pos, char comp)
+float VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
 {
 	glm::vec2 normPos = pos / H;
 	// get indexes
@@ -110,14 +110,14 @@ float VelocityField2::getVelCompAtPos(glm::vec2& pos, char comp)
 	return bilinearInterpolate(x1, x2, y1, y2, normPos, q11, q21, q12, q22);
 }
 
-glm::vec2 VelocityField2::getVelAtPos(glm::vec2& pos)
+glm::vec2 VelocityField::getVelAtPos(glm::vec2& pos)
 {
 	float xComp = getVelCompAtPos(pos, 'x');
 	float yComp = getVelCompAtPos(pos, 'y');
 	return glm::vec2(xComp, yComp);
 }
 
-float VelocityField2::getCompByIdx(int x, int y, char comp)
+float VelocityField::getCompByIdx(int x, int y, char comp)
 {
 	if (comp == 'x')
 		return x_prev[y][x];
@@ -125,7 +125,7 @@ float VelocityField2::getCompByIdx(int x, int y, char comp)
 		return y_prev[y][x];
 }
 
-void VelocityField2::addToCompByIdx(int x, int y, char comp, float v)
+void VelocityField::addToCompByIdx(int x, int y, char comp, float v)
 {
 	if (comp == 'x')
 		x_curr[y][x] += v;
@@ -133,12 +133,12 @@ void VelocityField2::addToCompByIdx(int x, int y, char comp, float v)
 		y_curr[y][x] += v;
 }
 
-bool VelocityField2::isLiquidCell(int x, int y, bool** liquidCells)
+bool VelocityField::isLiquidCell(int x, int y, bool** liquidCells)
 {
 	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells[y][x];
 }
 
-void VelocityField2::advectSelf(float t)
+void VelocityField::advectSelf(float t)
 {
 	// get vel at pos(x',y'), trace backwards, get vel at that pos, then apply to (x',y')
 	for (int y = 0; y < yCellsCount + 1; ++y)
@@ -179,7 +179,7 @@ void VelocityField2::advectSelf(float t)
 	}
 }
 
-void VelocityField2::applyExternalForces(float t, bool** liquidCells)
+void VelocityField::applyExternalForces(float t, bool** liquidCells)
 {
 	float maxGravityAcc = 9.81f;
 	float gravScale = 0.5f;
@@ -217,7 +217,7 @@ void VelocityField2::applyExternalForces(float t, bool** liquidCells)
 		y_curr[0][x] = max(0.f, y_curr[0][x]);*/
 }
 
-void VelocityField2::postUpdate()
+void VelocityField::postUpdate()
 {
 	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
@@ -233,7 +233,7 @@ void VelocityField2::postUpdate()
 	}
 }
 
-void VelocityField2::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
+void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 {
 	for (int y = 0; y < yCellsCount; ++y)
 	{
@@ -283,7 +283,7 @@ void VelocityField2::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	//}
 }
 
-glm::vec2 VelocityField2::getMaxU()
+glm::vec2 VelocityField::getMaxU()
 {
 	float max_x = 0.f, max_y = 0.f;
 	for (int y = 0; y < yCellsCount; ++y)

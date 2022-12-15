@@ -9,9 +9,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
 
-	uField2 = new VelocityField2(xCellsCount, yCellsCount);
+	uField2 = new VelocityField(xCellsCount, yCellsCount);
 	// uField->runUT();
-	ps2 = new PressureSolve2(xCellsCount, yCellsCount);
+	ps2 = new PressureSolve(xCellsCount, yCellsCount);
 
 	// [Bridson 2007] 2 x 2 particles per grid cell
 	for (float y = 0.f + (float)yCellsCount * H * 0.5f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)

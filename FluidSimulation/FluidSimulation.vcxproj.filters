@@ -69,10 +69,10 @@
     <ClCompile Include="JacobiMethod.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
-    <ClCompile Include="PressureSolve2.cpp">
+    <ClCompile Include="PressureSolve.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
-    <ClCompile Include="VelocityField2.cpp">
+    <ClCompile Include="VelocityField.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,10 +104,10 @@
     <ClInclude Include="JacobiMethod.h">
       <Filter>Fluid</Filter>
     </ClInclude>
-    <ClInclude Include="PressureSolve2.h">
+    <ClInclude Include="PressureSolve.h">
       <Filter>Fluid</Filter>
     </ClInclude>
-    <ClInclude Include="VelocityField2.h">
+    <ClInclude Include="VelocityField.h">
       <Filter>Fluid</Filter>
     </ClInclude>
   </ItemGroup>
