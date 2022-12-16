@@ -1,4 +1,6 @@
 #include "PressureSolve.h"
+const float DEN_WATER = 1.f;	// water density = 1000 kg/m^3, but in simulation always set to 1
+const float DEN_AIR = 1.f;	// air density = 1 kg/m^3
 
 PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
 {
