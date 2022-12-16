@@ -12,6 +12,8 @@ int main()
     Engine::instance()->Exit();
 
     // display memory leak report
+    // note that mem leaks may be detected for static resources still unreleased by the CRT
+    // https://stackoverflow.com/questions/898273/memory-leak-sort-of-with-a-static-stdvector
     _CrtDumpMemoryLeaks();
     return 0;
 
