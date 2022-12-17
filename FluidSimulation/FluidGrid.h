@@ -11,8 +11,8 @@ class FluidGrid
 	int xCellsCount, yCellsCount;
 
 	// quantities
-	VelocityField* uField2;
-	PressureSolve* ps2;
+	VelocityField* uField;
+	PressureSolve* ps;
 
 	// marker
 	vector<glm::vec2> markers;

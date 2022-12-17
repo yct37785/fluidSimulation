@@ -10,9 +10,9 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
 
-	uField2 = new VelocityField(xCellsCount, yCellsCount);
+	uField = new VelocityField(xCellsCount, yCellsCount);
 	// uField->runUT();
-	ps2 = new PressureSolve(xCellsCount, yCellsCount);
+	ps = new PressureSolve(xCellsCount, yCellsCount);
 
 	liquidCells = new bool* [yCellsCount];
 	for (int y = 0; y < yCellsCount; ++y)
@@ -31,8 +31,8 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 
 FluidGrid::~FluidGrid()
 {
-	delete uField2;
-	delete ps2;
+	delete uField;
+	delete ps;
 	delete gridMesh;
 	delete triangleMesh;
 	delete markerMesh;
@@ -54,7 +54,7 @@ void FluidGrid::loadFluid()
 float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
-	glm::vec2 maxU = uField2->getMaxU();
+	glm::vec2 maxU = uField->getMaxU();
 	float u_max = sqrt(abs(H * G));
 	float dist = glm::length(maxU);
 	if (!isinf(dist))
@@ -67,10 +67,10 @@ void FluidGrid::spawnFluid(float deltaTime)
 	// always set vel at fluid source
 	float xVel = -10.f;
 	float yVel = 1.f;
-	uField2->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'x', xVel);
-	uField2->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'x', xVel);
-	uField2->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'y', yVel);
-	uField2->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'y', yVel);
+	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'x', xVel);
+	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'x', xVel);
+	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'y', yVel);
+	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'y', yVel);
 	// spawn the fluid at intervals
 	spawnFluidTimer += (double)deltaTime;
 	if (spawnFluidTimer > 0.1 && markers.size() < 500)
@@ -108,16 +108,16 @@ void FluidGrid::Update(float deltaTime)
 		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
 	}
 	// advect + external forces
-	uField2->advectSelf(t);
-	uField2->applyExternalForces(t, liquidCells);
-	uField2->postUpdate();	// must be called before marker update to update prev -> curr
+	uField->advectSelf(t);
+	uField->applyExternalForces(t, liquidCells);
+	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
-	ps2->update(*uField2, liquidCells, t);
-	uField2->postUpdate();	// must be called before marker update to update prev -> curr
+	ps->update(*uField, liquidCells, t);
+	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// move particles through velocity field
 	for (int i = 0; i < markers.size(); ++i)
 	{
-		glm::vec2 vel = uField2->getVelAtPos(markers[i]);
+		glm::vec2 vel = uField->getVelAtPos(markers[i]);
 		markers[i] += vel * t;
 	}
 	// rendering
