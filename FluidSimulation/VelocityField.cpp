@@ -133,6 +133,14 @@ void VelocityField::addToCompByIdx(int x, int y, char comp, float v)
 		y_curr[y][x] += v;
 }
 
+void VelocityField::setCompByIdx(int x, int y, char comp, float v)
+{
+	if (comp == 'x')
+		x_curr[y][x] = v;
+	else
+		y_curr[y][x] = v;
+}
+
 bool VelocityField::isLiquidCell(int x, int y, bool** liquidCells)
 {
 	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells[y][x];

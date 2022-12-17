@@ -7,6 +7,7 @@ class FluidGrid
 	GridMesh* gridMesh;
 	Mesh* triangleMesh;
 	Mesh* markerMesh;
+	Mesh* fluidSourceMesh;
 	int xCellsCount, yCellsCount;
 
 	// quantities
@@ -17,11 +18,16 @@ class FluidGrid
 	vector<glm::vec2> markers;
 	bool** liquidCells;
 
-	//utils
-	glm::vec2 getVelocityBilinear(float x, float y);
+	// fluid source
+	double spawnFluidTimer;
+	glm::vec2 fluidSource;
+
+	// init
+	void loadFluid();
 
 	// updates
 	float getTimeStep();
+	void spawnFluid(float deltaTime);
 
 public:
 	FluidGrid(int xCellsCount, int yCellsCount);

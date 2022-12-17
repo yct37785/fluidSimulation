@@ -33,6 +33,7 @@ public:
 	glm::vec2 getVelAtPos(glm::vec2& pos);
 	float getCompByIdx(int x, int y, char comp);
 	void addToCompByIdx(int x, int y, char comp, float v);
+	void setCompByIdx(int x, int y, char comp, float v);
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
 

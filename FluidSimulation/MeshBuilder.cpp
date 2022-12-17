@@ -82,6 +82,24 @@ Mesh* MeshBuilder::CreateMesh(string type)
 		};
 		return new Mesh(vertices, indices, GL_STATIC_DRAW);
 	}
+	else if (type == "orange_marker")
+	{
+		vector<float> vertices{
+		0.1f * H,  0.1f * H,  // top right
+		255.f / 255.f, 128.f / 255.f, 0.f / 255.f,
+		0.1f * H, -0.1f * H,  // bottom right
+		255.f / 255.f, 128.f / 255.f, 0.f / 255.f,
+		-0.1f * H, -0.1f * H,  // bottom left
+		255.f / 255.f, 128.f / 255.f, 0.f / 255.f,
+		-0.1f * H,  0.1f * H,   // top left
+		255.f / 255.f, 128.f / 255.f, 0.f / 255.f,
+		};
+		vector<int> indices{  // note that we start from 0!
+			0, 1, 3,   // first triangle
+			1, 2, 3    // second triangle
+		};
+		return new Mesh(vertices, indices, GL_STATIC_DRAW);
+	}
 	else if (type == "triangle")
 	{
 		vector<float> vertices{
