@@ -35,8 +35,8 @@ void FluidGrid::loadFluid()
 {
 	// [Bridson 2007] 2 x 2 particles per grid cell
 	float space = 0.4f;
-	for (float y = 0.f + (float)yCellsCount * H * 0.5f; y < (float)yCellsCount * H * 0.9f; y += space * H)
-		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += space * H)
+	for (float y = 0.f + (float)yCellsCount * H * 0.7f; y < (float)yCellsCount * H * 0.9f; y += space * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.4f; x < (float)xCellsCount * H * 0.6f; x += space * H)
 			markers.push_back(glm::vec2(x, y));
 	cout << "Total markers: " << markers.size() << endl;
 }
@@ -96,6 +96,17 @@ void FluidGrid::Update(float deltaTime)
 			count++;
 			gridMesh->colorCell(xpos, ypos, 255.f, 255.f, 230.f);
 		}
+		//// also put neighbouring cells
+		//int x1 = xpos - 1, x2 = xpos + 1;
+		//int y1 = ypos - 1, y2 = ypos + 1;
+		//if (x1 >= 0 && x1 < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells.count(ypos * xCellsCount + x1))
+		//	liquidCells[ypos * xCellsCount + x1] = count++;
+		//if (x2 >= 0 && x2 < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells.count(ypos * xCellsCount + x2))
+		//	liquidCells[ypos * xCellsCount + x2] = count++;
+		//if (y1 >= 0 && y1 < xCellsCount && xpos >= 0 && xpos < xCellsCount && !liquidCells.count(y1 * xCellsCount + xpos))
+		//	liquidCells[y1 * xCellsCount + xpos] = count++;
+		//if (y2 >= 0 && y2 < xCellsCount && xpos >= 0 && xpos < xCellsCount && !liquidCells.count(y2 * xCellsCount + xpos))
+		//	liquidCells[y2 * xCellsCount + xpos] = count++;
 	}
 	// advect + external forces
 	uField->advectSelf(t);

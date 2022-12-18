@@ -121,9 +121,19 @@ glm::vec2 VelocityField::getVelAtPos(glm::vec2& pos)
 float VelocityField::getCompByIdx(int x, int y, char comp)
 {
 	if (comp == 'x')
-		return x_prev[y][x];
+	{
+		if (x >= 0 && x < xCellsCount + 1 && y >= 0 && y < yCellsCount)
+			return x_prev[y][x];
+		else
+			return -1.f;
+	}
 	else
-		return y_prev[y][x];
+	{
+		if (y >= 0 && y < yCellsCount + 1 && x >= 0 && x < xCellsCount)
+			return y_prev[y][x];
+		else
+			return -1.f;
+	}
 }
 
 void VelocityField::addToCompByIdx(int x, int y, char comp, float v)
