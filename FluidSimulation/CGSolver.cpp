@@ -82,7 +82,7 @@ void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func precondi
         rdotr = rnewdotrnew;
         iterCount++;
     }
-    if ((int)conv > 0)
+    if (iterCount > maxIter)
         cout << "Iter count: " << iterCount << ", conv: " << (int)conv << endl;
 }
 

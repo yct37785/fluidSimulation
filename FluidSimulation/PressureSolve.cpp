@@ -9,7 +9,6 @@ PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
 	d.reserve(xCellsCount * yCellsCount);
 	p.reserve(xCellsCount * yCellsCount);
 	a.reserve(xCellsCount * yCellsCount);
-	CGSolver::init(xCellsCount * yCellsCount);
 }
 
 PressureSolve::~PressureSolve()
@@ -113,7 +112,7 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 		// find divergence for center of cell
 		float div = getDerivative(uField, 'x', x + 1, y, x, y) + getDerivative(uField, 'y', x, y + 1, x, y);
 		// store divergence to D
-		d[map_idx] = (div * ((DEN_WATER * H) / t));
+		d[map_idx] = (div * ((DEN_WATER * H) / t)) - (float)airNeighbors;
 		// add coefficients
 		a[map_idx].clear();
 		addNeighborLiquidCell(map_idx, x - 1, y, liquidCells);
@@ -123,63 +122,11 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 		a[map_idx].push_back(map_idx);
 		a[map_idx].push_back(-(liquidNeighbors + airNeighbors));
 	}
-	//// for each grid cell, pressure term P is situated in the center
-	//for (int y = 0; y < yCellsCount; ++y)
-	//{
-	//	for (int x = 0; x < xCellsCount; ++x)
-	//	{
-	//		if (!liquidCells[y][x])
-	//			continue;
-	//		// some values
-	//		float Patm = 1.f;
-	//		int idx = y * xCellsCount + x;
-	//		int solidNeighbors = 0, liquidNeighbors = 0, airNeighbors = 0;
-	//		countSurroundingCellTypes(x, y, liquidCells, airNeighbors, liquidNeighbors);
-	//		// find divergence for center of cell
-	//		float div = getDerivative(uField, 'x', x + 1, y, x, y) + getDerivative(uField, 'y', x, y + 1, x, y);
-	//		// store divergence to D
-	//		a[idx].clear();
-	//		// DO NOT ADD ATMOSPHERIC PRESSURE
-	//		d[idx] = (div * ((DEN_WATER * H) / t));
-	//		// add coefficients
-	//		// why when using 1.f for coefficient Jacobi Method won't converge
-	//		// https://stackoverflow.com/questions/24730993/jacobi-iteration-doesnt-end
-	//		addNeighborLiquidCell(idx, x - 1, y, 1.f, liquidCells);
-	//		addNeighborLiquidCell(idx, x + 1, y, 1.f, liquidCells);
-	//		addNeighborLiquidCell(idx, x, y - 1, 1.f, liquidCells);
-	//		addNeighborLiquidCell(idx, x, y + 1, 1.f, liquidCells);
-	//		a[idx].push_back(idx);
-	//		a[idx].push_back(-(liquidNeighbors + airNeighbors));
-	//	}
-	//}
 	// solve P for AP = D
 	JacobiMethod::solve(a, d, p);
-	// CGSolver::solve(a, d, p);
+	/*CGSolver::init(liquidCells.size());
+	CGSolver::solve(a, d, p);*/
 	// update vel (boundary vels don't update)
-	//for (int y = 0; y < yCellsCount; ++y)
-	//{
-	//	for (int x = 0; x < xCellsCount; ++x)
-	//	{
-	//		if (!liquidCells[y][x])
-	//			continue;
-	//		// x
-	//		if (x > 0)
-	//		{
-	//			float nextP = p[y * xCellsCount + x];
-	//			float prevP = p[y * xCellsCount + x - 1];
-	//			float xp = (nextP - prevP) / H;
-	//			uField.addToCompByIdx(x, y, 'x', -((t / (DEN_WATER * H)) * xp));
-	//		}
-	//		// y
-	//		if (y > 0)
-	//		{
-	//			float nextP = p[y * xCellsCount + x];
-	//			float prevP = p[(y - 1) * xCellsCount + x];
-	//			float yp = (nextP - prevP) / H;
-	//			uField.addToCompByIdx(x, y, 'y', -((t / (DEN_WATER * H)) * yp));
-	//		}
-	//	}
-	//}
 	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
 		for (int x = 0; x < xCellsCount + 1; ++x)
@@ -187,7 +134,7 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 			// x
 			if (x > 0 && y < yCellsCount)
 			{
-				//if (isLiquidCell(x, y, liquidCells) || isLiquidCell(x - 1, y, liquidCells))
+				if (isLiquidCell(x, y, liquidCells) || isLiquidCell(x - 1, y, liquidCells))
 				{
 					float nextP = getLiquidCellPressure(x, y, liquidCells);
 					float prevP = getLiquidCellPressure(x - 1, y, liquidCells);
@@ -198,7 +145,7 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 			// y
 			if (y > 0 && x < xCellsCount)
 			{
-				//if (isLiquidCell(x, y, liquidCells) || isLiquidCell(x, y - 1, liquidCells))
+				if (isLiquidCell(x, y, liquidCells) || isLiquidCell(x, y - 1, liquidCells))
 				{
 					float nextP = getLiquidCellPressure(x, y, liquidCells);
 					float prevP = getLiquidCellPressure(x, y - 1, liquidCells);
@@ -206,6 +153,11 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 					uField.addToCompByIdx(x, y, 'y', -((t / (DEN_WATER * H)) * yp));
 				}
 			}
+			// no slip: pressure only applied to vel comps that border fluid cells
+			if ((x == 0 || x == xCellsCount) && y < yCellsCount)
+				uField.setCompByIdx(x, y, 'x', 0.f);
+			if ((y == 0 || y == yCellsCount) && x < xCellsCount)
+				uField.setCompByIdx(x, y, 'y', 0.f);
 		}
 	}
 }

@@ -70,7 +70,7 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
 
         k++;
     }
-    if ((int)conv > 0)
+    if (k > maxIter)
         cout << "Iter count: " << k << ", conv: " << (int)conv << endl;
 }
 
