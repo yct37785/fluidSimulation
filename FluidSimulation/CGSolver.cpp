@@ -1,4 +1,8 @@
 #include "CGSolver.h"
+int CGSolver::Asize = 0;
+vec CGSolver::r;
+vec CGSolver::p;
+vec CGSolver::Ap;
 
 double CGSolver::dot(const vec& x, const vec& y)
 {
@@ -19,28 +23,34 @@ void CGSolver::mul(vec& output, const matrix& m, const vec& a)
 }
 
 // Function to compute the residual r = b - Ax
-vec CGSolver::residual(const matrix& A, const vec& x, const vec& b)
+void CGSolver::residual(vec& r, const matrix& A, const vec& x, const vec& b)
 {
     int n = x.size();
-    vector<double> r(n);
     for (int i = 0; i < n; i++)
     {
         r[i] = b[i];
         for (int j = 0; j < A[i].size(); j += 2)
             r[i] -= A[i][j + 1] * x[A[i][j]];
     }
-    return r;
+}
+
+void CGSolver::init(int Asize)
+{
+    CGSolver::Asize = Asize;
+    r.resize(Asize);
+    p.resize(Asize);
+    Ap.resize(Asize);
 }
 
 // Function to solve the linear system Ax = b using the Conjugate Gradient method
-vec CGSolver::conjugateGradient(const matrix& A, const vec& b, precon_func preconditioner)
+void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func preconditioner)
 {
     double tol = 1e-6;
-    int maxIter = 100;
+    int maxIter = 200;
     int n = b.size();
-    vec x(n, 0.0); // Initialize solution to 0
-    vec r = residual(A, x, b);  // r = b - Ax (x is 0 so we set r = b)
-    vec p = b; // Initialize search direction to b
+    std::fill(x.begin(), x.end(), 0); // Initialize solution to 0
+    residual(r, A, x, b);  // r = b - Ax
+    p = b; // Initialize search direction to b
     // preconditional
     //if (preconditioner)
     //{
@@ -48,13 +58,17 @@ vec CGSolver::conjugateGradient(const matrix& A, const vec& b, precon_func preco
     //    mul(p, M, r);  // Initialize search direction to M^(-1) * r
     //}
     double rdotr = dot(r, r);
-    vec Ap(n, 0.0);
     int iterCount = 0;
+    double maxErr = 0.0;
     while (iterCount < maxIter)
     {
         // check convergence
-        if (sqrt(rdotr) < tol)
+        double conv = sqrt(rdotr);
+        if (conv < tol)
+        {
+            maxErr = conv;
             break;
+        }
         // Compute Ap
         mul(Ap, A, p);
         double alpha = rdotr / dot(p, Ap);
@@ -71,8 +85,7 @@ vec CGSolver::conjugateGradient(const matrix& A, const vec& b, precon_func preco
         rdotr = rnewdotrnew;
         iterCount++;
     }
-    cout << "Iter count: " << iterCount << endl;
-    return x;
+    cout << "Iter count: " << iterCount << ", maxErr: " << maxErr << endl;
 }
 
 matrix incomplete_cholesky_preconditioner(const matrix& A) {
@@ -113,7 +126,9 @@ void CGSolver::UT_CG()
     for (int i = 0; i < x_ans.size(); i++)
         cout << x_ans[i] << (i == x_ans.size() - 1 ? "]" : ", ");
     cout << endl;
-    vec x = conjugateGradient(A, b, incomplete_cholesky_preconditioner);
+    vec x = { 0.0, 0.0, 0.0 };
+    init(A.size());
+    solve(A, b, x, incomplete_cholesky_preconditioner);
 
     cout << "Solution: [";
     for (int i = 0; i < x.size(); i++)

@@ -19,7 +19,7 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
         y.resize(n);
     std::fill(y.begin(), y.end(), 0);
     double sum;
-    int k = 1;
+    int k = 0;
 
     // Iterate until the error is less than the given tolerance
     // 30 seems to be the sweet spot
@@ -66,6 +66,7 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
 
         k++;
     }
+    cout << "Iter count: " << k << endl;
 }
 
 void JacobiMethod::UT_JacobiMethod()

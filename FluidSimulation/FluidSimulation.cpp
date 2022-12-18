@@ -7,10 +7,9 @@
 
 int main()
 {
-    CGSolver::UT_CG();
-    /*Engine::instance() ->Init();
+    Engine::instance() ->Init();
     Engine::instance()->Run();
-    Engine::instance()->Exit();*/
+    Engine::instance()->Exit();
 
     // display memory leak report
     // note that mem leaks may be detected for static resources still unreleased by the CRT
