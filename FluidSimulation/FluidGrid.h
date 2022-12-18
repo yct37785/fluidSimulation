@@ -16,7 +16,7 @@ class FluidGrid
 
 	// marker
 	vector<glm::vec2> markers;
-	bool** liquidCells;
+	unordered_map<int, int> liquidCells;
 
 	// fluid source
 	double spawnFluidTimer;

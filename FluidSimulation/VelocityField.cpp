@@ -142,9 +142,9 @@ void VelocityField::setCompByIdx(int x, int y, char comp, float v)
 		y_curr[y][x] = v;
 }
 
-bool VelocityField::isLiquidCell(int x, int y, bool** liquidCells)
+bool VelocityField::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
 {
-	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells[y][x];
+	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells.count(y * xCellsCount + x);
 }
 
 void VelocityField::advectSelf(float t)
@@ -174,7 +174,7 @@ void VelocityField::advectSelf(float t)
 	}
 }
 
-void VelocityField::applyExternalForces(float t, bool** liquidCells)
+void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquidCells)
 {
 	float maxGravityAcc = 9.81f;
 	float gravScale = 0.5f;
@@ -185,7 +185,7 @@ void VelocityField::applyExternalForces(float t, bool** liquidCells)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			// is fluid
-			if (liquidCells[y][x])
+			if (liquidCells.count(y * xCellsCount + x))
 			{
 				if (!updatedVels.count(y * xCellsCount + x))
 				{

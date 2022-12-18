@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <random>
 #include <map>
+#include <unordered_map>
 #include <cmath>
 #include <numeric>
 // Core C++, OpenGL, texture and any other platform specific libs

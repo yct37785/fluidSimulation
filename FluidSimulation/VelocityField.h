@@ -20,14 +20,14 @@ class VelocityField
 	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
 		glm::vec2& pos, float q11, float q21, float q12, float q22);
 	float getVelCompAtPos(glm::vec2& pos, char comp);
-	bool isLiquidCell(int x, int y, bool** liquidCells);
+	bool isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells);
 
 public:
 	VelocityField(int xCellsCount, int yCellsCount);
 	~VelocityField();
 
 	void advectSelf(float t);
-	void applyExternalForces(float t, bool** liquidCells);
+	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);
 	void postUpdate();
 
 	glm::vec2 getVelAtPos(glm::vec2& pos);

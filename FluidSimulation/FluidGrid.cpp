@@ -14,14 +14,6 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	// uField->runUT();
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
-	liquidCells = new bool* [yCellsCount];
-	for (int y = 0; y < yCellsCount; ++y)
-	{
-		liquidCells[y] = new bool[xCellsCount];
-		for (int x = 0; x < xCellsCount; ++x)
-			liquidCells[y][x] = false;
-	}
-
 	loadFluid();
 
 	// fluidSource = glm::vec2((float)xCellsCount * 0.2f, (float)yCellsCount * 0.7f);
@@ -37,9 +29,6 @@ FluidGrid::~FluidGrid()
 	delete triangleMesh;
 	delete markerMesh;
 	delete fluidSourceMesh;
-	for (int i = 0; i < yCellsCount; ++i)
-		delete[] liquidCells[i];
-	delete[] liquidCells;
 }
 
 void FluidGrid::loadFluid()
@@ -94,20 +83,19 @@ void FluidGrid::Update(float deltaTime)
 	// float t = getTimeStep() * deltaTime * 7.f;
 	float t = deltaTime * 1.f;
 	// fluid cells update
-	for (int y = 0; y < yCellsCount; ++y)
-		for (int x = 0; x < xCellsCount; ++x)
-			liquidCells[y][x] = false;
+	liquidCells.clear();
+	int count = 0;
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		int xpos = (int)floor(markers[i].x / H);
 		int ypos = (int)floor(markers[i].y / H);
-		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells[ypos][xpos])
+		int idx = ypos * xCellsCount + xpos;
+		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells.count(idx))
 		{
-			liquidCells[ypos][xpos] = true;
+			liquidCells[idx] = count;
+			count++;
 			gridMesh->colorCell(xpos, ypos, 255.f, 255.f, 230.f);
 		}
-		// exceed alert
-		// if (xpos < 0 || xpos >= xCellsCount || ypos < 0 || ypos >= yCellsCount)
 	}
 	// advect + external forces
 	uField->advectSelf(t);
