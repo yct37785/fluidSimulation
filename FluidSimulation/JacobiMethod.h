@@ -1,17 +1,5 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cmath>
-#include <vector>
-#include <algorithm>
-#include <numeric>
-using namespace std;
-
-const double NEARZERO = 1.0e-10;       // interpretation of "zero"
-
-using vec = vector<double>;         // vector
-using matrix = vector<vec>;            // matrix (=collection of (row) vectors)
+#include "Utility.h"
 
 class JacobiMethod
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include "VelocityField.h"
-#include "JacobiMethod.h";
+#include "JacobiMethod.h"
+#include "CGSolver.h"
 
 class PressureSolve
 {

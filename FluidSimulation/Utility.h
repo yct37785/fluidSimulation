@@ -15,6 +15,8 @@
 #include <iomanip>
 #include <random>
 #include <map>
+#include <cmath>
+#include <numeric>
 // Core C++, OpenGL, texture and any other platform specific libs
 // memory leak detection
 #define _CRTDBG_MAP_ALLOC
@@ -65,3 +67,8 @@ enum INPUT_TYPES {
 // logging
 void LogInfo(string log);
 void LogWarn(string log);
+
+//
+using vec = vector<double>;	// vector
+using matrix = vector<vec>;	// matrix (=collection of (row) vectors)
+const double NEARZERO = 1.0e-10;

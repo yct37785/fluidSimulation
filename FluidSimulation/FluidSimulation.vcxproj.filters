@@ -31,6 +31,9 @@
     <Filter Include="Fluid">
       <UniqueIdentifier>{1286a649-735c-48b6-91ec-b1015b4fe09e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\Solver">
+      <UniqueIdentifier>{5046f47f-0271-4c67-97f4-553e85833789}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -66,14 +69,17 @@
     <ClCompile Include="FluidGrid.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
-    <ClCompile Include="JacobiMethod.cpp">
-      <Filter>Fluid</Filter>
-    </ClCompile>
     <ClCompile Include="PressureSolve.cpp">
       <Filter>Fluid</Filter>
     </ClCompile>
     <ClCompile Include="VelocityField.cpp">
       <Filter>Fluid</Filter>
+    </ClCompile>
+    <ClCompile Include="CGSolver.cpp">
+      <Filter>Fluid\Solver</Filter>
+    </ClCompile>
+    <ClCompile Include="JacobiMethod.cpp">
+      <Filter>Fluid\Solver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,14 +107,17 @@
     <ClInclude Include="FluidGrid.h">
       <Filter>Fluid</Filter>
     </ClInclude>
-    <ClInclude Include="JacobiMethod.h">
-      <Filter>Fluid</Filter>
-    </ClInclude>
     <ClInclude Include="PressureSolve.h">
       <Filter>Fluid</Filter>
     </ClInclude>
     <ClInclude Include="VelocityField.h">
       <Filter>Fluid</Filter>
+    </ClInclude>
+    <ClInclude Include="CGSolver.h">
+      <Filter>Fluid\Solver</Filter>
+    </ClInclude>
+    <ClInclude Include="JacobiMethod.h">
+      <Filter>Fluid\Solver</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
