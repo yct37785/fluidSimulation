@@ -102,6 +102,7 @@ float VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
 		y_extra++;
 		prev = y_prev;
 	}
+	// no slip: out of bounds vel comps = 0
 	float q11 = outOfRange(x1, y1, xCellsCount + x_extra, yCellsCount + y_extra) ? 0.f : prev[y1][x1];
 	float q21 = outOfRange(x2, y1, xCellsCount + x_extra, yCellsCount + y_extra) ? 0.f : prev[y1][x2];
 	float q12 = outOfRange(x1, y2, xCellsCount + x_extra, yCellsCount + y_extra) ? 0.f : prev[y2][x1];
@@ -160,13 +161,6 @@ void VelocityField::advectSelf(float t)
 				glm::vec2 vel = getVelAtPos(xCompPos);
 				glm::vec2 prevPos = xCompPos - vel * t;
 				x_curr[y][x] = getVelCompAtPos(prevPos, 'x');
-				// no slip
-				if (x == 0 || x == xCellsCount)
-					x_curr[y][x] = 0.f;
-				/*if (x == 0)
-					x_curr[y][x] = max(0.f, x_curr[y][x]);
-				if (x == xCellsCount)
-					x_curr[y][x] = min(0.f, x_curr[y][x]);*/
 			}
 			// y
 			if (x < xCellsCount)
@@ -175,13 +169,6 @@ void VelocityField::advectSelf(float t)
 				glm::vec2 vel = getVelAtPos(yCompPos);
 				glm::vec2 prevPos = yCompPos - vel * t;
 				y_curr[y][x] = getVelCompAtPos(prevPos, 'y');
-				// no slip
-				if (y == 0 || y == yCellsCount)
-					y_curr[y][x] = 0.f;
-				/*if (y == 0)
-					y_curr[y][x] = max(0.f, y_curr[y][x]);
-				if (y == yCellsCount)
-					y_curr[y][x] = min(0.f, y_curr[y][x]);*/
 			}
 		}
 	}
@@ -202,27 +189,21 @@ void VelocityField::applyExternalForces(float t, bool** liquidCells)
 			{
 				if (!updatedVels.count(y * xCellsCount + x))
 				{
-					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 9.81f * gravScale * t);
 					// if no acc. then will have no splashes
-					//y_curr[y][x] = -maxGravityAcc;
+					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 9.81f * gravScale * t);
 					updatedVels.insert(pair<int, bool>(y * xCellsCount + x, true));
 				}
 				if (!updatedVels.count((y + 1) * xCellsCount + x))
 				{
 					y_curr[y + 1][x] = max(-maxGravityAcc, y_curr[y + 1][x] - 9.81f * gravScale * t);
-					//y_curr[y + 1][x] = -maxGravityAcc;
 					updatedVels.insert(pair<int, bool>((y + 1) * xCellsCount + x, true));
 				}
-				/*y_curr[y][x - 1] = max(-9.81f, y_curr[y + 1][x] - 0.981f * t);
-				y_curr[y][x + 1] = max(-9.81f, y_curr[y + 1][x] - 0.981f * t);*/
 			}
 		}
 	}
 	// clamp
 	for (int x = 0; x < xCellsCount; ++x)
 		y_curr[0][x] = 0.f;
-	/*for (int x = 0; x < xCellsCount; ++x)
-		y_curr[0][x] = max(0.f, y_curr[0][x]);*/
 }
 
 void VelocityField::postUpdate()

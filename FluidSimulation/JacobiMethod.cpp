@@ -14,16 +14,19 @@ double JacobiMethod::error(const vec& x, const vec& y, int n)
 // Function to implement the Jacobi method
 void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
 {
+    double tol = 1e-6;
+    int maxIter = 200;
     int n = a.size();
     if (y.size() != n)
         y.resize(n);
     std::fill(y.begin(), y.end(), 0);
     double sum;
     int k = 0;
+    double conv = 0.0;
 
     // Iterate until the error is less than the given tolerance
     // 30 seems to be the sweet spot
-    while (1)
+    while (k < maxIter)
     {
         // Store the previous solution in y[]
         for (int i = 0; i < n; i++)
@@ -55,7 +58,8 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
             x[i] = (b[i] - sum) / centerVal;
         }
         // Check if the error is less than the given tolerance
-        if (error(x, y, n) < 0.00001)
+        conv = error(x, y, n);
+        if (conv < tol)
             break;
 
         // Print the intermediate solution
@@ -66,7 +70,8 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
 
         k++;
     }
-    cout << "Iter count: " << k << endl;
+    if ((int)conv > 0)
+        cout << "Iter count: " << k << ", conv: " << (int)conv << endl;
 }
 
 void JacobiMethod::UT_JacobiMethod()

@@ -110,8 +110,8 @@ void PressureSolve::update(VelocityField& uField, bool** liquidCells, float t)
 		}
 	}
 	// solve P for AP = D
-	// JacobiMethod::solve(a, d, p);
-	CGSolver::solve(a, d, p);
+	JacobiMethod::solve(a, d, p);
+	// CGSolver::solve(a, d, p);
 	// update vel (boundary vels don't update)
 	for (int y = 0; y < yCellsCount; ++y)
 	{

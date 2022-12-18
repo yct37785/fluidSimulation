@@ -45,8 +45,9 @@ FluidGrid::~FluidGrid()
 void FluidGrid::loadFluid()
 {
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	for (float y = 0.f + (float)yCellsCount * H * 0.5f; y < (float)yCellsCount * H * 0.9f; y += 0.25f * H)
-		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += 0.25f * H)
+	float space = 0.4f;
+	for (float y = 0.f + (float)yCellsCount * H * 0.5f; y < (float)yCellsCount * H * 0.9f; y += space * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.2f; x < (float)xCellsCount * H * 0.8f; x += space * H)
 			markers.push_back(glm::vec2(x, y));
 	cout << "Total markers: " << markers.size() << endl;
 }
@@ -90,7 +91,8 @@ void FluidGrid::Update(float deltaTime)
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot
-	float t = getTimeStep() * deltaTime * 7.f;
+	// float t = getTimeStep() * deltaTime * 7.f;
+	float t = deltaTime * 1.f;
 	// fluid cells update
 	for (int y = 0; y < yCellsCount; ++y)
 		for (int x = 0; x < xCellsCount; ++x)

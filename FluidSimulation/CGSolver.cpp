@@ -59,16 +59,13 @@ void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func precondi
     //}
     double rdotr = dot(r, r);
     int iterCount = 0;
-    double maxErr = 0.0;
+    double conv = 0.0;
     while (iterCount < maxIter)
     {
         // check convergence
-        double conv = sqrt(rdotr);
+        conv = sqrt(rdotr);
         if (conv < tol)
-        {
-            maxErr = conv;
             break;
-        }
         // Compute Ap
         mul(Ap, A, p);
         double alpha = rdotr / dot(p, Ap);
@@ -85,7 +82,8 @@ void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func precondi
         rdotr = rnewdotrnew;
         iterCount++;
     }
-    cout << "Iter count: " << iterCount << ", maxErr: " << maxErr << endl;
+    if ((int)conv > 0)
+        cout << "Iter count: " << iterCount << ", conv: " << (int)conv << endl;
 }
 
 matrix incomplete_cholesky_preconditioner(const matrix& A) {
