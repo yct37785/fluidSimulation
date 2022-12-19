@@ -112,7 +112,7 @@ void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liqui
 		// find divergence for center of cell
 		float div = getDerivative(uField, 'x', x + 1, y, x, y) + getDerivative(uField, 'y', x, y + 1, x, y);
 		// store divergence to D
-		d[map_idx] = (div * ((DEN_WATER * H) / t)) - (float)airNeighbors;
+		d[map_idx] = (div * ((DEN_WATER * H) / t));
 		// add coefficients
 		a[map_idx].clear();
 		addNeighborLiquidCell(map_idx, x - 1, y, liquidCells);

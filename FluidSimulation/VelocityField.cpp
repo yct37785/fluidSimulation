@@ -14,8 +14,8 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 		y_curr[y] = new float[xCellsCount];
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			//y_prev[y][x] = y_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-			y_prev[y][x] = y_curr[y][x] = 0.f;
+			y_prev[y][x] = y_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
+			//y_prev[y][x] = y_curr[y][x] = 0.f;
 		}
 		if (y < yCellsCount)
 		{
@@ -23,8 +23,8 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 			x_curr[y] = new float[xCellsCount + 1];
 			for (int x = 0; x < xCellsCount + 1; ++x)
 			{
-				//x_prev[y][x] = x_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-				x_prev[y][x] = x_curr[y][x] = 0.f;
+				x_prev[y][x] = x_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
+				//x_prev[y][x] = x_curr[y][x] = 0.f;
 			}
 		}
 	}

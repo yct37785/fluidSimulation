@@ -80,8 +80,8 @@ void FluidGrid::Update(float deltaTime)
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot
-	// float t = getTimeStep() * deltaTime * 7.f;
-	float t = deltaTime * 0.1f;
+	float t = getTimeStep() * deltaTime * 7.f;
+	// float t = deltaTime * 0.05f;
 	// fluid cells update
 	liquidCells.clear();
 	int count = 0;
@@ -110,7 +110,7 @@ void FluidGrid::Update(float deltaTime)
 	}
 	// advect + external forces
 	uField->advectSelf(t);
-	uField->applyExternalForces(t, liquidCells);
+	//uField->applyExternalForces(t, liquidCells);
 	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
 	ps->update(*uField, liquidCells, t);
@@ -119,7 +119,7 @@ void FluidGrid::Update(float deltaTime)
 	for (int i = 0; i < markers.size(); ++i)
 	{
 		glm::vec2 vel = uField->getVelAtPos(markers[i]);
-		markers[i] += vel;
+		markers[i] += vel * t;
 	}
 	// rendering
 	//gridMesh->updateMesh();
