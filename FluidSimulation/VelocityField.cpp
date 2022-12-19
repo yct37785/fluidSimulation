@@ -108,7 +108,7 @@ float VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
 	float q12 = outOfRange(x1, y2, xCellsCount + x_extra, yCellsCount + y_extra) ? 0.f : prev[y2][x1];
 	float q22 = outOfRange(x2, y2, xCellsCount + x_extra, yCellsCount + y_extra) ? 0.f : prev[y2][x2];
 	// bilinear
-	return bilinearInterpolate(x1, x2, y1, y2, normPos, q11, q21, q12, q22);
+	return bilinearInterpolate(x1 * H, x2 * H, y1 * H, y2 * H, normPos, q11, q21, q12, q22);
 }
 
 glm::vec2 VelocityField::getVelAtPos(glm::vec2& pos)
@@ -241,10 +241,10 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 			// get angular dir of velocity from lesser faces
 			float angleRad = (float)atan2(-x_curr[y][x], y_curr[y][x]);
 			//float scale = glm::length(glm::vec2(x_curr[y][x], y_curr[y][x]));
-			float scale = 1.f;
+			float scale = H;
 			// u
 			glm::mat4 mvpMat = mvMat *
-				glm::translate(glm::mat4(1.f), glm::vec3(x + Hoffset, y + Hoffset, 0.f)) *
+				glm::translate(glm::mat4(1.f), glm::vec3(x * H + Hoffset, y * H + Hoffset, 0.f)) *
 				glm::rotate(glm::mat4(1.f), angleRad, glm::vec3(0.f, 0.f, 1.f)) *
 				glm::scale(glm::mat4(1.f), glm::vec3(scale, scale, 1.f));
 			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
@@ -261,8 +261,8 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	//		{
 	//			// float x_scale = x_curr[y][x];
 	//			float x_scale = x_curr[y][x] == 0.f ? 0.f : 1.f;
-	//			glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(x, y + Hoffset, 0.f))
-	//				* glm::scale(glm::mat4(1.f), glm::vec3(x_scale, 1.f, 1.f));
+	//			glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(x * H, y * H + Hoffset, 0.f))
+	//				* glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));
 	//			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
 	//			glBindVertexArray(xMarker->getVAO());
 	//			glDrawElements(GL_TRIANGLES, xMarker->getTotalIndices(), GL_UNSIGNED_INT, 0);
@@ -272,8 +272,8 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	//		{
 	//			// float y_scale = y_curr[y][x];
 	//			float y_scale = y_curr[y][x] == 0.f ? 0.f : 1.f;
-	//			glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(x + Hoffset, y, 0.f))
-	//				* glm::scale(glm::mat4(1.f), glm::vec3(1.f, y_scale, 1.f));;
+	//			glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(x * H + Hoffset, y * H, 0.f))
+	//				* glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));;
 	//			glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
 	//			glBindVertexArray(yMarker->getVAO());
 	//			glDrawElements(GL_TRIANGLES, yMarker->getTotalIndices(), GL_UNSIGNED_INT, 0);
