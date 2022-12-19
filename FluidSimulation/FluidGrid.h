@@ -22,17 +22,14 @@ class FluidGrid
 	double spawnFluidTimer;
 	glm::vec2 fluidSource;
 
-	// init
-	void loadFluid();
-
 	// updates
 	float getTimeStep();
-	void spawnFluid(float deltaTime);
 
 public:
 	FluidGrid(int xCellsCount, int yCellsCount);
 	~FluidGrid();
 
+	void spawnFluid();
 	void Update(float deltaTime);
 	void Draw(int mvpHandle, glm::mat4& mvMat);
 };

@@ -26,8 +26,17 @@ void FluidScene::Init()
 
 void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
-	if (inputList[INPUT_UNFREEZE_FLUID])
-		unfreezeFluid = true;
+	if (spawnFluidTimer > 0.2)
+	{
+		if (inputList[INPUT_UNFREEZE_FLUID])
+		{
+			unfreezeFluid = true;
+			fluidGrid->spawnFluid();
+			spawnFluidTimer = 0.0;
+		}
+	}
+	else
+		spawnFluidTimer += (double)deltaTime;
 	if (unfreezeFluid)
 		fluidGrid->Update(deltaTime);
 }

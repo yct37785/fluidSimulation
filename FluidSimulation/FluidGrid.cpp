@@ -14,8 +14,6 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	// uField->runUT();
 	ps = new PressureSolve(xCellsCount, yCellsCount);
 
-	loadFluid();
-
 	// fluidSource = glm::vec2((float)xCellsCount * 0.2f, (float)yCellsCount * 0.7f);
 	fluidSource = glm::vec2(2.5f, 10.5f);
 	spawnFluidTimer = 0.0;
@@ -31,16 +29,6 @@ FluidGrid::~FluidGrid()
 	delete fluidSourceMesh;
 }
 
-void FluidGrid::loadFluid()
-{
-	// [Bridson 2007] 2 x 2 particles per grid cell
-	float space = 0.4f;
-	for (float y = 0.f + (float)yCellsCount * H * 0.3f; y < (float)yCellsCount * H * 0.7f; y += space * H)
-		for (float x = 0.f + (float)xCellsCount * H * 0.3f; x < (float)xCellsCount * H * 0.7f; x += space * H)
-			markers.push_back(glm::vec2(x, y));
-	cout << "Total markers: " << markers.size() << endl;
-}
-
 float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
@@ -52,31 +40,27 @@ float FluidGrid::getTimeStep()
 	return Kcfl * H / u_max;
 }
 
-void FluidGrid::spawnFluid(float deltaTime)
+void FluidGrid::spawnFluid()
 {
-	// always set vel at fluid source
-	float xVel = -10.f;
-	float yVel = 1.f;
-	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'x', xVel);
-	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'x', xVel);
-	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y, 'y', yVel);
-	uField->setCompByIdx((int)fluidSource.x, (int)fluidSource.y + 1, 'y', yVel);
-	// spawn the fluid at intervals
-	spawnFluidTimer += (double)deltaTime;
-	if (spawnFluidTimer > 0.1 && markers.size() < 500)
-	{
-		spawnFluidTimer = 0.0;
-		if (markers.size() % 2)
-			markers.push_back(glm::vec2(fluidSource.x, fluidSource.y + 0.4f));
-		else
-			markers.push_back(glm::vec2(fluidSource.x + 0.2f, fluidSource.y - 0.4f));
-	}
+	/*float xmin = 0.3f;
+	float xmax = 0.7f;
+	float ymin = 0.3f;
+	float ymax = 0.7f;*/
+	float xmin = 0.7f;
+	float xmax = 0.9f;
+	float ymin = 0.4f;
+	float ymax = 0.6f;
+	// [Bridson 2007] 2 x 2 particles per grid cell
+	float space = 0.4f;
+	for (float y = 0.f + (float)yCellsCount * H * ymin; y < (float)yCellsCount * H * ymax; y += space * H)
+		for (float x = 0.f + (float)xCellsCount * H * xmin; x < (float)xCellsCount * H * xmax; x += space * H)
+			markers.push_back(glm::vec2(x, y));
+	cout << "Total markers: " << markers.size() << endl;
 }
 
 void FluidGrid::Update(float deltaTime)
 {
 	gridMesh->ResetCellsColor();
-	// spawnFluid(deltaTime);
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot

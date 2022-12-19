@@ -9,6 +9,7 @@ class FluidScene
 	int xCellsCount, yCellsCount;
 	FluidGrid* fluidGrid;
 	// state
+	double spawnFluidTimer;
 	bool unfreezeFluid;
 	// rendering/update
 	glm::mat4 viewMat, projMat;
