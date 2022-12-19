@@ -15,7 +15,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 		for (int x = 0; x < xCellsCount; ++x)
 		{
 			y_prev[y][x] = y_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-			//y_prev[y][x] = y_curr[y][x] = 0.f;
+			y_prev[y][x] = y_curr[y][x] = 0.f;
 		}
 		if (y < yCellsCount)
 		{
@@ -24,7 +24,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 			for (int x = 0; x < xCellsCount + 1; ++x)
 			{
 				x_prev[y][x] = x_curr[y][x] = (float)rand() / (RAND_MAX / 1.f) * (rand() % 2 ? -1.f : 1.f);
-				//x_prev[y][x] = x_curr[y][x] = 0.f;
+				x_prev[y][x] = x_curr[y][x] = 0.f;
 			}
 		}
 	}
@@ -171,6 +171,9 @@ void VelocityField::advectSelf(float t)
 				glm::vec2 vel = getVelAtPos(xCompPos);
 				glm::vec2 prevPos = xCompPos - vel * t;
 				x_curr[y][x] = getVelCompAtPos(prevPos, 'x');
+				// no slip
+				if (x == 0 || x == xCellsCount)
+					x_curr[y][x] = 0.f;
 			}
 			// y
 			if (x < xCellsCount)
@@ -179,6 +182,9 @@ void VelocityField::advectSelf(float t)
 				glm::vec2 vel = getVelAtPos(yCompPos);
 				glm::vec2 prevPos = yCompPos - vel * t;
 				y_curr[y][x] = getVelCompAtPos(prevPos, 'y');
+				// no slip
+				if (y == 0 || y == yCellsCount)
+					y_curr[y][x] = 0.f;
 			}
 		}
 	}
@@ -187,8 +193,8 @@ void VelocityField::advectSelf(float t)
 void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquidCells)
 {
 	float maxGravityAcc = 9.81f;
-	float gravScale = 0.5f;
-	map<int, bool> updatedVels;
+	float gravScale = 0.1f;
+	unordered_map<int, bool> updatedVels;
 	// only updated for vels bordering fluid (both x and y)
 	for (int y = 0; y < yCellsCount; ++y)
 	{
@@ -200,13 +206,13 @@ void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquid
 				if (!updatedVels.count(y * xCellsCount + x))
 				{
 					// if no acc. then will have no splashes
-					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 9.81f * gravScale * t);
-					updatedVels.insert(pair<int, bool>(y * xCellsCount + x, true));
+					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 0.981f * t);
+					updatedVels[y * xCellsCount + x] = true;
 				}
 				if (!updatedVels.count((y + 1) * xCellsCount + x))
 				{
-					y_curr[y + 1][x] = max(-maxGravityAcc, y_curr[y + 1][x] - 9.81f * gravScale * t);
-					updatedVels.insert(pair<int, bool>((y + 1) * xCellsCount + x, true));
+					y_curr[y + 1][x] = max(-maxGravityAcc, y_curr[y + 1][x] - 0.981f * t);
+					updatedVels[(y + 1) * xCellsCount + x] = true;
 				}
 			}
 		}

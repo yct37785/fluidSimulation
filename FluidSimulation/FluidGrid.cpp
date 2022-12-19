@@ -35,8 +35,8 @@ void FluidGrid::loadFluid()
 {
 	// [Bridson 2007] 2 x 2 particles per grid cell
 	float space = 0.4f;
-	for (float y = 0.f + (float)yCellsCount * H * 0.7f; y < (float)yCellsCount * H * 0.9f; y += space * H)
-		for (float x = 0.f + (float)xCellsCount * H * 0.4f; x < (float)xCellsCount * H * 0.6f; x += space * H)
+	for (float y = 0.f + (float)yCellsCount * H * 0.3f; y < (float)yCellsCount * H * 0.7f; y += space * H)
+		for (float x = 0.f + (float)xCellsCount * H * 0.3f; x < (float)xCellsCount * H * 0.7f; x += space * H)
 			markers.push_back(glm::vec2(x, y));
 	cout << "Total markers: " << markers.size() << endl;
 }
@@ -80,8 +80,8 @@ void FluidGrid::Update(float deltaTime)
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot
-	float t = getTimeStep() * deltaTime * 7.f;
-	// float t = deltaTime * 0.05f;
+	//float t = getTimeStep() * deltaTime * 20.f;
+	float t = deltaTime * 2.f;
 	// fluid cells update
 	liquidCells.clear();
 	int count = 0;
@@ -110,7 +110,7 @@ void FluidGrid::Update(float deltaTime)
 	}
 	// advect + external forces
 	uField->advectSelf(t);
-	//uField->applyExternalForces(t, liquidCells);
+	uField->applyExternalForces(t, liquidCells);
 	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
 	ps->update(*uField, liquidCells, t);
@@ -137,7 +137,7 @@ void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 	glBindVertexArray(fluidSourceMesh->getVAO());
 	glDrawElements(GL_TRIANGLES, fluidSourceMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);*/
 
-	uField->draw(mvMat, mvpHandle, triangleMesh);
+	// uField->draw(mvMat, mvpHandle, triangleMesh);
 
 	for (int i = 0; i < markers.size(); ++i)
 	{

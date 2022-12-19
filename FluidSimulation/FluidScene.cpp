@@ -14,7 +14,7 @@ FluidScene::~FluidScene()
 void FluidScene::Init()
 {
 	unfreezeFluid = false;
-	xCellsCount = 20;
+	xCellsCount = 60;
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
 	yCellsCount = (int)accurateYSpaceHeight + 1;
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
