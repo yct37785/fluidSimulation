@@ -8,7 +8,7 @@
 * - vel comps are placed on centers of each face of a grid cell
 * - x comps on x-axis faces and y comps on y-axis faces
 */
-class VelocityField
+class MAC_VelocityField
 {
 	float** x_prev, ** y_prev, ** x_curr, ** y_curr;
 	int xCellsCount, yCellsCount;
@@ -23,8 +23,8 @@ class VelocityField
 	bool isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells);
 
 public:
-	VelocityField(int xCellsCount, int yCellsCount);
-	~VelocityField();
+	MAC_VelocityField(int xCellsCount, int yCellsCount);
+	~MAC_VelocityField();
 
 	void advectSelf(float t);
 	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);

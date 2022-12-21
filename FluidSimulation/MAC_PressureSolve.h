@@ -1,9 +1,9 @@
 #pragma once
-#include "VelocityField.h"
+#include "MAC_VelocityField.h"
 #include "JacobiMethod.h"
 #include "CGSolver.h"
 
-class PressureSolve
+class MAC_PressureSolve
 {
 	vec d;
 	vec p;
@@ -14,12 +14,12 @@ class PressureSolve
 	bool isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells);
 	bool addNeighborLiquidCell(int curr_map_idx, int x, int y, unordered_map<int, int>& liquidCells);
 	void countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid);
-	float getDerivative(VelocityField& uField, char comp, int x2, int y2, int x1, int y1);
+	float getDerivative(MAC_VelocityField& uField, char comp, int x2, int y2, int x1, int y1);
 	float getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells);
 
 public:
-	PressureSolve(int xCellsCount, int yCellsCount);
-	~PressureSolve();
+	MAC_PressureSolve(int xCellsCount, int yCellsCount);
+	~MAC_PressureSolve();
 
-	void update(VelocityField& uField, unordered_map<int, int>& liquidCells, float t);
+	void update(MAC_VelocityField& uField, unordered_map<int, int>& liquidCells, float t);
 };

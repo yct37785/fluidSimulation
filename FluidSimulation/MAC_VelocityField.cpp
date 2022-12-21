@@ -1,6 +1,6 @@
-#include "VelocityField.h"
+#include "MAC_VelocityField.h"
 
-VelocityField::VelocityField(int xCellsCount, int yCellsCount)
+MAC_VelocityField::MAC_VelocityField(int xCellsCount, int yCellsCount)
 {
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
@@ -32,7 +32,7 @@ VelocityField::VelocityField(int xCellsCount, int yCellsCount)
 	yMarker = MeshBuilder::CreateMesh("yellow_marker");
 }
 
-VelocityField::~VelocityField()
+MAC_VelocityField::~MAC_VelocityField()
 {
 	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
@@ -52,19 +52,19 @@ VelocityField::~VelocityField()
 	delete yMarker;
 }
 
-bool VelocityField::outOfRange(int x, int y, int maxx, int maxy)
+bool MAC_VelocityField::outOfRange(int x, int y, int maxx, int maxy)
 {
 	return x < 0 || x >= maxx || y < 0 || y >= maxy;
 }
 
-void VelocityField::getIndicesCoords(float pos, int& minv, int& maxv)
+void MAC_VelocityField::getIndicesCoords(float pos, int& minv, int& maxv)
 {
 	// eg. 0.2 -> idx(-1, 0)
 	minv = (int)floor(pos);
 	maxv = (int)ceil(pos);
 }
 
-float VelocityField::bilinearInterpolate(float x1, float x2, float y1, float y2,
+float MAC_VelocityField::bilinearInterpolate(float x1, float x2, float y1, float y2,
 	glm::vec2& pos, float q11, float q21, float q12, float q22)
 {
 	float hx = x2 - x1;
@@ -78,7 +78,7 @@ float VelocityField::bilinearInterpolate(float x1, float x2, float y1, float y2,
 	return r1 * y_1 + r2 * y_2;
 }
 
-float VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
+float MAC_VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
 {
 	glm::vec2 normPos = pos / H;
 	// get indexes
@@ -111,14 +111,14 @@ float VelocityField::getVelCompAtPos(glm::vec2& pos, char comp)
 	return bilinearInterpolate(x1 * H, x2 * H, y1 * H, y2 * H, normPos, q11, q21, q12, q22);
 }
 
-glm::vec2 VelocityField::getVelAtPos(glm::vec2& pos)
+glm::vec2 MAC_VelocityField::getVelAtPos(glm::vec2& pos)
 {
 	float xComp = getVelCompAtPos(pos, 'x');
 	float yComp = getVelCompAtPos(pos, 'y');
 	return glm::vec2(xComp, yComp);
 }
 
-float VelocityField::getCompByIdx(int x, int y, char comp)
+float MAC_VelocityField::getCompByIdx(int x, int y, char comp)
 {
 	if (comp == 'x')
 	{
@@ -136,7 +136,7 @@ float VelocityField::getCompByIdx(int x, int y, char comp)
 	}
 }
 
-void VelocityField::addToCompByIdx(int x, int y, char comp, float v)
+void MAC_VelocityField::addToCompByIdx(int x, int y, char comp, float v)
 {
 	if (comp == 'x')
 		x_curr[y][x] += v;
@@ -144,7 +144,7 @@ void VelocityField::addToCompByIdx(int x, int y, char comp, float v)
 		y_curr[y][x] += v;
 }
 
-void VelocityField::setCompByIdx(int x, int y, char comp, float v)
+void MAC_VelocityField::setCompByIdx(int x, int y, char comp, float v)
 {
 	if (comp == 'x')
 		x_curr[y][x] = v;
@@ -152,12 +152,12 @@ void VelocityField::setCompByIdx(int x, int y, char comp, float v)
 		y_curr[y][x] = v;
 }
 
-bool VelocityField::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
+bool MAC_VelocityField::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
 {
 	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells.count(y * xCellsCount + x);
 }
 
-void VelocityField::advectSelf(float t)
+void MAC_VelocityField::advectSelf(float t)
 {
 	// get vel at pos(x',y'), trace backwards, get vel at that pos, then apply to (x',y')
 	for (int y = 0; y < yCellsCount + 1; ++y)
@@ -190,7 +190,7 @@ void VelocityField::advectSelf(float t)
 	}
 }
 
-void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquidCells)
+void MAC_VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquidCells)
 {
 	float maxGravityAcc = 9.81f;
 	float gravScale = 0.1f;
@@ -222,7 +222,7 @@ void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquid
 		y_curr[0][x] = 0.f;
 }
 
-void VelocityField::postUpdate()
+void MAC_VelocityField::postUpdate()
 {
 	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
@@ -238,7 +238,7 @@ void VelocityField::postUpdate()
 	}
 }
 
-void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
+void MAC_VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 {
 	for (int y = 0; y < yCellsCount; ++y)
 	{
@@ -288,7 +288,7 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	//}
 }
 
-float VelocityField::getMaxU()
+float MAC_VelocityField::getMaxU()
 {
 	float max_len = 0.f;
 	for (int y = 0; y < yCellsCount; ++y)

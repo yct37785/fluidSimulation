@@ -34,6 +34,9 @@
     <Filter Include="Fluid\Solver">
       <UniqueIdentifier>{5046f47f-0271-4c67-97f4-553e85833789}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\MAC">
+      <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -57,7 +60,7 @@
     <ClCompile Include="MeshBuilder.cpp">
       <Filter>Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="FluidScene.cpp">
+    <ClCompile Include="EulerianFluidScene.cpp">
       <Filter>FluidScene</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -66,20 +69,23 @@
     <ClCompile Include="GridMesh.cpp">
       <Filter>Mesh\GridMesh</Filter>
     </ClCompile>
-    <ClCompile Include="FluidGrid.cpp">
-      <Filter>Fluid</Filter>
-    </ClCompile>
-    <ClCompile Include="PressureSolve.cpp">
-      <Filter>Fluid</Filter>
-    </ClCompile>
-    <ClCompile Include="VelocityField.cpp">
-      <Filter>Fluid</Filter>
-    </ClCompile>
     <ClCompile Include="CGSolver.cpp">
       <Filter>Fluid\Solver</Filter>
     </ClCompile>
     <ClCompile Include="JacobiMethod.cpp">
       <Filter>Fluid\Solver</Filter>
+    </ClCompile>
+    <ClCompile Include="MAC_FluidGrid.cpp">
+      <Filter>Fluid\MAC</Filter>
+    </ClCompile>
+    <ClCompile Include="MAC_PressureSolve.cpp">
+      <Filter>Fluid\MAC</Filter>
+    </ClCompile>
+    <ClCompile Include="MAC_VelocityField.cpp">
+      <Filter>Fluid\MAC</Filter>
+    </ClCompile>
+    <ClCompile Include="SPHFluidScene.cpp">
+      <Filter>FluidScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +101,7 @@
     <ClInclude Include="MeshBuilder.h">
       <Filter>Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="FluidScene.h">
+    <ClInclude Include="EulerianFluidScene.h">
       <Filter>FluidScene</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
@@ -104,20 +110,23 @@
     <ClInclude Include="GridMesh.h">
       <Filter>Mesh\GridMesh</Filter>
     </ClInclude>
-    <ClInclude Include="FluidGrid.h">
-      <Filter>Fluid</Filter>
-    </ClInclude>
-    <ClInclude Include="PressureSolve.h">
-      <Filter>Fluid</Filter>
-    </ClInclude>
-    <ClInclude Include="VelocityField.h">
-      <Filter>Fluid</Filter>
-    </ClInclude>
     <ClInclude Include="CGSolver.h">
       <Filter>Fluid\Solver</Filter>
     </ClInclude>
     <ClInclude Include="JacobiMethod.h">
       <Filter>Fluid\Solver</Filter>
+    </ClInclude>
+    <ClInclude Include="MAC_FluidGrid.h">
+      <Filter>Fluid\MAC</Filter>
+    </ClInclude>
+    <ClInclude Include="MAC_PressureSolve.h">
+      <Filter>Fluid\MAC</Filter>
+    </ClInclude>
+    <ClInclude Include="MAC_VelocityField.h">
+      <Filter>Fluid\MAC</Filter>
+    </ClInclude>
+    <ClInclude Include="SPHFluidScene.h">
+      <Filter>FluidScene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

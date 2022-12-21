@@ -1,6 +1,6 @@
-#include "FluidGrid.h"
+#include "MAC_FluidGrid.h"
 
-FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
+MAC_FluidGrid::MAC_FluidGrid(int xCellsCount, int yCellsCount)
 {
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	triangleMesh = MeshBuilder::CreateMesh("triangle");
@@ -10,16 +10,16 @@ FluidGrid::FluidGrid(int xCellsCount, int yCellsCount)
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
 
-	uField = new VelocityField(xCellsCount, yCellsCount);
+	uField = new MAC_VelocityField(xCellsCount, yCellsCount);
 	// uField->runUT();
-	ps = new PressureSolve(xCellsCount, yCellsCount);
+	ps = new MAC_PressureSolve(xCellsCount, yCellsCount);
 
 	// fluidSource = glm::vec2((float)xCellsCount * 0.2f, (float)yCellsCount * 0.7f);
 	fluidSource = glm::vec2(2.5f, 10.5f);
 	spawnFluidTimer = 0.0;
 }
 
-FluidGrid::~FluidGrid()
+MAC_FluidGrid::~MAC_FluidGrid()
 {
 	delete uField;
 	delete ps;
@@ -29,7 +29,7 @@ FluidGrid::~FluidGrid()
 	delete fluidSourceMesh;
 }
 
-float FluidGrid::getTimeStep()
+float MAC_FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
 	float dist = uField->getMaxU();
@@ -38,7 +38,7 @@ float FluidGrid::getTimeStep()
 	return Kcfl * H / u_max;
 }
 
-void FluidGrid::spawnFluid()
+void MAC_FluidGrid::spawnFluid()
 {
 	/*float xmin = 0.3f;
 	float xmax = 0.7f;
@@ -56,7 +56,7 @@ void FluidGrid::spawnFluid()
 	cout << "Total markers: " << markers.size() << endl;
 }
 
-void FluidGrid::Update(float deltaTime)
+void MAC_FluidGrid::Update(float deltaTime)
 {
 	gridMesh->ResetCellsColor();
 	// timestep
@@ -108,7 +108,7 @@ void FluidGrid::Update(float deltaTime)
 }
 
 
-void FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
+void MAC_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
 	glm::mat4 mvpMat;
 

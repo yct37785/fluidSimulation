@@ -1,13 +1,13 @@
 #pragma once
 #include "MeshBuilder.h"
 #include "Shader.h"
-#include "FluidGrid.h"
+#include "MAC_FluidGrid.h"
 
-class FluidScene
+class EulerianFluidScene
 {
 	// fluid
 	int xCellsCount, yCellsCount;
-	FluidGrid* fluidGrid;
+	MAC_FluidGrid* fluidGrid;
 	// state
 	double spawnFluidTimer;
 	bool unfreezeFluid;
@@ -19,8 +19,8 @@ class FluidScene
 	Shader* shader;
 
 public:
-	FluidScene();
-	~FluidScene();
+	EulerianFluidScene();
+	~EulerianFluidScene();
 
 	void Init();
 	void Update(bool inputList[INPUT_TOTAL], float deltaTime);

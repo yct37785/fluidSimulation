@@ -1,17 +1,17 @@
-#include "FluidScene.h"
+#include "EulerianFluidScene.h"
 
-FluidScene::FluidScene()
+EulerianFluidScene::EulerianFluidScene()
 {
 }
 
-FluidScene::~FluidScene()
+EulerianFluidScene::~EulerianFluidScene()
 {
 	delete quadMesh;
 	delete shader;
 	delete fluidGrid;
 }
 
-void FluidScene::Init()
+void EulerianFluidScene::Init()
 {
 	unfreezeFluid = false;
 	xCellsCount = 60;
@@ -21,10 +21,10 @@ void FluidScene::Init()
 	projMat = glm::frustum(-H, (float)xCellsCount * H + H * 2, -H, accurateYSpaceHeight * H + H * 2, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
-	fluidGrid = new FluidGrid(xCellsCount, yCellsCount);
+	fluidGrid = new MAC_FluidGrid(xCellsCount, yCellsCount);
 }
 
-void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
+void EulerianFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
 	if (spawnFluidTimer > 0.2)
 	{
@@ -41,7 +41,7 @@ void FluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 		fluidGrid->Update(deltaTime);
 }
 
-void FluidScene::Draw()
+void EulerianFluidScene::Draw()
 {
 	glUseProgram(shader->getProgram());
 	int mvpHandle = glGetUniformLocation(shader->getProgram(), "uMVPMatrix");
@@ -55,11 +55,11 @@ void FluidScene::Draw()
 	fluidGrid->Draw(mvpHandle, mvMat);
 }
 
-void FluidScene::windowsResize(int width, int height)
+void EulerianFluidScene::windowsResize(int width, int height)
 {
 }
 
-void FluidScene::mouseCallback(double xpos, double ypos)
+void EulerianFluidScene::mouseCallback(double xpos, double ypos)
 {
 	float gridSize = (float)WINDOWS_WIDTH / (float)xCellsCount;
 	cursorPosX = (float)xpos / gridSize;

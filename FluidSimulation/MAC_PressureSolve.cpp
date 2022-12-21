@@ -1,8 +1,8 @@
-#include "PressureSolve.h"
+#include "MAC_PressureSolve.h"
 const float DEN_WATER = 1000.f;	// water density = 1000 kg/m^3, but in simulation always set to 1
 const float DEN_AIR = 1.f;	// air density = 1 kg/m^3
 
-PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
+MAC_PressureSolve::MAC_PressureSolve(int xCellsCount, int yCellsCount)
 {
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
@@ -11,21 +11,21 @@ PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
 	a.reserve(xCellsCount * yCellsCount);
 }
 
-PressureSolve::~PressureSolve()
+MAC_PressureSolve::~MAC_PressureSolve()
 {
 }
 
-bool PressureSolve::isValidCell(int x, int y)
+bool MAC_PressureSolve::isValidCell(int x, int y)
 {
 	return x >= 0 && x < xCellsCount && y >= 0 && y < yCellsCount;
 }
 
-bool PressureSolve::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
+bool MAC_PressureSolve::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
 {
 	return isValidCell(x, y) && liquidCells.count(y * xCellsCount + x);
 }
 
-bool PressureSolve::addNeighborLiquidCell(int curr_map_idx, int x, int y, unordered_map<int, int>& liquidCells)
+bool MAC_PressureSolve::addNeighborLiquidCell(int curr_map_idx, int x, int y, unordered_map<int, int>& liquidCells)
 {
 	if (isLiquidCell(x, y, liquidCells))
 	{
@@ -37,7 +37,7 @@ bool PressureSolve::addNeighborLiquidCell(int curr_map_idx, int x, int y, unorde
 	return false;
 }
 
-void PressureSolve::countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid)
+void MAC_PressureSolve::countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid)
 {
 	air = liquid = 0;
 	// top
@@ -74,7 +74,7 @@ void PressureSolve::countSurroundingCellTypes(int x, int y, unordered_map<int, i
 	}
 }
 
-float PressureSolve::getDerivative(VelocityField& uField, char comp, int x2, int y2, int x1, int y1)
+float MAC_PressureSolve::getDerivative(MAC_VelocityField& uField, char comp, int x2, int y2, int x1, int y1)
 {
 	float v2 = 0.f, v1 = 0.f;
 	v2 = uField.getCompByIdx(x2, y2, comp);
@@ -82,7 +82,7 @@ float PressureSolve::getDerivative(VelocityField& uField, char comp, int x2, int
 	return (v2 - v1) / H;
 }
 
-float PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells)
+float MAC_PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells)
 {
 	int idx = y * xCellsCount + x;
 	if (liquidCells.count(idx))
@@ -91,7 +91,7 @@ float PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, int>
 		return 0.0;
 }
 
-void PressureSolve::update(VelocityField& uField, unordered_map<int, int>& liquidCells, float t)
+void MAC_PressureSolve::update(MAC_VelocityField& uField, unordered_map<int, int>& liquidCells, float t)
 {
 	// reset
 	d.clear();

@@ -1,8 +1,8 @@
 #pragma once
-#include "PressureSolve.h"
-#include "VelocityField.h"
+#include "MAC_PressureSolve.h"
+#include "MAC_VelocityField.h"
 
-class FluidGrid
+class MAC_FluidGrid
 {
 	GridMesh* gridMesh;
 	Mesh* triangleMesh;
@@ -11,8 +11,8 @@ class FluidGrid
 	int xCellsCount, yCellsCount;
 
 	// quantities
-	VelocityField* uField;
-	PressureSolve* ps;
+	MAC_VelocityField* uField;
+	MAC_PressureSolve* ps;
 
 	// marker
 	vector<glm::vec2> markers;
@@ -26,8 +26,8 @@ class FluidGrid
 	float getTimeStep();
 
 public:
-	FluidGrid(int xCellsCount, int yCellsCount);
-	~FluidGrid();
+	MAC_FluidGrid(int xCellsCount, int yCellsCount);
+	~MAC_FluidGrid();
 
 	void spawnFluid();
 	void Update(float deltaTime);
