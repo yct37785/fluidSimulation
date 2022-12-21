@@ -288,20 +288,18 @@ void VelocityField::draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh)
 	//}
 }
 
-glm::vec2 VelocityField::getMaxU()
+float VelocityField::getMaxU()
 {
-	float max_x = 0.f, max_y = 0.f;
+	float max_len = 0.f;
 	for (int y = 0; y < yCellsCount; ++y)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			// x
-			if (y < yCellsCount && max_x < x_curr[y][x])
-				max_x = x_curr[y][x];
-			// y
-			if (x < xCellsCount && max_y < y_curr[y][x])
-				max_y = y_curr[y][x];
+			if (y < yCellsCount && max_len < x_curr[y][x])
+				max_len = x_curr[y][x];
+			if (x < xCellsCount && max_len < y_curr[y][x])
+				max_len = y_curr[y][x];
 		}
 	}
-	return glm::vec2(max_x, max_y);
+	return max_len;
 }

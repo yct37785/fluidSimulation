@@ -32,11 +32,9 @@ FluidGrid::~FluidGrid()
 float FluidGrid::getTimeStep()
 {
 	// Bridson 2007, a more robust timestep calculation where no divide by zero errors will occur
-	glm::vec2 maxU = uField->getMaxU();
+	float dist = uField->getMaxU();
 	float u_max = sqrt(abs(H * G));
-	float dist = glm::length(maxU);
-	if (!isinf(dist))
-		u_max += dist;
+	u_max += dist;
 	return Kcfl * H / u_max;
 }
 
@@ -64,7 +62,7 @@ void FluidGrid::Update(float deltaTime)
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot
-	//float t = getTimeStep() * deltaTime * 20.f;
+	// float t = getTimeStep() * deltaTime * 20.f;
 	float t = deltaTime * 2.f;
 	// fluid cells update
 	liquidCells.clear();

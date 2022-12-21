@@ -37,5 +37,5 @@ public:
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* triangleMesh);
 
-	glm::vec2 getMaxU();
+	float getMaxU();
 };
