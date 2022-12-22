@@ -12,17 +12,19 @@ SPHFluidScene::~SPHFluidScene()
 
 void SPHFluidScene::Init()
 {
-	xCellsCount = 60;
+	xCellsCount = 20;
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
 	yCellsCount = (int)accurateYSpaceHeight + 1;
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-	projMat = glm::frustum(-H, (float)xCellsCount * H + H * 2, -H, accurateYSpaceHeight * H + H * 2, 3.f, 7.f);
+	projMat = glm::frustum(-Hrad, (float)xCellsCount * Hrad + Hrad * 2, -Hrad, accurateYSpaceHeight * Hrad + Hrad * 2, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
+	fluidGrid = new SPH_FluidGrid(xCellsCount, yCellsCount);
 }
 
 void SPHFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
+	fluidGrid->Update(deltaTime);
 }
 
 void SPHFluidScene::Draw()
@@ -35,6 +37,8 @@ void SPHFluidScene::Draw()
 	glm::mat4 cursorMat = mvMat *
 		glm::translate(glm::mat4(1.f), glm::vec3(cursorPosX, cursorPosY, 0.f)) *
 		glm::scale(glm::mat4(1.f), glm::vec3(10.f, 10.f, 1.f));
+
+	fluidGrid->Draw(mvpHandle, mvMat);
 }
 
 void SPHFluidScene::windowsResize(int width, int height)

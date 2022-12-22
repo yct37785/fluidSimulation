@@ -145,6 +145,8 @@
     <ClCompile Include="MAC_PressureSolve.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SPHFluidScene.cpp" />
+    <ClCompile Include="SPH_FluidGrid.cpp" />
+    <ClCompile Include="SPH_Particle.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="MAC_VelocityField.cpp" />
@@ -161,6 +163,8 @@
     <ClInclude Include="MAC_PressureSolve.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SPHFluidScene.h" />
+    <ClInclude Include="SPH_FluidGrid.h" />
+    <ClInclude Include="SPH_Particle.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="MAC_VelocityField.h" />
   </ItemGroup>

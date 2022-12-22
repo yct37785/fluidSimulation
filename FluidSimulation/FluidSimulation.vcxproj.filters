@@ -37,6 +37,9 @@
     <Filter Include="Fluid\MAC">
       <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\SPH">
+      <UniqueIdentifier>{3e55e03d-dc75-4a4d-bf77-393880e29935}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -87,6 +90,12 @@
     <ClCompile Include="SPHFluidScene.cpp">
       <Filter>FluidScene</Filter>
     </ClCompile>
+    <ClCompile Include="SPH_Particle.cpp">
+      <Filter>Fluid\SPH</Filter>
+    </ClCompile>
+    <ClCompile Include="SPH_FluidGrid.cpp">
+      <Filter>Fluid\SPH</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -127,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="SPHFluidScene.h">
       <Filter>FluidScene</Filter>
+    </ClInclude>
+    <ClInclude Include="SPH_Particle.h">
+      <Filter>Fluid\SPH</Filter>
+    </ClInclude>
+    <ClInclude Include="SPH_FluidGrid.h">
+      <Filter>Fluid\SPH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

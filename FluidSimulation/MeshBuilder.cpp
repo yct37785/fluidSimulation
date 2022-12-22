@@ -46,6 +46,25 @@ Mesh* MeshBuilder::CreateMesh(string type)
 		};
 		return new Mesh(vertices, indices, GL_STATIC_DRAW);
 	}
+	else if (type == "sph_blue_marker")
+	{
+		float rad = 0.02f;
+		vector<float> vertices{
+		rad,  rad,  // top right
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
+		rad, -rad,  // bottom right
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
+		-rad, -rad,  // bottom left
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
+		-rad,  rad,   // top left
+		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,
+		};
+		vector<int> indices{  // note that we start from 0!
+			0, 1, 3,   // first triangle
+			1, 2, 3    // second triangle
+		};
+		return new Mesh(vertices, indices, GL_STATIC_DRAW);
+	}
 	else if (type == "purple_marker")
 	{
 		vector<float> vertices{
