@@ -39,12 +39,16 @@ public:
 
 	void init(float m, glm::vec2 pos, glm::vec2 vel);
 	void postUpdate();
+	void updatePosByVel(float t);
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh);
 
 	const glm::vec2& getPos();
 	float getMass();
 	float getDensity();
 	float getPressure();
+	glm::vec2 getVel();
 	void setDensity(float d);
 	void setPressure(float p);
+	void accelerateVel(glm::vec2 acc, float t);
+	void applyGravity(float t);
 };

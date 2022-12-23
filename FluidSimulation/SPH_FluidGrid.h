@@ -8,13 +8,21 @@ class SPH_FluidGrid
 	Mesh* particleMesh;
 	int xCellsCount, yCellsCount;
 	// predefines
-	float wMultiplier;
+	float W_Scaler;
+	float dW_Scaler;
 	float acc_wMultiplier;
 
 	vector<SPH_Particle> particles;
 
 	// utils
-	float calW(float r);
+	float cal_W(float r);
+	float cal_dW(float r);
+
+	// update
+	void findNeighbors();
+	void findDensity();
+	void findPressure();
+	void applyAcceleration(float t);
 
 public:
 	SPH_FluidGrid(int xCellsCount, int yCellsCount);

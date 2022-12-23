@@ -19,6 +19,14 @@ void SPH_Particle::postUpdate()
 	prev = curr;
 }
 
+void SPH_Particle::updatePosByVel(float t)
+{
+	// repulse off boundaries (reflect off boundary plane but keep the magnitude)
+
+	// update pos
+	curr.pos += curr.vel;
+}
+
 void SPH_Particle::draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh)
 {
 	glm::mat4 mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(curr.pos, 0.f));
@@ -47,6 +55,11 @@ float SPH_Particle::getPressure()
 	return prev.p;
 }
 
+glm::vec2 SPH_Particle::getVel()
+{
+	return prev.vel;
+}
+
 void SPH_Particle::setDensity(float d)
 {
 	curr.d = d;
@@ -55,4 +68,14 @@ void SPH_Particle::setDensity(float d)
 void SPH_Particle::setPressure(float p)
 {
 	curr.p = p;
+}
+
+void SPH_Particle::accelerateVel(glm::vec2 acc, float t)
+{
+	curr.vel += acc * t;
+}
+
+void SPH_Particle::applyGravity(float t)
+{
+	curr.vel.y = max(-0.981f * Hrad, curr.vel.y - 0.981f * t);
 }
