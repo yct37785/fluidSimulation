@@ -8,9 +8,14 @@ SPH_Particle::~SPH_Particle()
 {
 }
 
-void SPH_Particle::init(float m, float d, glm::vec2 pos)
+void SPH_Particle::init(float m, glm::vec2 pos, glm::vec2 vel)
 {
-	curr.init(m, d, pos);
+	curr.init(m, pos, vel);
+	prev = curr;
+}
+
+void SPH_Particle::postUpdate()
+{
 	prev = curr;
 }
 
@@ -24,5 +29,30 @@ void SPH_Particle::draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh)
 
 const glm::vec2& SPH_Particle::getPos()
 {
-	return curr.pos;
+	return prev.pos;
+}
+
+float SPH_Particle::getMass()
+{
+	return prev.m;
+}
+
+float SPH_Particle::getDensity()
+{
+	return prev.d;
+}
+
+float SPH_Particle::getPressure()
+{
+	return prev.p;
+}
+
+void SPH_Particle::setDensity(float d)
+{
+	curr.d = d;
+}
+
+void SPH_Particle::setPressure(float p)
+{
+	curr.p = p;
 }

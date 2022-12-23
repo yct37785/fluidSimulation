@@ -7,14 +7,19 @@ class SPH_FluidGrid
 	GridMesh* gridMesh;
 	Mesh* particleMesh;
 	int xCellsCount, yCellsCount;
+	// predefines
+	float wMultiplier;
+	float acc_wMultiplier;
 
 	vector<SPH_Particle> particles;
+
+	// utils
+	float calW(float r);
 
 public:
 	SPH_FluidGrid(int xCellsCount, int yCellsCount);
 	~SPH_FluidGrid();
 
-	void spawnFluid();
 	void Update(float deltaTime);
 	void Draw(int mvpHandle, glm::mat4& mvMat);
 };

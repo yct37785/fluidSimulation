@@ -43,6 +43,8 @@ const float H = 1.f;	// width/height of a grid cell
 const float Hoffset = H * 0.5f;
 // lagrangian
 const float Hrad = 0.2f;
+const float K = 20.f;	// pressure constant
+const float P0 = 20.f;	// ref density
 // general
 string fileToShaderString(string filename);
 
