@@ -48,7 +48,7 @@ Mesh* MeshBuilder::CreateMesh(string type)
 	}
 	else if (type == "sph_blue_marker")
 	{
-		float rad = 0.02f;
+		float rad = Hrad / 2.f * 0.7f;
 		vector<float> vertices{
 		rad,  rad,  // top right
 		0.f / 255.f, 57.f / 255.f, 230.f / 255.f,

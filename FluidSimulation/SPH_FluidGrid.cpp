@@ -7,179 +7,132 @@ SPH_FluidGrid::SPH_FluidGrid(int xCellsCount, int yCellsCount)
 
 	this->xCellsCount = xCellsCount;
 	this->yCellsCount = yCellsCount;
+	viewWidth = (float)xCellsCount * Hrad;
+	viewHeight = (float)yCellsCount * Hrad;
 
-	float mass = 10.f;
-	float xmin = 0.3f;
-	float xmax = 0.7f;
-	float ymin = 0.3f;
-	float ymax = 0.7f;
-	float space = 0.6f;
-	for (float y = 0.f + (float)yCellsCount * Hrad * ymin; y < (float)yCellsCount * Hrad * ymax; y += space * Hrad)
+	for (float y = EPS; y < viewHeight - EPS * 2.f; y += Hrad)
 	{
-		for (float x = 0.f + (float)xCellsCount * Hrad * xmin; x < (float)xCellsCount * Hrad * xmax; x += space * Hrad)
+		for (float x = viewWidth / 4; x <= viewWidth / 2; x += Hrad)
 		{
-			particles.push_back(SPH_Particle());
-			particles.back().init(mass, glm::vec2(x, y), glm::vec2(0.f, 0.f));
+			float jitter = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+			SPH_Particle* particle = new SPH_Particle();
+			particles.push_back(particle);
+			particles.back()->init(glm::vec2(x + jitter, y), glm::vec2(0.f, 0.f));
 		}
 	}
 	cout << "Total particles: " << particles.size() << endl;
-
-	W_Scaler = 315.f / (64.f * PI * pow(Hrad, 9));
-	dW_Scaler = -(45.f / (PI * pow(Hrad, 6)));
 }
 
 SPH_FluidGrid::~SPH_FluidGrid()
 {
 }
 
-// smoothing kernel, returns 0 -> 1
-// param r: dist btw particle i and j
-float SPH_FluidGrid::cal_W(float r)
-{
-	float distVar = Hrad * Hrad - r * r;
-	distVar = pow(distVar, 3);
-	return W_Scaler * distVar;
-}
-
-// gradient of smoothing kernel
-// param r: dist btw particle i and j
-float SPH_FluidGrid::cal_dW(float r)
-{
-	float distVar = pow(Hrad - r, 2);
-	return dW_Scaler * distVar;
-}
-
-void SPH_FluidGrid::getMaxValues()
-{
-	maxVel = maxA = maxC = 0.f;
-	for (int i = 0; i < particles.size(); ++i)
-	{
-		float velMag = glm::length(particles[i].getVel());
-		float accMag = particles[i].getAcceleration();
-		float soundSpeed = sqrt((1.f * particles[i].getPressure()) / particles[i].getDensity());
-		soundSpeed = isinf(soundSpeed) ? 0.f : soundSpeed;
-		if (velMag > maxVel)
-			maxVel = velMag;
-		if (accMag > maxA)
-			maxA = accMag;
-		if (soundSpeed > maxC)
-			maxC = soundSpeed;
-	}
-	//cout << maxVel << " " << maxA << " " << maxC << endl;
-}
-
-float SPH_FluidGrid::getTimestamp()
-{
-	getMaxValues();
-	float C = 1.f;
-	float Ch = C * Hrad;
-	float maxVel_t = Ch / max(maxVel, 0.0000001f);
-	float maxA_t = sqrt(Hrad / max(maxA, 0.0000001f));
-	float maxC_t = Ch / max(maxC, 0.0000001f);
-	return max(max(maxVel_t, maxA_t), maxC_t);
-}
-
-void SPH_FluidGrid::findNeighbors()
+void SPH_FluidGrid::findDensityPressure()
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		particles[i].neighbors.clear();
-		particles[i].neighborDist.clear();
+		SPH_Particle* pi = particles[i];
+		float rho = 0.f;
 		for (int j = 0; j < particles.size(); ++j)
 		{
-			if (i == j)
-				continue;
-			// ! change to square pls
-			float r = glm::length(particles[j].getPos() - particles[i].getPos());
-			// only consider neighbors within < 2 * Hrad dist
-			if (r < Hrad * 2.f)
+			SPH_Particle* pj = particles[j];
+			glm::vec2 rij = pj->pos() - pi->pos();
+			float r = glm::length(rij);
+			if (r < Hrad)
 			{
-				particles[i].neighbors.push_back(j);
-				particles[i].neighborDist.push_back(r);
+				// rhoi = sum(mj * Wij)
+				rho += MASS * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
 			}
 		}
+		pi->rho(rho);
+		// Pi = K(pi - p0)
+		pi->p(GAS_CONST * (rho - REST_DENS));
 	}
+	for (int i = 0; i < particles.size(); ++i)
+		particles[i]->postUpdate();
 }
 
-void SPH_FluidGrid::findDensity()
+void SPH_FluidGrid::computeForces()
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		// pi = sum(mj * Wij)
-		float density = 0.f;
-		for (int j = 0; j < particles[i].neighbors.size(); ++j)
+		SPH_Particle* pi = particles[i];
+		glm::vec2 fpress(0.f, 0.f);
+		glm::vec2 fvisc(0.f, 0.f);
+		for (int j = 0; j < particles.size(); ++j)
 		{
-			int nIdx = particles[i].neighbors[j];
-			density += particles[nIdx].getMass() * cal_W(particles[i].neighborDist[j]);
+			SPH_Particle* pj = particles[j];
+			if (i == j)
+				continue;
+			glm::vec2 rij = pj->pos() - pi->pos();
+			float r = glm::length(rij);
+			if (r < Hrad)
+			{
+				// pressure force contributions
+				fpress += -glm::normalize(rij) * MASS * (pi->p() + pj->p()) / (2.f * pj->rho()) * SPIKY_GRAD * pow(Hrad - r, 3.f);
+				// compute viscosity force contributions
+				fvisc += VISC * MASS * (pj->v() - pi->v()) / pj->rho() * VISC_LAP * (Hrad - r);
+			}
 		}
-		particles[i].setDensity(density);
+		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
+		pi->f(fpress + fvisc + fgrav);
 	}
 	for (int i = 0; i < particles.size(); ++i)
-		particles[i].postUpdate();
+		particles[i]->postUpdate();
 }
 
-void SPH_FluidGrid::findPressure()
-{
-	// Pi = K(pi - p0)
-	for (int i = 0; i < particles.size(); ++i)
-	{
-		float pressure = max(P0, K * (particles[i].getDensity() - P0));
-		particles[i].setPressure(pressure);
-	}
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i].postUpdate();
-}
-
-void SPH_FluidGrid::applyAcceleration()
+void SPH_FluidGrid::integrate(float t)
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		// a = -sum(mj/mi * (Pi + Pj) / (2 * pi * pj) * dWij * r^^ij
-		glm::vec2 acc(0.f);
-		for (int j = 0; j < particles[i].neighbors.size(); ++j)
+		// forward Euler integration
+		SPH_Particle* p = particles[i];
+		p->forwardEuler(t);
+		p->postUpdate();
+
+		// enforce boundary conditions
+		glm::vec2 v = p->v();
+		glm::vec2 pos = p->pos();
+		if (pos.x - EPS < 0.f)
 		{
-			int nIdx = particles[i].neighbors[j];
-			float m_Var = particles[nIdx].getMass() / particles[i].getMass();
-			float P_Div = (particles[i].getPressure() + particles[nIdx].getPressure()) /
-				(2.f * particles[i].getDensity() * particles[nIdx].getDensity());
-			float dW = cal_dW(particles[i].neighborDist[j]);
-			glm::vec2 rij = (particles[nIdx].getPos() - particles[i].getPos()) / particles[i].neighborDist[j];
-			acc += m_Var * P_Div * dW * rij;
+			v.x *= BOUND_DAMPING;
+			pos.x = EPS;
 		}
-		acc = -acc;
-		particles[i].accelerateVel(acc);
-		particles[i].applyGravity();
+		if (pos.x + EPS > viewWidth)
+		{
+			v.x *= BOUND_DAMPING;
+			pos.x = viewWidth - EPS;
+		}
+		if (pos.y - EPS < 0.f)
+		{
+			v.y *= BOUND_DAMPING;
+			pos.y = EPS;
+		}
+		if (pos.y + EPS > viewHeight)
+		{
+			v.y *= BOUND_DAMPING;
+			pos.y = viewHeight - EPS;
+		}
+		p->v(v);
+		p->pos(pos);
+		p->postUpdate();
 	}
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i].postUpdate();
 }
 
 void SPH_FluidGrid::Update(float deltaTime)
 {
-	float t = getTimestamp() * deltaTime * 0.0000001f;
-	findNeighbors();
-	findDensity();
-	findPressure();
-	applyAcceleration();
-	// update particles by vel
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i].updatePosByVel(t);
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i].postUpdate();
+	float t = deltaTime * 0.01f;
+	findDensityPressure();
+	computeForces();
+	integrate(t);
 }
 
 void SPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
-	glm::mat4 mvpMat;
 	for (int i = 0; i < particles.size(); ++i)
-	{
-		mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(particles[i].getPos(), 0.f));
-		glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
-		glBindVertexArray(particleMesh->getVAO());
-		glDrawElements(GL_TRIANGLES, particleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
-	}
+		particles[i]->draw(mvMat, mvpHandle, particleMesh);
 
-	mvpMat = mvMat * glm::scale(glm::mat4(1.f), glm::vec3(Hrad, Hrad, 0.f));
+	glm::mat4 mvpMat = mvMat * glm::scale(glm::mat4(1.f), glm::vec3(Hrad, Hrad, 0.f));
 	glUniformMatrix4fv(mvpHandle, 1, GL_FALSE, glm::value_ptr(mvpMat));
 	glBindVertexArray(gridMesh->getVAO());
 	glDrawElements(GL_TRIANGLES, gridMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);

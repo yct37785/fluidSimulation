@@ -8,9 +8,9 @@ SPH_Particle::~SPH_Particle()
 {
 }
 
-void SPH_Particle::init(float m, glm::vec2 pos, glm::vec2 vel)
+void SPH_Particle::init(glm::vec2 pos, glm::vec2 v)
 {
-	curr.init(m, pos, vel);
+	curr.init(pos, v);
 	prev = curr;
 }
 
@@ -19,12 +19,10 @@ void SPH_Particle::postUpdate()
 	prev = curr;
 }
 
-void SPH_Particle::updatePosByVel(float t)
+void SPH_Particle::forwardEuler(float t)
 {
-	// repulse off boundaries (reflect off boundary plane but keep the magnitude)
-
-	// update pos
-	curr.pos += curr.vel * t;
+	curr.v += t * curr.f / curr.rho;
+	curr.pos += t * curr.v;
 }
 
 void SPH_Particle::draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh)
@@ -35,53 +33,17 @@ void SPH_Particle::draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh)
 	glDrawElements(GL_TRIANGLES, particleMesh->getTotalIndices(), GL_UNSIGNED_INT, 0);
 }
 
-const glm::vec2& SPH_Particle::getPos()
-{
-	return prev.pos;
-}
+const glm::vec2& SPH_Particle::pos() { return prev.pos; }
+void SPH_Particle::pos(glm::vec2 v) { curr.pos = v; }
 
-float SPH_Particle::getMass()
-{
-	return prev.m;
-}
+float SPH_Particle::rho() { return prev.rho; }
+void SPH_Particle::rho(float v) { curr.rho = v; }
 
-float SPH_Particle::getDensity()
-{
-	return prev.d;
-}
+float SPH_Particle::p() { return prev.p; }
+void SPH_Particle::p(float v) { curr.p = v; }
 
-float SPH_Particle::getPressure()
-{
-	return prev.p;
-}
+glm::vec2 SPH_Particle::f() { return prev.f; }
+void SPH_Particle::f(glm::vec2 v) { curr.f = v; }
 
-float SPH_Particle::getAcceleration()
-{
-	return prev.a;
-}
-
-glm::vec2 SPH_Particle::getVel()
-{
-	return prev.vel;
-}
-
-void SPH_Particle::setDensity(float d)
-{
-	curr.d = d;
-}
-
-void SPH_Particle::setPressure(float p)
-{
-	curr.p = p;
-}
-
-void SPH_Particle::accelerateVel(glm::vec2 acc)
-{
-	curr.a = glm::length(acc);
-	curr.vel += acc;
-}
-
-void SPH_Particle::applyGravity()
-{
-	curr.vel.y = max(-9.81f, curr.vel.y - 0.981f * 0.05f);
-}
+glm::vec2 SPH_Particle::v() { return prev.v; }
+void SPH_Particle::v(glm::vec2 v) { curr.v = v; }

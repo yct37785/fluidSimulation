@@ -7,27 +7,15 @@ class SPH_FluidGrid
 	GridMesh* gridMesh;
 	Mesh* particleMesh;
 	int xCellsCount, yCellsCount;
-	// predefines
-	float W_Scaler;
-	float dW_Scaler;
-	float acc_wMultiplier;
+	float viewWidth, viewHeight;
 	// max
 	float maxVel, maxA, maxC;
 
-	vector<SPH_Particle> particles;
+	vector<SPH_Particle*> particles;
 
-	// utils
-	float cal_W(float r);
-	float cal_dW(float r);
-
-	// update
-	void getMaxValues();
-	float getTimestamp();
-
-	void findNeighbors();
-	void findDensity();
-	void findPressure();
-	void applyAcceleration();
+	void findDensityPressure();
+	void computeForces();
+	void integrate(float t);
 
 public:
 	SPH_FluidGrid(int xCellsCount, int yCellsCount);
