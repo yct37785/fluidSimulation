@@ -12,6 +12,10 @@ class SPH_FluidGrid
 	float maxVel, maxA, maxC;
 
 	vector<SPH_Particle*> particles;
+	unordered_map<int, vector<int>> grids;
+
+	void spatialPartitioning();
+	void getNeighborsInclusive(vector<int>& neighbors, int curr);
 
 	void findDensityPressure();
 	void computeForces();

@@ -32,15 +32,50 @@ void SPH_FluidGrid::spawnParticles()
 	cout << "Total particles: " << particles.size() << endl;
 }
 
+void SPH_FluidGrid::spatialPartitioning()
+{
+	grids.clear();
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		glm::vec2 pos = particles[i]->pos() / Hrad;
+		int x = int(pos.x);
+		int y = int(pos.y);
+		int idx = y * xCellsCount + x;
+		if (!grids.count(idx))
+			grids[idx] = vector<int>();
+		grids[idx].push_back(i);
+	}
+}
+
+void SPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
+{
+	neighbors.clear();
+	glm::vec2 pos = particles[curr]->pos() / Hrad;
+	int xidx = int(pos.x);
+	int yidx = int(pos.y);
+	// we check all adj. + curr grids
+	for (int y = yidx - 1; y <= yidx + 1; ++y)
+	{
+		for (int x = xidx - 1; x <= xidx + 1; ++x)
+		{
+			int idx = y * xCellsCount + x;
+			if (grids.count(idx))
+				neighbors.insert(neighbors.end(), grids[idx].begin(), grids[idx].end());
+		}
+	}
+}
+
 void SPH_FluidGrid::findDensityPressure()
 {
+	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		SPH_Particle* pi = particles[i];
 		float rho = 0.f;
-		for (int j = 0; j < particles.size(); ++j)
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			SPH_Particle* pj = particles[j];
+			SPH_Particle* pj = particles[neighbors[j]];
 			glm::vec2 rij = pj->pos() - pi->pos();
 			float r = glm::length(rij);
 			if (r < Hrad)
@@ -59,15 +94,17 @@ void SPH_FluidGrid::findDensityPressure()
 
 void SPH_FluidGrid::computeForces()
 {
+	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		SPH_Particle* pi = particles[i];
 		glm::vec2 fpress(0.f, 0.f);
 		glm::vec2 fvisc(0.f, 0.f);
-		for (int j = 0; j < particles.size(); ++j)
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			SPH_Particle* pj = particles[j];
-			if (i == j)
+			SPH_Particle* pj = particles[neighbors[j]];
+			if (i == neighbors[j])
 				continue;
 			glm::vec2 rij = pj->pos() - pi->pos();
 			float r = glm::length(rij);
@@ -126,7 +163,8 @@ void SPH_FluidGrid::integrate(float t)
 
 void SPH_FluidGrid::Update(float deltaTime)
 {
-	float t = deltaTime * 0.01f;
+	float t = deltaTime * 0.005f;
+	spatialPartitioning();
 	findDensityPressure();
 	computeForces();
 	integrate(t);
