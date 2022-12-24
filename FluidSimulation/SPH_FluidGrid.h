@@ -11,6 +11,8 @@ class SPH_FluidGrid
 	float W_Scaler;
 	float dW_Scaler;
 	float acc_wMultiplier;
+	// max
+	float maxVel, maxA, maxC;
 
 	vector<SPH_Particle> particles;
 
@@ -19,10 +21,13 @@ class SPH_FluidGrid
 	float cal_dW(float r);
 
 	// update
+	void getMaxValues();
+	float getTimestamp();
+
 	void findNeighbors();
 	void findDensity();
 	void findPressure();
-	void applyAcceleration(float t);
+	void applyAcceleration();
 
 public:
 	SPH_FluidGrid(int xCellsCount, int yCellsCount);

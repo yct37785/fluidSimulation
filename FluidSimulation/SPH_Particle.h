@@ -3,7 +3,7 @@
 
 struct SPH_ParticleData
 {
-	float m, d, p;	// mass, density, pressure
+	float m, d, p, a;	// mass, density, pressure, acceleration
 	glm::vec2 pos;	// pos
 	glm::vec2 vel;
 
@@ -12,7 +12,7 @@ struct SPH_ParticleData
 		this->m = m;
 		this->pos = pos;
 		this->vel = vel;
-		d = p = 0.f;
+		d = p = a = 0.f;
 	}
 
 	SPH_ParticleData& operator=(const SPH_ParticleData& copy)
@@ -20,6 +20,7 @@ struct SPH_ParticleData
 		this->m = copy.m;
 		this->d = copy.d;
 		this->p = copy.p;
+		this->a = copy.a;
 		this->pos = copy.pos;
 		this->vel = copy.vel;
 		return *this;
@@ -46,9 +47,10 @@ public:
 	float getMass();
 	float getDensity();
 	float getPressure();
+	float getAcceleration();
 	glm::vec2 getVel();
 	void setDensity(float d);
 	void setPressure(float p);
-	void accelerateVel(glm::vec2 acc, float t);
-	void applyGravity(float t);
+	void accelerateVel(glm::vec2 acc);
+	void applyGravity();
 };

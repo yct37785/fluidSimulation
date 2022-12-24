@@ -49,6 +49,36 @@ float SPH_FluidGrid::cal_dW(float r)
 	return dW_Scaler * distVar;
 }
 
+void SPH_FluidGrid::getMaxValues()
+{
+	maxVel = maxA = maxC = 0.f;
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		float velMag = glm::length(particles[i].getVel());
+		float accMag = particles[i].getAcceleration();
+		float soundSpeed = sqrt((1.f * particles[i].getPressure()) / particles[i].getDensity());
+		soundSpeed = isinf(soundSpeed) ? 0.f : soundSpeed;
+		if (velMag > maxVel)
+			maxVel = velMag;
+		if (accMag > maxA)
+			maxA = accMag;
+		if (soundSpeed > maxC)
+			maxC = soundSpeed;
+	}
+	//cout << maxVel << " " << maxA << " " << maxC << endl;
+}
+
+float SPH_FluidGrid::getTimestamp()
+{
+	getMaxValues();
+	float C = 1.f;
+	float Ch = C * Hrad;
+	float maxVel_t = Ch / max(maxVel, 0.0000001f);
+	float maxA_t = sqrt(Hrad / max(maxA, 0.0000001f));
+	float maxC_t = Ch / max(maxC, 0.0000001f);
+	return max(max(maxVel_t, maxA_t), maxC_t);
+}
+
 void SPH_FluidGrid::findNeighbors()
 {
 	for (int i = 0; i < particles.size(); ++i)
@@ -100,7 +130,7 @@ void SPH_FluidGrid::findPressure()
 		particles[i].postUpdate();
 }
 
-void SPH_FluidGrid::applyAcceleration(float t)
+void SPH_FluidGrid::applyAcceleration()
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
@@ -117,8 +147,8 @@ void SPH_FluidGrid::applyAcceleration(float t)
 			acc += m_Var * P_Div * dW * rij;
 		}
 		acc = -acc;
-		particles[i].accelerateVel(acc, t);
-		particles[i].applyGravity(t);
+		particles[i].accelerateVel(acc);
+		particles[i].applyGravity();
 	}
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i].postUpdate();
@@ -126,16 +156,14 @@ void SPH_FluidGrid::applyAcceleration(float t)
 
 void SPH_FluidGrid::Update(float deltaTime)
 {
-	float t = deltaTime * 0.001f;
+	float t = getTimestamp() * deltaTime * 0.0000001f;
 	findNeighbors();
 	findDensity();
 	findPressure();
-	applyAcceleration(t);
+	applyAcceleration();
 	// update particles by vel
 	for (int i = 0; i < particles.size(); ++i)
-	{
 		particles[i].updatePosByVel(t);
-	}
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i].postUpdate();
 }
