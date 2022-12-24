@@ -21,6 +21,7 @@ public:
 	SPH_FluidGrid(int xCellsCount, int yCellsCount);
 	~SPH_FluidGrid();
 
+	void spawnParticles();
 	void Update(float deltaTime);
 	void Draw(int mvpHandle, glm::mat4& mvMat);
 };

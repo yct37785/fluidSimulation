@@ -9,7 +9,16 @@ SPH_FluidGrid::SPH_FluidGrid(int xCellsCount, int yCellsCount)
 	this->yCellsCount = yCellsCount;
 	viewWidth = (float)xCellsCount * Hrad;
 	viewHeight = (float)yCellsCount * Hrad;
+}
 
+SPH_FluidGrid::~SPH_FluidGrid()
+{
+	for (int i = 0; i < particles.size(); ++i)
+		delete particles[i];
+}
+
+void SPH_FluidGrid::spawnParticles()
+{
 	for (float y = EPS; y < viewHeight - EPS * 2.f; y += Hrad)
 	{
 		for (float x = viewWidth / 4; x <= viewWidth / 2; x += Hrad)
@@ -21,10 +30,6 @@ SPH_FluidGrid::SPH_FluidGrid(int xCellsCount, int yCellsCount)
 		}
 	}
 	cout << "Total particles: " << particles.size() << endl;
-}
-
-SPH_FluidGrid::~SPH_FluidGrid()
-{
 }
 
 void SPH_FluidGrid::findDensityPressure()

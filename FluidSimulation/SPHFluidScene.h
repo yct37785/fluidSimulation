@@ -14,6 +14,7 @@ class SPHFluidScene
 	int cursorCellX, cursorCellY = 0;
 	Mesh* quadMesh;
 	Shader* shader;
+	bool spawnParticles;
 
 public:
 	SPHFluidScene();

@@ -6,6 +6,7 @@ SPHFluidScene::SPHFluidScene()
 
 SPHFluidScene::~SPHFluidScene()
 {
+	delete fluidGrid;
 	delete quadMesh;
 	delete shader;
 }
@@ -20,10 +21,16 @@ void SPHFluidScene::Init()
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
 	fluidGrid = new SPH_FluidGrid(xCellsCount, yCellsCount);
+	spawnParticles = false;
 }
 
 void SPHFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
+	if (!spawnParticles && inputList[INPUT_UNFREEZE_FLUID])
+	{
+		spawnParticles = true;
+		fluidGrid->spawnParticles();
+	}
 	fluidGrid->Update(deltaTime);
 }
 
