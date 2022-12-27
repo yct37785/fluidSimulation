@@ -185,7 +185,7 @@ void Engine::Init()
 	{
 		inputList[i] = false;
 	}
-	fluidScene = new SPHFluidScene();
+	fluidScene = new EulerianFluidScene();
 	fluidScene->Init();
 }
 

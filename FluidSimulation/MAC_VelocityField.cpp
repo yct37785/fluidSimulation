@@ -157,7 +157,7 @@ bool MAC_VelocityField::isLiquidCell(int x, int y, unordered_map<int, int>& liqu
 	return !outOfRange(x, y, xCellsCount, yCellsCount) && liquidCells.count(y * xCellsCount + x);
 }
 
-void MAC_VelocityField::advectSelf(float t)
+void MAC_VelocityField::advectSelf(float t, unordered_map<int, int>& liquidCells)
 {
 	// get vel at pos(x',y'), trace backwards, get vel at that pos, then apply to (x',y')
 	for (int y = 0; y < yCellsCount + 1; ++y)
@@ -167,10 +167,15 @@ void MAC_VelocityField::advectSelf(float t)
 			// x
 			if (y < yCellsCount)
 			{
-				glm::vec2 xCompPos = glm::vec2(x, y + Hoffset);
-				glm::vec2 vel = getVelAtPos(xCompPos);
-				glm::vec2 prevPos = xCompPos - vel * t;
-				x_curr[y][x] = getVelCompAtPos(prevPos, 'x');
+				//if (liquidCells.count(y * xCellsCount + x - 1) || liquidCells.count(y * xCellsCount + x))
+				{
+					glm::vec2 xCompPos = glm::vec2(x, y + Hoffset);
+					glm::vec2 vel = getVelAtPos(xCompPos);
+					glm::vec2 prevPos = xCompPos - vel * t;
+					x_curr[y][x] = getVelCompAtPos(prevPos, 'x');
+				}
+				//else
+				//	x_curr[y][x] = 0.f;
 				// no slip
 				if (x == 0 || x == xCellsCount)
 					x_curr[y][x] = 0.f;
@@ -178,10 +183,15 @@ void MAC_VelocityField::advectSelf(float t)
 			// y
 			if (x < xCellsCount)
 			{
-				glm::vec2 yCompPos = glm::vec2(x + Hoffset, y);
-				glm::vec2 vel = getVelAtPos(yCompPos);
-				glm::vec2 prevPos = yCompPos - vel * t;
-				y_curr[y][x] = getVelCompAtPos(prevPos, 'y');
+				//if (liquidCells.count((y - 1) * xCellsCount + x) || liquidCells.count(y * xCellsCount + x))
+				{
+					glm::vec2 yCompPos = glm::vec2(x + Hoffset, y);
+					glm::vec2 vel = getVelAtPos(yCompPos);
+					glm::vec2 prevPos = yCompPos - vel * t;
+					y_curr[y][x] = getVelCompAtPos(prevPos, 'y');
+				}
+				//else
+				//	y_curr[y][x] = 0.f;
 				// no slip
 				if (y == 0 || y == yCellsCount)
 					y_curr[y][x] = 0.f;

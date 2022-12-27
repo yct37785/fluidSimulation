@@ -6,7 +6,7 @@ class Engine {
 	static Engine* engine;
 	static GLFWwindow* window;
 
-	SPHFluidScene* fluidScene;
+	EulerianFluidScene* fluidScene;
 
 	bool inputList[INPUT_TOTAL];
 	float deltaTime, lastFrame;

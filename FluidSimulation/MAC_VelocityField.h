@@ -26,7 +26,7 @@ public:
 	MAC_VelocityField(int xCellsCount, int yCellsCount);
 	~MAC_VelocityField();
 
-	void advectSelf(float t);
+	void advectSelf(float t, unordered_map<int, int>& liquidCells);
 	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);
 	void postUpdate();
 

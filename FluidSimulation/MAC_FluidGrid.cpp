@@ -40,19 +40,25 @@ float MAC_FluidGrid::getTimeStep()
 
 void MAC_FluidGrid::spawnFluid()
 {
+	// [Bridson 2007] 2 x 2 particles per grid cell
 	/*float xmin = 0.3f;
 	float xmax = 0.7f;
 	float ymin = 0.3f;
 	float ymax = 0.7f;*/
-	float xmin = 0.7f;
-	float xmax = 0.9f;
-	float ymin = 0.4f;
-	float ymax = 0.6f;
-	// [Bridson 2007] 2 x 2 particles per grid cell
+	float xmin = 0.6f;
+	float xmax = 0.8f;
+	float ymin = 0.6f;
+	float ymax = 0.8f;
 	float space = 0.4f;
 	for (float y = 0.f + (float)yCellsCount * H * ymin; y < (float)yCellsCount * H * ymax; y += space * H)
+	{
 		for (float x = 0.f + (float)xCellsCount * H * xmin; x < (float)xCellsCount * H * xmax; x += space * H)
-			markers.push_back(glm::vec2(x, y));
+		{
+			float jitterX = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
+			float jitterY = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
+			markers.push_back(glm::vec2(x + jitterX, y + jitterY));
+		}
+	}
 	cout << "Total markers: " << markers.size() << endl;
 }
 
@@ -62,8 +68,8 @@ void MAC_FluidGrid::Update(float deltaTime)
 	// timestep
 	// (VERY IMPORTANT!! timestep must not be too big or else it will 'override' pressure update and cause compressibility)
 	// 7f multiplier is sweet spot
-	// float t = getTimeStep() * deltaTime * 20.f;
-	float t = deltaTime * 2.f;
+	//float t = getTimeStep() * deltaTime * 20.f;
+	float t = deltaTime * 4.f;
 	// fluid cells update
 	liquidCells.clear();
 	int count = 0;
@@ -91,7 +97,7 @@ void MAC_FluidGrid::Update(float deltaTime)
 		//	liquidCells[y2 * xCellsCount + xpos] = count++;
 	}
 	// advect + external forces
-	uField->advectSelf(t);
+	uField->advectSelf(t, liquidCells);
 	uField->applyExternalForces(t, liquidCells);
 	uField->postUpdate();	// must be called before marker update to update prev -> curr
 	// pressure update
