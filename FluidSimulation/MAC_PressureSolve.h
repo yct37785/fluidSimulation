@@ -16,6 +16,7 @@ class MAC_PressureSolve
 	void countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid);
 	float getDerivative(MAC_VelocityField& uField, char comp, int x2, int y2, int x1, int y1);
 	float getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells);
+	float getAvgOf4Neighbors(MAC_VelocityField& uField, int x, int y, char comp);
 
 public:
 	MAC_PressureSolve(int xCellsCount, int yCellsCount);

@@ -91,6 +91,26 @@ float MAC_PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, 
 		return 0.0;
 }
 
+float MAC_PressureSolve::getAvgOf4Neighbors(MAC_VelocityField& uField, int x, int y, char comp)
+{
+	float xvals[4];
+	xvals[0] = uField.getCompByIdx(x + 1, y, comp);
+	xvals[1] = uField.getCompByIdx(x - 1, y, comp);
+	xvals[2] = uField.getCompByIdx(x, y + 1, comp);
+	xvals[3] = uField.getCompByIdx(x, y - 1, comp);
+	float total = 0.f;
+	float count = 0.f;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (xvals[i] != -1.f)
+		{
+			total += xvals[i];
+			count += 1.f;
+		}
+	}
+	return total / count;
+}
+
 void MAC_PressureSolve::update(MAC_VelocityField& uField, unordered_map<int, int>& liquidCells, float t)
 {
 	// reset
@@ -163,58 +183,22 @@ void MAC_PressureSolve::update(MAC_VelocityField& uField, unordered_map<int, int
 	{
 		for (int x = 0; x < xCellsCount + 1; ++x)
 		{
-			//// for each non-fluid cell, for vel comps not bordering fluid cells
-			//// set to average of neighbors of C that are fluid
-			//// x
-			//if (x > 0 && y < yCellsCount)
-			//{
-			//	// not border liquid
-			//	if (!isLiquidCell(x, y, liquidCells) && !isLiquidCell(x, y - 1, liquidCells))
-			//	{
-			//		// avg of 4 neighbors
-			//		float xvals[4];
-			//		xvals[0] = uField.getCompByIdx(x + 1, y, 'x');
-			//		xvals[1] = uField.getCompByIdx(x - 1, y, 'x');
-			//		xvals[2] = uField.getCompByIdx(x, y + 1, 'x');
-			//		xvals[3] = uField.getCompByIdx(x, y - 1, 'x');
-			//		float total = 0.f;
-			//		float count = 0.f;
-			//		for (int i = 0; i < 4; ++i)
-			//		{
-			//			if (xvals[i] != -1.f)
-			//			{
-			//				total += xvals[i];
-			//				count += 1.f;
-			//			}
-			//		}
-			//		uField.setCompByIdx(x, y, 'x', total / count);
-			//	}
-			//}
-			//// y
-			//if (y > 0 && x < xCellsCount)
-			//{
-			//	// not border liquid
-			//	if (!isLiquidCell(x, y, liquidCells) && !isLiquidCell(x - 1, y, liquidCells))
-			//	{
-			//		// avg of 4 neighbors
-			//		float xvals[4];
-			//		xvals[0] = uField.getCompByIdx(x + 1, y, 'y');
-			//		xvals[1] = uField.getCompByIdx(x - 1, y, 'y');
-			//		xvals[2] = uField.getCompByIdx(x, y + 1, 'y');
-			//		xvals[3] = uField.getCompByIdx(x, y - 1, 'y');
-			//		float total = 0.f;
-			//		float count = 0.f;
-			//		for (int i = 0; i < 4; ++i)
-			//		{
-			//			if (xvals[i] != -1.f)
-			//			{
-			//				total += xvals[i];
-			//				count += 1.f;
-			//			}
-			//		}
-			//		uField.setCompByIdx(x, y, 'y', total / count);
-			//	}
-			//}
+			// for vel comps not bordering fluid cells
+			// set to average of neighbors of C that are fluid
+			// x
+			if (x > 0 && y < yCellsCount)
+			{
+				// not border liquid
+				if (!isLiquidCell(x, y, liquidCells) && !isLiquidCell(x - 1, y, liquidCells))
+					uField.setCompByIdx(x, y, 'x', getAvgOf4Neighbors(uField, x, y, 'x'));
+			}
+			// y
+			if (y > 0 && x < xCellsCount)
+			{
+				// not border liquid
+				if (!isLiquidCell(x, y, liquidCells) && !isLiquidCell(x, y - 1, liquidCells))
+					uField.setCompByIdx(x, y, 'y', getAvgOf4Neighbors(uField, x, y, 'y'));
+			}
 			// no slip: vel comps that point into solid will be set to 0
 			if ((x == 0 || x == xCellsCount) && y < yCellsCount)
 				uField.setCompByIdx(x, y, 'x', 0.f);

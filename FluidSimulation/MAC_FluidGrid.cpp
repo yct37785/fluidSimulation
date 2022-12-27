@@ -45,8 +45,8 @@ void MAC_FluidGrid::spawnFluid()
 	float xmax = 0.7f;
 	float ymin = 0.3f;
 	float ymax = 0.7f;*/
-	float xmin = 0.6f;
-	float xmax = 0.8f;
+	float xmin = 0.55f;
+	float xmax = 0.85f;
 	float ymin = 0.6f;
 	float ymax = 0.8f;
 	float space = 0.4f;
