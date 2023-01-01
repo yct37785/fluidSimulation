@@ -12,11 +12,12 @@ class Hybrid_FluidGrid
 
 	// particles
 	vector<Particle*> particles;
-	unordered_map<int, int> liquidCellsIdx;
+	unordered_map<int, int> liquidCells;
 
 	// update
 	float getTimestep(float deltaTime);
 	void updateLiquidCells();
+	void advectParticles_Eulerian(float t);
 
 public:
 	Hybrid_FluidGrid(int xCellsCount, int yCellsCount);

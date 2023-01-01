@@ -45,7 +45,7 @@ float Hybrid_FluidGrid::getTimestep(float deltaTime)
 
 void Hybrid_FluidGrid::updateLiquidCells()
 {
-	liquidCellsIdx.clear();
+	liquidCells.clear();
 	int count = 0;
 	for (int i = 0; i < particles.size(); ++i)
 	{
@@ -53,12 +53,21 @@ void Hybrid_FluidGrid::updateLiquidCells()
 		int xpos = (int)floor(pos.x / H);
 		int ypos = (int)floor(pos.y / H);
 		int idx = ypos * xCellsCount + xpos;
-		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCellsIdx.count(idx))
+		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells.count(idx))
 		{
-			liquidCellsIdx[idx] = count;
+			liquidCells[idx] = count;
 			count++;
 			gridMesh->colorCell(xpos, ypos, 255.f, 255.f, 230.f);
 		}
+	}
+}
+
+void Hybrid_FluidGrid::advectParticles_Eulerian(float t)
+{
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		glm::vec2 vel = uField->getVelAtPos(particles[i]->get_pos());
+		particles[i]->forwardEuler(vel, t);
 	}
 }
 
@@ -66,6 +75,9 @@ void Hybrid_FluidGrid::Update(float deltaTime)
 {
 	float t = getTimestep(deltaTime);
 	updateLiquidCells();
+	uField->advectSelf_semiLagrangian(t, liquidCells);
+	uField->applyExternalForces(t, liquidCells);
+	advectParticles_Eulerian(t);
 }
 
 void Hybrid_FluidGrid::Draw(glm::mat4& mvMat, int mvpHandle)

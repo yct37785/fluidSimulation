@@ -120,6 +120,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Fluid\Particle</Filter>
     </ClCompile>
+    <ClCompile Include="MathUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Fluid\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtility.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,5 +18,18 @@ public:
 	VelocityField(int xCellsCount, int yCellsCount);
 	~VelocityField();
 
+	// particle-to-grid
+	void advectSelf_semiLagrangian(float t, unordered_map<int, int>& liquidCells);
+
+	// update
+	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);
+
+	// grid-to-particle
+
+
+	// get
+	glm::vec2 getVelAtPos(glm::vec2 pos);
+
+	// draw
 	void draw(glm::mat4& mvMat, int mvpHandle);
 };

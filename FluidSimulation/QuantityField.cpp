@@ -29,6 +29,56 @@ QuantityField::~QuantityField()
 	delete[] curr;
 }
 
+bool QuantityField::outOfBounds(int x, int y)
+{
+	return x < 0.f || x >= xCount || y < 0.f || y >= yCount;
+}
+
+float QuantityField::getQuantityAtIdx(int x, int y)
+{
+	if (outOfBounds(x, y))
+		return 0.f;
+	return prev[y][x];
+}
+
+void QuantityField::setQuantityAtIdx(int x, int y, float value)
+{
+	if (!outOfBounds(x, y))
+		curr[y][x] = value;
+}
+
+float QuantityField::getQuantityAtPos(glm::vec2 pos)
+{
+	// world space -> q field space
+	// eg. 1.7 -> 1.2
+	pos.x -= xOffset;
+	pos.y -= yOffset;
+	// normalize
+	glm::vec2 normPos = pos / H;
+	// indexes
+	int x1, x2, y1, y2;
+	x1 = (int)floor(normPos.x);
+	x2 = (int)ceil(normPos.x);
+	y1 = (int)floor(normPos.y);
+	y2 = (int)ceil(normPos.y);
+	// out of bounds = 0
+	float q11 = outOfBounds(x1, y1) ? 0.f : prev[y1][x1];
+	float q21 = outOfBounds(x2, y1) ? 0.f : prev[y1][x2];
+	float q12 = outOfBounds(x1, y2) ? 0.f : prev[y2][x1];
+	float q22 = outOfBounds(x2, y2) ? 0.f : prev[y2][x2];
+	// bilinear
+	return bilinearInterpolate(x1, x2, y1, y2, normPos, q11, q21, q12, q22);
+}
+
+void QuantityField::postUpdate()
+{
+	for (int y = 0; y < yCount; ++y)
+	{
+		for (int x = 0; x < xCount; ++x)
+			prev[y][x] = curr[y][x];
+	}
+}
+
 void QuantityField::draw(glm::mat4& mvMat, int mvpHandle)
 {
 	for (int y = 0; y < yCount; ++y)

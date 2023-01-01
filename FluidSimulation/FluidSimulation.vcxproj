@@ -142,6 +142,7 @@
     <ClCompile Include="GridMesh.cpp" />
     <ClCompile Include="JacobiMethod.cpp" />
     <ClCompile Include="Hybrid_FluidGrid.cpp" />
+    <ClCompile Include="MathUtility.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MAC_PressureSolve.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="GridMesh.h" />
     <ClInclude Include="JacobiMethod.h" />
     <ClInclude Include="Hybrid_FluidGrid.h" />
+    <ClInclude Include="MathUtility.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="MAC_PressureSolve.h" />

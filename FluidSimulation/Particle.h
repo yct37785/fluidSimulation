@@ -17,6 +17,8 @@ public:
 
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh);
 
+	void forwardEuler(glm::vec2 vel, float t);
+
 	void set_u(glm::vec2 u);
 	glm::vec2 get_u();
 	void set_pos(glm::vec2 pos);
