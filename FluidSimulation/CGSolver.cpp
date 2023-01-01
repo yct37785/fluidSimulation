@@ -60,7 +60,7 @@ void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func precondi
     double rdotr = dot(r, r);
     int iterCount = 0;
     double conv = 0.0;
-    while (iterCount < maxIter)
+    while (1)
     {
         // check convergence
         conv = sqrt(rdotr);
