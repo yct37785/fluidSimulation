@@ -147,6 +147,7 @@
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="MAC_PressureSolve.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="PressureSolve.cpp" />
     <ClCompile Include="QuantityField.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SPHFluidScene.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="MAC_PressureSolve.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="PressureSolve.h" />
     <ClInclude Include="QuantityField.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SPHFluidScene.h" />

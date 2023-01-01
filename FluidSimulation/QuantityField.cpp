@@ -70,6 +70,24 @@ float QuantityField::getQuantityAtPos(glm::vec2 pos)
 	return bilinearInterpolate(x1, x2, y1, y2, normPos, q11, q21, q12, q22);
 }
 
+float QuantityField::getNeighboringAvg(int x, int y)
+{
+	if (outOfBounds(x, y))
+		return 0.f;
+	int offset[4][2] = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
+	int count = 0;
+	float sum = 0.f;
+	for (int i = 0; i < 4; ++i)
+	{
+		if (!outOfBounds(x + offset[i][0], y + offset[i][1]))
+		{
+			count++;
+			sum += prev[y + offset[i][1]][x + offset[i][0]];
+		}
+	}
+	return sum / (float)count;
+}
+
 void QuantityField::postUpdate()
 {
 	for (int y = 0; y < yCount; ++y)

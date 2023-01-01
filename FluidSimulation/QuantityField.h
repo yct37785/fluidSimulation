@@ -21,6 +21,7 @@ public:
 	float getQuantityAtIdx(int x, int y);
 	void setQuantityAtIdx(int x, int y, float value);
 	float getQuantityAtPos(glm::vec2 pos);
+	float getNeighboringAvg(int x, int y);
 	void postUpdate();
 
 	void draw(glm::mat4& mvMat, int mvpHandle);

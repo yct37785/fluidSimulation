@@ -123,6 +123,9 @@
     <ClCompile Include="MathUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PressureSolve.cpp">
+      <Filter>Fluid\Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="MathUtility.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PressureSolve.h">
+      <Filter>Fluid\Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

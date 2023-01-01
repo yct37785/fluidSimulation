@@ -1,5 +1,6 @@
 #pragma once
 #include "VelocityField.h"
+#include "PressureSolve.h"
 
 class Hybrid_FluidGrid
 {
@@ -9,6 +10,9 @@ class Hybrid_FluidGrid
 
 	// quantities
 	VelocityField* uField;
+
+	// pressure
+	PressureSolve* ps;
 
 	// particles
 	vector<Particle*> particles;

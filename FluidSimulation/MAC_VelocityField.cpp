@@ -190,32 +190,20 @@ void MAC_VelocityField::applyExternalForces(float t, unordered_map<int, int>& li
 {
 	float maxGravityAcc = 9.81f;
 	float gravScale = 0.1f;
-	unordered_map<int, bool> updatedVels;
-	// only updated for vels bordering fluid (both x and y)
-	for (int y = 0; y < yCellsCount; ++y)
+	// only updated for vel comps bordering fluid
+	for (int y = 0; y < yCellsCount + 1; ++y)
 	{
 		for (int x = 0; x < xCellsCount; ++x)
 		{
-			// is fluid
-			if (liquidCells.count(y * xCellsCount + x))
+			if (liquidCells.count((y - 1) * xCellsCount + x) || liquidCells.count(y * xCellsCount + x))
 			{
-				if (!updatedVels.count(y * xCellsCount + x))
-				{
-					// if no acc. then will have no splashes
-					y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 0.981f * t);
-					updatedVels[y * xCellsCount + x] = true;
-				}
-				if (!updatedVels.count((y + 1) * xCellsCount + x))
-				{
-					y_curr[y + 1][x] = max(-maxGravityAcc, y_curr[y + 1][x] - 0.981f * t);
-					updatedVels[(y + 1) * xCellsCount + x] = true;
-				}
+				y_curr[y][x] = max(-maxGravityAcc, y_curr[y][x] - 0.981f * t);
 			}
+			// no slip
+			if (y == 0)
+				y_curr[y][x] = 0.f;
 		}
 	}
-	// clamp
-	for (int x = 0; x < xCellsCount; ++x)
-		y_curr[0][x] = 0.f;
 }
 
 void MAC_VelocityField::postUpdate()

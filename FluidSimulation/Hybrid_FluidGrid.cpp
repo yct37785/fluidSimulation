@@ -7,6 +7,7 @@ Hybrid_FluidGrid::Hybrid_FluidGrid(int xCellsCount, int yCellsCount)
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	particleMesh = MeshBuilder::CreateMesh("blue_marker");
 	uField = new VelocityField(xCellsCount, yCellsCount);
+	ps = new PressureSolve(xCellsCount, yCellsCount);
 }
 
 Hybrid_FluidGrid::~Hybrid_FluidGrid()
@@ -16,6 +17,7 @@ Hybrid_FluidGrid::~Hybrid_FluidGrid()
 	delete gridMesh;
 	delete particleMesh;
 	delete uField;
+	delete ps;
 }
 
 void Hybrid_FluidGrid::spawnParticles()
@@ -77,6 +79,8 @@ void Hybrid_FluidGrid::Update(float deltaTime)
 	updateLiquidCells();
 	uField->advectSelf_semiLagrangian(t, liquidCells);
 	uField->applyExternalForces(t, liquidCells);
+	ps->update(uField, liquidCells, t);
+	uField->extrapolate(liquidCells);
 	advectParticles_Eulerian(t);
 }
 

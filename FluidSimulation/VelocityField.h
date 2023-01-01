@@ -19,16 +19,20 @@ public:
 	~VelocityField();
 
 	// particle-to-grid
-	void advectSelf_semiLagrangian(float t, unordered_map<int, int>& liquidCells);
 
 	// update
+	void advectSelf_semiLagrangian(float t, unordered_map<int, int>& liquidCells);
 	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);
+	void extrapolate(unordered_map<int, int>& liquidCells);
 
 	// grid-to-particle
 
 
-	// get
+	// get/set/apply
+	float getDerivative(int x1, int y1, int x2, int y2, char comp);
 	glm::vec2 getVelAtPos(glm::vec2 pos);
+	void addToCompByIdx(int x, int y, char comp, float add);
+	void postUpdate();
 
 	// draw
 	void draw(glm::mat4& mvMat, int mvpHandle);
