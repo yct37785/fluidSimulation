@@ -17,8 +17,6 @@ class MAC_VelocityField
 	// utilities
 	static bool outOfRange(int x, int y, int maxx, int maxy);
 	static void getIndicesCoords(float pos, int& minv, int& maxv);
-	static float bilinearInterpolate(float x1, float x2, float y1, float y2,
-		glm::vec2& pos, float q11, float q21, float q12, float q22);
 	float getVelCompAtPos(glm::vec2& pos, char comp);
 	bool isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells);
 
