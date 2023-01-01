@@ -46,6 +46,9 @@
     <Filter Include="Fluid\Hybrid">
       <UniqueIdentifier>{8410770c-9fcf-474b-9ded-33cd9f0e3941}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\Particle">
+      <UniqueIdentifier>{75cc8a43-4921-4f98-858c-60a45b4aa88a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -114,6 +117,9 @@
     <ClCompile Include="HybridFluidScene.cpp">
       <Filter>FluidScene</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Fluid\Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -172,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="HybridFluidScene.h">
       <Filter>FluidScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Fluid\Particle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

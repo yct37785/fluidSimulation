@@ -10,6 +10,14 @@ class Hybrid_FluidGrid
 	// quantities
 	VelocityField* uField;
 
+	// particles
+	vector<Particle*> particles;
+	unordered_map<int, int> liquidCellsIdx;
+
+	// update
+	float getTimestep(float deltaTime);
+	void updateLiquidCells();
+
 public:
 	Hybrid_FluidGrid(int xCellsCount, int yCellsCount);
 	~Hybrid_FluidGrid();
