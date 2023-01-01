@@ -18,7 +18,7 @@ void EulerianFluidScene::Init()
 	viewMat = glm::lookAt(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 	projMat = glm::frustum(-H, (float)xCellsCount * H + H * 2, -H, accurateYSpaceHeight * H + H * 2, 3.f, 7.f);
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
-	fluidGrid = new Hybrid_FluidGrid(xCellsCount, yCellsCount);
+	fluidGrid = new Eulerian_FluidGrid(xCellsCount, yCellsCount);
 }
 
 void EulerianFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)

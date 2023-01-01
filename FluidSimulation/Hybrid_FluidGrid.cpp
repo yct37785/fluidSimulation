@@ -77,11 +77,6 @@ void Hybrid_FluidGrid::Update(float deltaTime)
 {
 	float t = getTimestep(deltaTime);
 	updateLiquidCells();
-	uField->advectSelf_semiLagrangian(t, liquidCells);
-	uField->applyExternalForces(t, liquidCells);
-	ps->update(uField, liquidCells, t);
-	uField->extrapolate(liquidCells);
-	advectParticles_Eulerian(t);
 }
 
 void Hybrid_FluidGrid::Draw(glm::mat4& mvMat, int mvpHandle)

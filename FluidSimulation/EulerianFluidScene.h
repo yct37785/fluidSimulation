@@ -1,13 +1,13 @@
 #pragma once
 #include "MeshBuilder.h"
 #include "Shader.h"
-#include "Hybrid_FluidGrid.h"
+#include "Eulerian_FluidGrid.h"
 
 class EulerianFluidScene
 {
 	// fluid
 	int xCellsCount, yCellsCount;
-	Hybrid_FluidGrid* fluidGrid;
+	Eulerian_FluidGrid* fluidGrid;
 	// rendering/update
 	glm::mat4 viewMat, projMat;
 	Shader* shader;
