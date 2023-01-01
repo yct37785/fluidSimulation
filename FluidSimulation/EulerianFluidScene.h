@@ -1,22 +1,18 @@
 #pragma once
 #include "MeshBuilder.h"
 #include "Shader.h"
-#include "MAC_FluidGrid.h"
+#include "Hybrid_FluidGrid.h"
 
 class EulerianFluidScene
 {
 	// fluid
 	int xCellsCount, yCellsCount;
-	MAC_FluidGrid* fluidGrid;
-	// state
-	double spawnFluidTimer;
-	bool unfreezeFluid;
+	Hybrid_FluidGrid* fluidGrid;
 	// rendering/update
 	glm::mat4 viewMat, projMat;
-	float cursorPosX, cursorPosY = 0.f;
-	int cursorCellX, cursorCellY = 0;
-	Mesh* quadMesh;
 	Shader* shader;
+	// state
+	double spawnParticlesTimer;
 
 public:
 	EulerianFluidScene();

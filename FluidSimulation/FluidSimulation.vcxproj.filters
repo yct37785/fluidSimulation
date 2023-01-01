@@ -34,9 +34,6 @@
     <Filter Include="Fluid\Solver">
       <UniqueIdentifier>{5046f47f-0271-4c67-97f4-553e85833789}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Fluid\MAC">
-      <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fluid\SPH">
       <UniqueIdentifier>{3e55e03d-dc75-4a4d-bf77-393880e29935}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="Fluid\Particle">
       <UniqueIdentifier>{75cc8a43-4921-4f98-858c-60a45b4aa88a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fluid\Eulerian">
+      <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,15 +87,6 @@
     <ClCompile Include="JacobiMethod.cpp">
       <Filter>Fluid\Solver</Filter>
     </ClCompile>
-    <ClCompile Include="MAC_FluidGrid.cpp">
-      <Filter>Fluid\MAC</Filter>
-    </ClCompile>
-    <ClCompile Include="MAC_PressureSolve.cpp">
-      <Filter>Fluid\MAC</Filter>
-    </ClCompile>
-    <ClCompile Include="MAC_VelocityField.cpp">
-      <Filter>Fluid\MAC</Filter>
-    </ClCompile>
     <ClCompile Include="SPHFluidScene.cpp">
       <Filter>FluidScene</Filter>
     </ClCompile>
@@ -126,6 +117,9 @@
     <ClCompile Include="PressureSolve.cpp">
       <Filter>Fluid\Shared</Filter>
     </ClCompile>
+    <ClCompile Include="Eulerian_FluidGrid.cpp">
+      <Filter>Fluid\Eulerian</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -154,15 +148,6 @@
     </ClInclude>
     <ClInclude Include="JacobiMethod.h">
       <Filter>Fluid\Solver</Filter>
-    </ClInclude>
-    <ClInclude Include="MAC_FluidGrid.h">
-      <Filter>Fluid\MAC</Filter>
-    </ClInclude>
-    <ClInclude Include="MAC_PressureSolve.h">
-      <Filter>Fluid\MAC</Filter>
-    </ClInclude>
-    <ClInclude Include="MAC_VelocityField.h">
-      <Filter>Fluid\MAC</Filter>
     </ClInclude>
     <ClInclude Include="SPHFluidScene.h">
       <Filter>FluidScene</Filter>
@@ -193,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="PressureSolve.h">
       <Filter>Fluid\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Eulerian_FluidGrid.h">
+      <Filter>Fluid\Eulerian</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

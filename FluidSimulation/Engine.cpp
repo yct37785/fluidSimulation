@@ -185,7 +185,7 @@ void Engine::Init()
 	{
 		inputList[i] = false;
 	}
-	fluidScene = new HybridFluidScene();
+	fluidScene = new EulerianFluidScene();
 	fluidScene->Init();
 }
 
