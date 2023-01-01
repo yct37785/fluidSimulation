@@ -41,12 +41,8 @@ float MAC_FluidGrid::getTimeStep()
 void MAC_FluidGrid::spawnFluid()
 {
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	/*float xmin = 0.3f;
-	float xmax = 0.7f;
-	float ymin = 0.3f;
-	float ymax = 0.7f;*/
-	float xmin = 0.55f;
-	float xmax = 0.85f;
+	float xmin = 0.3f;
+	float xmax = 0.6f;
 	float ymin = 0.6f;
 	float ymax = 0.8f;
 	float space = 0.4f;
