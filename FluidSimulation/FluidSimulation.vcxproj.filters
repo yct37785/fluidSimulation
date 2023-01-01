@@ -40,6 +40,12 @@
     <Filter Include="Fluid\SPH">
       <UniqueIdentifier>{3e55e03d-dc75-4a4d-bf77-393880e29935}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\Shared">
+      <UniqueIdentifier>{ea4246e8-6fd6-42e4-a5ab-23274bd9bcf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fluid\Hybrid">
+      <UniqueIdentifier>{8410770c-9fcf-474b-9ded-33cd9f0e3941}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -96,6 +102,18 @@
     <ClCompile Include="SPH_FluidGrid.cpp">
       <Filter>Fluid\SPH</Filter>
     </ClCompile>
+    <ClCompile Include="VelocityField.cpp">
+      <Filter>Fluid\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="QuantityField.cpp">
+      <Filter>Fluid\Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Hybrid_FluidGrid.cpp">
+      <Filter>Fluid\Hybrid</Filter>
+    </ClCompile>
+    <ClCompile Include="HybridFluidScene.cpp">
+      <Filter>FluidScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -142,6 +160,18 @@
     </ClInclude>
     <ClInclude Include="SPH_FluidGrid.h">
       <Filter>Fluid\SPH</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityField.h">
+      <Filter>Fluid\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantityField.h">
+      <Filter>Fluid\Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Hybrid_FluidGrid.h">
+      <Filter>Fluid\Hybrid</Filter>
+    </ClInclude>
+    <ClInclude Include="HybridFluidScene.h">
+      <Filter>FluidScene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
