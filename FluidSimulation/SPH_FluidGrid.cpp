@@ -163,7 +163,7 @@ void SPH_FluidGrid::integrate(float t)
 
 void SPH_FluidGrid::Update(float deltaTime)
 {
-	float t = deltaTime * 0.005f;
+	float t = deltaTime * 0.03f;
 	spatialPartitioning();
 	findDensityPressure();
 	computeForces();

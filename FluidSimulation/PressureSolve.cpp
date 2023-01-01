@@ -1,5 +1,5 @@
 #include "PressureSolve.h"
-const float EULERIAN_DEN_WATER = 1000.f;	// water density = 1000 kg/m^3, in Eulerian pressure solve doesn't affect anything
+const float EULERIAN_DEN_WATER = 1000.f;	// water density = 1000 kg/m^3
 const float EULERIAN_DEN_AIR = 1.f;	// air density = 1 kg/m^3
 
 PressureSolve::PressureSolve(int xCellsCount, int yCellsCount)
@@ -71,6 +71,10 @@ void PressureSolve::resetContainers(unordered_map<int, int>& liquidCells)
 	p.resize(liquidCells.size(), 0.0);
 }
 
+/*
+* Note that density is on both LHS and RHS and plays 0 role in deriving the value of p, this makes sense since 
+* in this Eulerian solver the fluid is 100% incompressible, hence density doesn't change
+*/
 void PressureSolve::setupLinearEquations(VelocityField* uField, unordered_map<int, int>& liquidCells, float t)
 {
 	for (auto cell : liquidCells)
