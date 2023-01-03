@@ -133,15 +133,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CGSolver.cpp" />
+    <ClCompile Include="DFSPH_FluidGrid.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Eulerian_FluidGrid.cpp" />
-    <ClCompile Include="HybridFluidScene.cpp" />
     <ClCompile Include="EulerianFluidScene.cpp" />
     <ClCompile Include="FluidSimulation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GridMesh.cpp" />
     <ClCompile Include="JacobiMethod.cpp" />
-    <ClCompile Include="Hybrid_FluidGrid.cpp" />
     <ClCompile Include="MathUtility.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
@@ -158,13 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGSolver.h" />
+    <ClInclude Include="DFSPH_FluidGrid.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Eulerian_FluidGrid.h" />
-    <ClInclude Include="HybridFluidScene.h" />
     <ClInclude Include="EulerianFluidScene.h" />
     <ClInclude Include="GridMesh.h" />
     <ClInclude Include="JacobiMethod.h" />
-    <ClInclude Include="Hybrid_FluidGrid.h" />
     <ClInclude Include="MathUtility.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />

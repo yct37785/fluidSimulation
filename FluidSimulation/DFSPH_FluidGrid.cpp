@@ -1,6 +1,6 @@
-#include "SPH_FluidGrid.h"
+#include "DFSPH_FluidGrid.h"
 
-SPH_FluidGrid::SPH_FluidGrid(int xCellsCount, int yCellsCount)
+DFSPH_FluidGrid::DFSPH_FluidGrid(int xCellsCount, int yCellsCount)
 {
 	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
 	particleMesh = MeshBuilder::CreateMesh("sph_blue_marker");
@@ -11,13 +11,13 @@ SPH_FluidGrid::SPH_FluidGrid(int xCellsCount, int yCellsCount)
 	viewHeight = (float)yCellsCount * Hrad;
 }
 
-SPH_FluidGrid::~SPH_FluidGrid()
+DFSPH_FluidGrid::~DFSPH_FluidGrid()
 {
 	for (int i = 0; i < particles.size(); ++i)
 		delete particles[i];
 }
 
-void SPH_FluidGrid::spawnParticles()
+void DFSPH_FluidGrid::spawnParticles()
 {
 	for (float y = EPS; y < viewHeight - EPS * 2.f; y += Hrad)
 	{
@@ -32,7 +32,7 @@ void SPH_FluidGrid::spawnParticles()
 	cout << "Total particles: " << particles.size() << endl;
 }
 
-void SPH_FluidGrid::spatialPartitioning()
+void DFSPH_FluidGrid::spatialPartitioning()
 {
 	grids.clear();
 	for (int i = 0; i < particles.size(); ++i)
@@ -47,7 +47,7 @@ void SPH_FluidGrid::spatialPartitioning()
 	}
 }
 
-void SPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
+void DFSPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
 {
 	neighbors.clear();
 	glm::vec2 pos = particles[curr]->pos() / Hrad;
@@ -65,7 +65,7 @@ void SPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
 	}
 }
 
-void SPH_FluidGrid::findDensityPressure()
+void DFSPH_FluidGrid::findDensityPressure()
 {
 	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
@@ -92,7 +92,7 @@ void SPH_FluidGrid::findDensityPressure()
 		particles[i]->postUpdate();
 }
 
-void SPH_FluidGrid::computeForces()
+void DFSPH_FluidGrid::computeForces()
 {
 	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
@@ -123,7 +123,7 @@ void SPH_FluidGrid::computeForces()
 		particles[i]->postUpdate();
 }
 
-void SPH_FluidGrid::integrate(float t)
+void DFSPH_FluidGrid::integrate(float t)
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
@@ -161,7 +161,7 @@ void SPH_FluidGrid::integrate(float t)
 	}
 }
 
-void SPH_FluidGrid::Update(float deltaTime)
+void DFSPH_FluidGrid::Update(float deltaTime)
 {
 	float t = deltaTime * 0.02f;
 	spatialPartitioning();
@@ -170,7 +170,7 @@ void SPH_FluidGrid::Update(float deltaTime)
 	integrate(t);
 }
 
-void SPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
+void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
 {
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i]->draw(mvMat, mvpHandle, particleMesh);

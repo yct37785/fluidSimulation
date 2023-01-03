@@ -1,7 +1,6 @@
 #pragma once
 #include "EulerianFluidScene.h"
 #include "SPHFluidScene.h"
-#include "HybridFluidScene.h"
 
 class Engine {
 	static Engine* engine;

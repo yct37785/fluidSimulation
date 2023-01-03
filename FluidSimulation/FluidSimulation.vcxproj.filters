@@ -40,14 +40,14 @@
     <Filter Include="Fluid\Shared">
       <UniqueIdentifier>{ea4246e8-6fd6-42e4-a5ab-23274bd9bcf7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Fluid\Hybrid">
-      <UniqueIdentifier>{8410770c-9fcf-474b-9ded-33cd9f0e3941}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fluid\Particle">
       <UniqueIdentifier>{75cc8a43-4921-4f98-858c-60a45b4aa88a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Fluid\Eulerian">
       <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fluid\SPH\DFSPH">
+      <UniqueIdentifier>{7782c1ff-cebb-4d00-b8b0-81e7d7a507f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,12 +102,6 @@
     <ClCompile Include="QuantityField.cpp">
       <Filter>Fluid\Shared</Filter>
     </ClCompile>
-    <ClCompile Include="Hybrid_FluidGrid.cpp">
-      <Filter>Fluid\Hybrid</Filter>
-    </ClCompile>
-    <ClCompile Include="HybridFluidScene.cpp">
-      <Filter>FluidScene</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Fluid\Particle</Filter>
     </ClCompile>
@@ -119,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="Eulerian_FluidGrid.cpp">
       <Filter>Fluid\Eulerian</Filter>
+    </ClCompile>
+    <ClCompile Include="DFSPH_FluidGrid.cpp">
+      <Filter>Fluid\SPH\DFSPH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,12 +161,6 @@
     <ClInclude Include="QuantityField.h">
       <Filter>Fluid\Shared</Filter>
     </ClInclude>
-    <ClInclude Include="Hybrid_FluidGrid.h">
-      <Filter>Fluid\Hybrid</Filter>
-    </ClInclude>
-    <ClInclude Include="HybridFluidScene.h">
-      <Filter>FluidScene</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>Fluid\Particle</Filter>
     </ClInclude>
@@ -181,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="Eulerian_FluidGrid.h">
       <Filter>Fluid\Eulerian</Filter>
+    </ClInclude>
+    <ClInclude Include="DFSPH_FluidGrid.h">
+      <Filter>Fluid\SPH\DFSPH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
