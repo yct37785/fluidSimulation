@@ -10,6 +10,7 @@ class DFSPH_FluidGrid
 	float viewWidth, viewHeight;
 	// max
 	float maxVel, maxA, maxC;
+	float avgRho;
 
 	vector<SPH_Particle*> particles;
 	unordered_map<int, vector<int>> neighborhoods;
@@ -20,6 +21,9 @@ class DFSPH_FluidGrid
 	void computeNonPressureForces(float t);
 	void predictVelocities(float t);
 	void correctDensityError(float t);
+	void forwardParticles(float t);
+	float computeDensityMat();	// returns avg
+	void correctDivergenceError(float t);
 
 public:
 	DFSPH_FluidGrid(int xCellsCount, int yCellsCount);

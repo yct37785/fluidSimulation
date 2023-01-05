@@ -45,8 +45,8 @@ void SPH_Particle::p(float p) { curr.p = p; }
 float SPH_Particle::a() { return prev.a; }
 void SPH_Particle::a(float a) { curr.a = a; }
 
-float SPH_Particle::rho_matDiv() { return prev.rho_matDiv; }
-void SPH_Particle::rho_matDiv(float rho_matDiv) { curr.rho_matDiv = rho_matDiv; }
+float SPH_Particle::rho_mat() { return prev.rho_mat; }
+void SPH_Particle::rho_mat(float rho_mat) { curr.rho_mat = rho_mat; }
 
 glm::vec2 SPH_Particle::f() { return prev.f; }
 void SPH_Particle::f(glm::vec2 f) { curr.f = f; }
