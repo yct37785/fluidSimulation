@@ -42,6 +42,9 @@ void SPH_Particle::rho(float v) { curr.rho = v; }
 float SPH_Particle::p() { return prev.p; }
 void SPH_Particle::p(float v) { curr.p = v; }
 
+float SPH_Particle::a() { return prev.a; }
+void SPH_Particle::a(float a) { curr.a = a; }
+
 glm::vec2 SPH_Particle::f() { return prev.f; }
 void SPH_Particle::f(glm::vec2 v) { curr.f = v; }
 

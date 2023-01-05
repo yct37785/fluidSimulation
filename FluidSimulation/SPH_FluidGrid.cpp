@@ -111,7 +111,7 @@ void SPH_FluidGrid::computeForces()
 			if (r < Hrad)
 			{
 				// pressure force contributions
-				fpress += -glm::normalize(rij) * MASS * (pi->p() + pj->p()) / (2.f * pj->rho()) * SPIKY_GRAD * pow(Hrad - r, 3.f);
+				fpress += -glm::normalize(rij) * MASS * (pi->p() + pj->p()) / (2.f * pj->rho()) * POLY6_GRAD * pow(Hrad - r, 3.f);
 				// compute viscosity force contributions
 				fvisc += VISC * MASS * (pj->v() - pi->v()) / pj->rho() * VISC_LAP * (Hrad - r);
 			}

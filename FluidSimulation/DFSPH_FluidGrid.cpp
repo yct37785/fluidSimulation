@@ -32,25 +32,28 @@ void DFSPH_FluidGrid::spawnParticles()
 	cout << "Total particles: " << particles.size() << endl;
 }
 
-void DFSPH_FluidGrid::spatialPartitioning()
+void DFSPH_FluidGrid::loadNeighborhoods()
 {
-	grids.clear();
+	neighborhoods.clear();
 	for (int i = 0; i < particles.size(); ++i)
 	{
+		// store particle index in respective grid cell
 		glm::vec2 pos = particles[i]->pos() / Hrad;
 		int x = int(pos.x);
 		int y = int(pos.y);
-		int idx = y * xCellsCount + x;
-		if (!grids.count(idx))
-			grids[idx] = vector<int>();
-		grids[idx].push_back(i);
+		int posIdx = y * xCellsCount + x;
+		if (!neighborhoods.count(posIdx))
+			neighborhoods[posIdx] = vector<int>();
+		neighborhoods[posIdx].push_back(i);
 	}
 }
 
-void DFSPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
+// we simply get all the particles in the current + adjacent cells, particles >Hrad away
+// won't affect calculations thanks to the kernel
+void DFSPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx)
 {
 	neighbors.clear();
-	glm::vec2 pos = particles[curr]->pos() / Hrad;
+	glm::vec2 pos = particles[currparticleIdx]->pos() / Hrad;
 	int xidx = int(pos.x);
 	int yidx = int(pos.y);
 	// we check all adj. + curr grids
@@ -59,115 +62,63 @@ void DFSPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
 		for (int x = xidx - 1; x <= xidx + 1; ++x)
 		{
 			int idx = y * xCellsCount + x;
-			if (grids.count(idx))
-				neighbors.insert(neighbors.end(), grids[idx].begin(), grids[idx].end());
+			if (neighborhoods.count(idx))
+				neighbors.insert(neighbors.end(), neighborhoods[idx].begin(), neighborhoods[idx].end());
 		}
 	}
 }
 
-void DFSPH_FluidGrid::findDensityPressure()
+void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 {
 	vector<int> neighbors;
+	// per particle
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		SPH_Particle* pi = particles[i];
-		float rho = 0.f;
+		SPH_Particle* p_i = particles[i];
+		SPH_Particle* p_j;
 		getNeighborsInclusive(neighbors, i);
+		// compute rho_i
+		float rho_i = 0.f;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			SPH_Particle* pj = particles[neighbors[j]];
-			glm::vec2 rij = pj->pos() - pi->pos();
-			float r = glm::length(rij);
+			p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->pos() - p_i->pos());
 			if (r < Hrad)
 			{
-				// rhoi = sum(mj * Wij)
-				rho += MASS * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
+				// rho_i = sum_j(mass_j * W_ij)
+				rho_i += MASS * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
 			}
 		}
-		pi->rho(rho);
-		// Pi = K(pi - p0)
-		pi->p(GAS_CONST * (rho - REST_DENS));
+		// compute a_i
+		float a_i = 0.f;
+		float term_1 = 0.f, term_2 = 0.f;
+		for (int j = 0; j < neighbors.size(); ++j)
+		{
+			p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->pos() - p_i->pos());
+			if (r < Hrad)
+			{
+				float m_jW_j = MASS * POLY6_GRAD * pow(H - r, 3.f);
+				term_1 += m_jW_j;
+				term_2 += pow(m_jW_j, 2);
+			}
+		}
+		// a_i = rho_i / [ |sum_j(m_j * gradW_ij)|^2 + sum_j(|m_j * gradW_ij|^2) ]
+		a_i = max(rho_i / term_1 + term_2, pow(10.f, -6.f));
+		// set values
+		p_i->rho(rho_i);
+		p_i->a(a_i);
+
 	}
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i]->postUpdate();
-}
-
-void DFSPH_FluidGrid::computeForces()
-{
-	vector<int> neighbors;
-	for (int i = 0; i < particles.size(); ++i)
-	{
-		SPH_Particle* pi = particles[i];
-		glm::vec2 fpress(0.f, 0.f);
-		glm::vec2 fvisc(0.f, 0.f);
-		getNeighborsInclusive(neighbors, i);
-		for (int j = 0; j < neighbors.size(); ++j)
-		{
-			SPH_Particle* pj = particles[neighbors[j]];
-			if (i == neighbors[j])
-				continue;
-			glm::vec2 rij = pj->pos() - pi->pos();
-			float r = glm::length(rij);
-			if (r < Hrad)
-			{
-				// pressure force contributions
-				fpress += -glm::normalize(rij) * MASS * (pi->p() + pj->p()) / (2.f * pj->rho()) * SPIKY_GRAD * pow(Hrad - r, 3.f);
-				// compute viscosity force contributions
-				fvisc += VISC * MASS * (pj->v() - pi->v()) / pj->rho() * VISC_LAP * (Hrad - r);
-			}
-		}
-		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
-		pi->f(fpress + fvisc + fgrav);
-	}
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i]->postUpdate();
-}
-
-void DFSPH_FluidGrid::integrate(float t)
-{
-	for (int i = 0; i < particles.size(); ++i)
-	{
-		// forward Euler integration
-		SPH_Particle* p = particles[i];
-		p->forwardEuler(t);
-		p->postUpdate();
-
-		// enforce boundary conditions
-		glm::vec2 v = p->v();
-		glm::vec2 pos = p->pos();
-		if (pos.x - EPS < 0.f)
-		{
-			v.x *= BOUND_DAMPING;
-			pos.x = EPS;
-		}
-		if (pos.x + EPS > viewWidth)
-		{
-			v.x *= BOUND_DAMPING;
-			pos.x = viewWidth - EPS;
-		}
-		if (pos.y - EPS < 0.f)
-		{
-			v.y *= BOUND_DAMPING;
-			pos.y = EPS;
-		}
-		if (pos.y + EPS > viewHeight)
-		{
-			v.y *= BOUND_DAMPING;
-			pos.y = viewHeight - EPS;
-		}
-		p->v(v);
-		p->pos(pos);
-		p->postUpdate();
-	}
 }
 
 void DFSPH_FluidGrid::Update(float deltaTime)
 {
 	float t = deltaTime * 0.02f;
-	spatialPartitioning();
-	findDensityPressure();
-	computeForces();
-	integrate(t);
+	loadNeighborhoods();
+	computeDensitiesAndFactors(t);
 }
 
 void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)

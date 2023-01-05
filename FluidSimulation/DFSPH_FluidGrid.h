@@ -12,14 +12,11 @@ class DFSPH_FluidGrid
 	float maxVel, maxA, maxC;
 
 	vector<SPH_Particle*> particles;
-	unordered_map<int, vector<int>> grids;
+	unordered_map<int, vector<int>> neighborhoods;
 
-	void spatialPartitioning();
-	void getNeighborsInclusive(vector<int>& neighbors, int curr);
-
-	void findDensityPressure();
-	void computeForces();
-	void integrate(float t);
+	void loadNeighborhoods();
+	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
+	void computeDensitiesAndFactors(float t);
 
 public:
 	DFSPH_FluidGrid(int xCellsCount, int yCellsCount);
