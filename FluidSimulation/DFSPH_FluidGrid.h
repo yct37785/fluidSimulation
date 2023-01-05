@@ -17,6 +17,7 @@ class DFSPH_FluidGrid
 	void loadNeighborhoods();
 	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
 	void computeDensitiesAndFactors(float t);
+	void computeNonPressureForces(float t);
 
 public:
 	DFSPH_FluidGrid(int xCellsCount, int yCellsCount);

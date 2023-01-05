@@ -81,6 +81,7 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		float rho_i = 0.f;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->pos() - p_i->pos());
 			if (r < Hrad)
@@ -94,6 +95,7 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		float term_1 = 0.f, term_2 = 0.f;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->pos() - p_i->pos());
 			if (r < Hrad)
@@ -114,11 +116,36 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		particles[i]->postUpdate();
 }
 
+void DFSPH_FluidGrid::computeNonPressureForces(float t)
+{
+	vector<int> neighbors;
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		SPH_Particle* pi = particles[i];
+		glm::vec2 fvisc(0.f, 0.f);
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
+		{
+			if (i == neighbors[j]) continue;
+			SPH_Particle* pj = particles[neighbors[j]];
+			float r = glm::length(pj->pos() - pi->pos());
+			// compute viscosity force contributions
+			if (r < Hrad)
+				fvisc += VISC * MASS * (pj->v() - pi->v()) / pj->rho() * VISC_LAP * (Hrad - r);
+		}
+		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
+		pi->f(fvisc + fgrav);
+	}
+	for (int i = 0; i < particles.size(); ++i)
+		particles[i]->postUpdate();
+}
+
 void DFSPH_FluidGrid::Update(float deltaTime)
 {
 	float t = deltaTime * 0.02f;
 	loadNeighborhoods();
 	computeDensitiesAndFactors(t);
+	computeNonPressureForces(t);
 }
 
 void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
