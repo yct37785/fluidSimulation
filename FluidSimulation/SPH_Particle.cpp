@@ -34,19 +34,22 @@ void SPH_Particle::draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh)
 }
 
 const glm::vec2& SPH_Particle::pos() { return prev.pos; }
-void SPH_Particle::pos(glm::vec2 v) { curr.pos = v; }
+void SPH_Particle::pos(glm::vec2 pos) { curr.pos = pos; }
 
 float SPH_Particle::rho() { return prev.rho; }
-void SPH_Particle::rho(float v) { curr.rho = v; }
+void SPH_Particle::rho(float rho) { curr.rho = rho; }
 
 float SPH_Particle::p() { return prev.p; }
-void SPH_Particle::p(float v) { curr.p = v; }
+void SPH_Particle::p(float p) { curr.p = p; }
 
 float SPH_Particle::a() { return prev.a; }
 void SPH_Particle::a(float a) { curr.a = a; }
 
+float SPH_Particle::rho_matDiv() { return prev.rho_matDiv; }
+void SPH_Particle::rho_matDiv(float rho_matDiv) { curr.rho_matDiv = rho_matDiv; }
+
 glm::vec2 SPH_Particle::f() { return prev.f; }
-void SPH_Particle::f(glm::vec2 v) { curr.f = v; }
+void SPH_Particle::f(glm::vec2 f) { curr.f = f; }
 
 glm::vec2 SPH_Particle::v() { return prev.v; }
 void SPH_Particle::v(glm::vec2 v) { curr.v = v; }

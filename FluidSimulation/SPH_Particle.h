@@ -4,6 +4,7 @@
 struct SPH_ParticleData
 {
 	float rho, p, a;	// density, pressure, factor (for DFSPH)
+	float rho_matDiv;	// (for DFSPH)
 	glm::vec2 pos;	// pos
 	glm::vec2 v;
 	glm::vec2 f;
@@ -13,7 +14,7 @@ struct SPH_ParticleData
 		this->pos = pos;
 		this->v = v;
 		this->f = glm::vec2(0.f, 0.f);
-		rho = p = a = 0.f;
+		rho = p = a = rho_matDiv = 0.f;
 	}
 
 	SPH_ParticleData& operator=(const SPH_ParticleData& copy)
@@ -21,6 +22,7 @@ struct SPH_ParticleData
 		this->rho = copy.rho;
 		this->p = copy.p;
 		this->a = copy.a;
+		this->rho_matDiv = copy.rho_matDiv;
 		this->pos = copy.pos;
 		this->v = copy.v;
 		this->f = copy.f;
@@ -42,15 +44,17 @@ public:
 	void draw(glm::mat4& mvMat, int mvpHandle, Mesh* particleMesh);
 
 	const glm::vec2& pos();
-	void pos(glm::vec2 v);
+	void pos(glm::vec2 pos);
 	float rho();
-	void rho(float v);
+	void rho(float rho);
 	float p();
-	void p(float v);
+	void p(float p);
 	float a();
 	void a(float a);
+	float rho_matDiv();
+	void rho_matDiv(float rho_matDiv);
 	glm::vec2 f();
-	void f(glm::vec2 v);
+	void f(glm::vec2 f);
 	glm::vec2 v();
 	void v(glm::vec2 v);
 };

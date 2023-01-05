@@ -81,7 +81,6 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		float rho_i = 0.f;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->pos() - p_i->pos());
 			if (r < Hrad)
@@ -100,9 +99,9 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 			float r = glm::length(p_j->pos() - p_i->pos());
 			if (r < Hrad)
 			{
-				float m_jW_j = MASS * POLY6_GRAD * pow(H - r, 3.f);
-				term_1 += m_jW_j;
-				term_2 += pow(m_jW_j, 2);
+				float m_jgradW_j = MASS * POLY6_GRAD * pow(H - r, 3.f);
+				term_1 += m_jgradW_j;
+				term_2 += pow(m_jgradW_j, 2);
 			}
 		}
 		// a_i = rho_i / [ |sum_j(m_j * gradW_ij)|^2 + sum_j(|m_j * gradW_ij|^2) ]
@@ -121,23 +120,70 @@ void DFSPH_FluidGrid::computeNonPressureForces(float t)
 	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		SPH_Particle* pi = particles[i];
+		SPH_Particle* p_i = particles[i];
 		glm::vec2 fvisc(0.f, 0.f);
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
 			if (i == neighbors[j]) continue;
-			SPH_Particle* pj = particles[neighbors[j]];
-			float r = glm::length(pj->pos() - pi->pos());
+			SPH_Particle* p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->pos() - p_i->pos());
 			// compute viscosity force contributions
 			if (r < Hrad)
-				fvisc += VISC * MASS * (pj->v() - pi->v()) / pj->rho() * VISC_LAP * (Hrad - r);
+				fvisc += VISC * MASS * (p_j->v() - p_i->v()) / p_j->rho() * VISC_LAP * (Hrad - r);
 		}
-		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
-		pi->f(fvisc + fgrav);
+		// compute external force contributions
+		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / p_i->rho();
+		p_i->f(fvisc + fgrav);
 	}
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i]->postUpdate();
+}
+
+void DFSPH_FluidGrid::predictVelocities(float t)
+{
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		// v*i = v_i + t * fadv_i / m_i
+		glm::vec2 v_i = particles[i]->v();
+		particles[i]->v(v_i + t * particles[i]->f() / MASS);
+	}
+	for (int i = 0; i < particles.size(); ++i)
+		particles[i]->postUpdate();
+}
+
+void DFSPH_FluidGrid::correctDensityError(float t)
+{
+	vector<int> neighbors;
+	// find mat derivative of density
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		SPH_Particle* p_i = particles[i];
+		// Drho_i / Dt = sum_j(m_j(v_i - v_j) * gradW_ij)
+		float rho_i_matDiv = 0.f;
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
+		{
+			SPH_Particle* p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->pos() - p_i->pos());
+			if (r < Hrad)
+				rho_i_matDiv += MASS * glm::length(p_i->v() - p_j->v()) * POLY6_GRAD * pow(H - r, 3.f);
+		}
+		p_i->rho_matDiv(rho_i_matDiv);
+	}
+	float avgDiv = 1000.f;
+	float thres = 0.0001f;
+	// while avg(Drho / Dt) > threshold nV
+	while (avgDiv > thres)
+	{
+		// for all particles
+		for (int i = 0; i < particles.size(); ++i)
+		{
+			//// stiffness params
+			//float kv_i = 1 / t * rho_i_matDiv * p_i->a();
+			//float kv_j = 1 / t * rho_i_matDiv * p_i->a();
+		}
+	}
 }
 
 void DFSPH_FluidGrid::Update(float deltaTime)
@@ -146,6 +192,9 @@ void DFSPH_FluidGrid::Update(float deltaTime)
 	loadNeighborhoods();
 	computeDensitiesAndFactors(t);
 	computeNonPressureForces(t);
+	// todo: timestep CFL
+	predictVelocities(t);
+	correctDensityError(t);
 }
 
 void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
