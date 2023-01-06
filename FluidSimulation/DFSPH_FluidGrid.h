@@ -15,12 +15,18 @@ class DFSPH_FluidGrid
 	vector<SPH_Particle*> particles;
 	unordered_map<int, vector<int>> neighborhoods;
 
+	// compute particle values
+	void ComputeParticleValues(float t);
 	void loadNeighborhoods();
 	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
 	void computeDensitiesAndFactors(float t);
+	// velocity update
+	void VelocityUpdate(float t);
 	void computeNonPressureForces(float t);
 	void predictVelocities(float t);
-	void correctDensityError(float t);
+	// correct density error
+	void CorrectDensityError(float t);
+	// forward particles
 	void forwardParticles(float t);
 	float computeDensityMat();	// returns avg
 	void correctDivergenceError(float t);
