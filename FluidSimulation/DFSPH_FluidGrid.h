@@ -19,13 +19,14 @@ class DFSPH_FluidGrid
 	void ComputeParticleValues(float t);
 	void loadNeighborhoods();
 	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
-	void computeDensitiesAndFactors(float t);
+	void computeDensitiesAndFactors(float t, bool factor);
 	// velocity update
 	void VelocityUpdate(float t);
 	void computeNonPressureForces(float t);
 	void predictVelocities(float t);
 	// correct density error
 	void CorrectDensityError(float t);
+	void computeUpdatedDensities(float t);
 	// forward particles
 	void forwardParticles(float t);
 	float computeDensityMat();	// returns avg

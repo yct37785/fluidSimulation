@@ -22,6 +22,7 @@ void SPHFluidScene::Init()
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
 	fluidGrid = new DFSPH_FluidGrid(xCellsCount, yCellsCount);
 	spawnParticles = false;
+	fluidGrid->spawnParticles();
 }
 
 void SPHFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)

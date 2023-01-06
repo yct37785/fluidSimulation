@@ -84,6 +84,7 @@ void SPH_FluidGrid::findDensityPressure()
 				rho += MASS * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
 			}
 		}
+		cout << rho << endl;
 		pi->rho(rho);
 		// Pi = K(pi - p0)
 		pi->p(GAS_CONST * (rho - REST_DENS));
