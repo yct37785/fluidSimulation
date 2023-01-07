@@ -126,6 +126,9 @@
     <ClCompile Include="IISPH_Particle.cpp">
       <Filter>Fluid\SPH\IISPH</Filter>
     </ClCompile>
+    <ClCompile Include="DFSPH_Particle.cpp">
+      <Filter>Fluid\SPH\DFSPH</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="IISPH_Particle.h">
       <Filter>Fluid\SPH\IISPH</Filter>
+    </ClInclude>
+    <ClInclude Include="DFSPH_Particle.h">
+      <Filter>Fluid\SPH\DFSPH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
