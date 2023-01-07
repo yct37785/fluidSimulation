@@ -1,5 +1,5 @@
 #pragma once
-#include "SPH_Particle.h"
+#include "IISPH_Particle.h"
 
 class IISPH_FluidGrid
 {
@@ -9,15 +9,31 @@ class IISPH_FluidGrid
 	int xCellsCount, yCellsCount;
 	float viewWidth, viewHeight;
 
-	vector<SPH_Particle*> particles;
+	vector<IISPH_Particle*> particles;
 	unordered_map<int, vector<int>> neighborhoods;
+
+	float avgRho;
+
+	void updateValues();
+
+	float W(float r);
+	float gradW(float r);
 
 	void loadNeighborhoods();
 	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
+
 	// predict advection
 	void PredictAdvection(float t);
-	void compute_vadv_dii(float t);
-	void compute_aii(float t);
+	void part_1(float t);
+	void part_2(float t);
+
+	// pressure solve
+	void PressureSolve(float t);
+	void part_3(float t);
+	void part_4(float t);
+
+	// integration
+	void Integration(float t);
 
 public:
 	IISPH_FluidGrid(int xCellsCount, int yCellsCount);
