@@ -13,7 +13,7 @@ class DFSPH_FluidGrid
 	vector<DFSPH_Particle*> particles;
 	unordered_map<int, vector<int>> neighborhoods;
 
-	float avgRho;
+	float avgRho, avgRhoDivergence;
 
 	void updateValues();
 
@@ -36,6 +36,14 @@ class DFSPH_FluidGrid
 	void CorrectDensityError(float t);
 	void predictDensity(float t);
 	void adaptVelocities(float t);
+
+	// update position
+	void UpdatePositions(float t);
+
+	// correct divergence error
+	void CorrectDivergenceError(float t);
+	void computeDensityDivergence(float t);
+	void adaptVelocitiesDivSolver(float t);
 
 
 	//void ComputeParticleValues(float t);
