@@ -9,6 +9,7 @@ IISPH_FluidGrid::IISPH_FluidGrid(int xCellsCount, int yCellsCount)
 	this->yCellsCount = yCellsCount;
 	viewWidth = (float)xCellsCount * Hrad;
 	viewHeight = (float)yCellsCount * Hrad;
+	avgRho = 0.f;
 }
 
 IISPH_FluidGrid::~IISPH_FluidGrid()
@@ -98,6 +99,7 @@ void IISPH_FluidGrid::part_1(float t)
 		float d_ii = 0.f;
 		glm::vec2 fvisc(0.f, 0.f);
 		getNeighborsInclusive(neighbors, i);
+		cout << neighbors.size() << endl;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
 			p_j = particles[neighbors[j]];
@@ -106,6 +108,7 @@ void IISPH_FluidGrid::part_1(float t)
 			{
 				// compute rho(i)
 				rho_i += MASS * W(r);
+				cout << MASS * W(r) << endl;
 				// compute viscosity force contributions
 				fvisc += VISC * MASS * (p_j->prev.v - p_i->prev.v) / p_j->prev.rho * VISC_LAP * (Hrad - r);
 				// compute d(ii)
@@ -124,8 +127,10 @@ void IISPH_FluidGrid::part_1(float t)
 		p_i->curr.rho = rho_i;
 		p_i->curr.v_adv = v_adv_i;
 		p_i->curr.d_ii = d_ii;
+		avgRho += rho_i;
 	}
 	updateValues();
+	avgRho = avgRho / (float)particles.size();
 }
 
 void IISPH_FluidGrid::part_2(float t)
@@ -236,20 +241,53 @@ void IISPH_FluidGrid::part_4(float t)
 
 void IISPH_FluidGrid::PressureSolve(float t)
 {
-	avgRho = 0.f;
 	float threshold = 0.1f;
-	while (avgRho - REST_DENS > threshold)
+	while (abs(avgRho - REST_DENS) > threshold)
 	{
+		avgRho = 0.f;
+		part_1(t);
+		part_2(t);
 		part_3(t);
 		part_4(t);
+		Integration(t);
 	}
+}
+
+void IISPH_FluidGrid::Integration(float t)
+{
+	vector<int> neighbors;
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		IISPH_Particle* p_i = particles[i];
+		IISPH_Particle* p_j;
+		float fpress = 0.f;
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
+		{
+			p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			if (r < Hrad)
+			{
+				// compute fpress(i)
+				fpress += MASS * ((p_i->prev.p / pow(p_i->prev.rho, 2.f)) + (p_j->prev.p / pow(p_j->prev.rho, 2.f))) * gradW(r);
+			}
+		}
+		// fpress(i)
+		fpress = -MASS * fpress;
+		// set values
+		glm::vec2 v_i = p_i->prev.v_adv + t * (fpress / MASS);
+		p_i->curr.pos = p_i->prev.pos + t * v_i;
+		p_i->curr.v = v_i;
+	}
+	updateValues();
 }
 
 void IISPH_FluidGrid::Update(float deltaTime)
 {
 	float t = deltaTime * 0.2f;
-	PredictAdvection(t);
+	//PredictAdvection(t);
 	PressureSolve(t);
+	//Integration(t);
 }
 
 void IISPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
