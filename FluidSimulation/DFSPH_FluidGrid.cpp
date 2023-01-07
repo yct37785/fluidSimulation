@@ -175,13 +175,16 @@ void DFSPH_FluidGrid::computeUpdatedDensities(float t)
 			if (r < Hrad)
 			{
 				// EQ: rho*i = sum_j(mass_j * (v_i - v_j) * gradW_ij)
-				rhoMat += MASS * glm::length(p_i->v() - p_j->v()) * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
+				float velLen = glm::length(p_i->v() - p_j->v());
+				if (isinf(velLen))
+					velLen = 0.f;
+				rhoMat += MASS * velLen * POLY6_GRAD * pow(H - r, 3.f);
 			}
 		}
 		// set values
-		float rho_u = p_i->rho() + t * rhoMat;
-		p_i->rho(rho_u);
-		avgRho += rho_u;
+		float rho_i = p_i->rho() + t * rhoMat;
+		p_i->rho(rho_i);
+		avgRho += rho_i;
 	}
 	for (int i = 0; i < particles.size(); ++i)
 		particles[i]->postUpdate();
@@ -193,7 +196,9 @@ void DFSPH_FluidGrid::CorrectDensityError(float t)
 	vector<int> neighbors;
 	float thres = 0.01f;
 	// while avg(Drho / Dt) > threshold nV
-	while (abs(avgRho - REST_DENS) > thres)
+	int counter = 0;
+	//while (abs(avgRho - REST_DENS) > thres)
+	while(counter < 1)
 	{
 		// for all particles
 		for (int i = 0; i < particles.size(); ++i)
@@ -217,6 +222,7 @@ void DFSPH_FluidGrid::CorrectDensityError(float t)
 		for (int i = 0; i < particles.size(); ++i)
 			particles[i]->postUpdate();
 		computeUpdatedDensities(t);
+		counter++;
 	}
 }
 
@@ -274,7 +280,6 @@ void DFSPH_FluidGrid::correctDivergenceError(float t)
 			getNeighborsInclusive(neighbors, i);
 			for (int j = 0; j < neighbors.size(); ++j)
 			{
-				if (i == neighbors[j]) continue;
 				SPH_Particle* p_j = particles[neighbors[j]];
 				float r = glm::length(p_j->pos() - p_i->pos());
 				// stiffness params
@@ -305,12 +310,14 @@ void DFSPH_FluidGrid::VelocityUpdate(float t)
 
 void DFSPH_FluidGrid::Update(float deltaTime)
 {
-	float t = deltaTime * 0.02f;
+	float t = deltaTime * 0.2f;
 	ComputeParticleValues(t);
 	VelocityUpdate(t);
+	//forwardParticles(t);
 	// todo: timestep CFL
 	CorrectDensityError(t);
-	cout << "asdasd" << endl;
+	forwardParticles(t);
+	//cout << "asdasd" << endl;
 }
 
 void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
