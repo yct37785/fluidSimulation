@@ -24,6 +24,7 @@ class IISPH_FluidGrid
 
 	// predict advection
 	void PredictAdvection(float t);
+	void computeDensity(float t);
 	void part_1(float t);
 	void part_2(float t);
 

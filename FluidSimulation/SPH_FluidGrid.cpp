@@ -84,7 +84,6 @@ void SPH_FluidGrid::findDensityPressure()
 				rho += MASS * POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
 			}
 		}
-		cout << rho << endl;
 		pi->rho(rho);
 		// Pi = K(pi - p0)
 		pi->p(GAS_CONST * (rho - REST_DENS));
@@ -118,6 +117,7 @@ void SPH_FluidGrid::computeForces()
 			}
 		}
 		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
+		cout << "fgrav: " << fgrav.x << ", " << fgrav.y << endl;
 		pi->f(fpress + fvisc + fgrav);
 	}
 	for (int i = 0; i < particles.size(); ++i)

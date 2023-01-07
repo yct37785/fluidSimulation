@@ -88,7 +88,7 @@ void IISPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int currpart
 /**************************************************************************************
 * Predict advection
 **************************************************************************************/
-void IISPH_FluidGrid::part_1(float t)
+void IISPH_FluidGrid::computeDensity(float t)
 {
 	vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
@@ -96,10 +96,7 @@ void IISPH_FluidGrid::part_1(float t)
 		IISPH_Particle* p_i = particles[i];
 		IISPH_Particle* p_j;
 		float rho_i = 0.f;
-		float d_ii = 0.f;
-		glm::vec2 fvisc(0.f, 0.f);
 		getNeighborsInclusive(neighbors, i);
-		cout << neighbors.size() << endl;
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
 			p_j = particles[neighbors[j]];
@@ -108,7 +105,30 @@ void IISPH_FluidGrid::part_1(float t)
 			{
 				// compute rho(i)
 				rho_i += MASS * W(r);
-				cout << MASS * W(r) << endl;
+			}
+		}
+		// set values
+		p_i->prev.rho = p_i->curr.rho = rho_i;
+	}
+}
+
+void IISPH_FluidGrid::part_1(float t)
+{
+	vector<int> neighbors;
+	for (int i = 0; i < particles.size(); ++i)
+	{
+		IISPH_Particle* p_i = particles[i];
+		IISPH_Particle* p_j;
+		float d_ii = 0.f;
+		glm::vec2 fvisc(0.f, 0.f);
+		getNeighborsInclusive(neighbors, i);
+		for (int j = 0; j < neighbors.size(); ++j)
+		{
+			if (i == neighbors[j]) continue;
+			p_j = particles[neighbors[j]];
+			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			if (r < Hrad)
+			{
 				// compute viscosity force contributions
 				fvisc += VISC * MASS * (p_j->prev.v - p_i->prev.v) / p_j->prev.rho * VISC_LAP * (Hrad - r);
 				// compute d(ii)
@@ -118,19 +138,19 @@ void IISPH_FluidGrid::part_1(float t)
 		// compute f_adv(i)
 		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / p_i->prev.rho;
 		glm::vec2 fadv = fvisc + fgrav;
+		//cout << "fadv: " << fadv.x << ", " << fadv.y << endl;
 		// predict v_adv(i)
 		glm::vec2 v_adv_i = p_i->prev.v + t * (fadv / MASS);
+		//cout << "v_adv_i: " << v_adv_i.x << ", " << v_adv_i.y << endl;
 		// d(ii)
 		d_ii = pow(t, 2.f) * d_ii;
+		//cout << "d_ii: " << d_ii << endl;
 		// set values
 		p_i->curr.p_prev = p_i->prev.p;
-		p_i->curr.rho = rho_i;
 		p_i->curr.v_adv = v_adv_i;
 		p_i->curr.d_ii = d_ii;
-		avgRho += rho_i;
 	}
 	updateValues();
-	avgRho = avgRho / (float)particles.size();
 }
 
 void IISPH_FluidGrid::part_2(float t)
@@ -145,6 +165,7 @@ void IISPH_FluidGrid::part_2(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
@@ -160,8 +181,11 @@ void IISPH_FluidGrid::part_2(float t)
 		}
 		// rho_adv(i)
 		rho_adv_i = p_i->prev.rho + t * rho_adv_i;
+		//cout << "rho_adv_i: " << rho_adv_i << endl;
 		// rho0(i)
 		float p0_i = 0.5f * p_i->prev.p_prev;
+		//cout << "p0_i: " << p0_i << endl;
+		//cout << "a_ii: " << a_ii << endl;
 		// set values
 		p_i->curr.rho_adv = rho_adv_i;
 		p_i->curr.a_ii = a_ii;
@@ -172,6 +196,7 @@ void IISPH_FluidGrid::part_2(float t)
 
 void IISPH_FluidGrid::PredictAdvection(float t)
 {
+	computeDensity(t);
 	part_1(t);
 	part_2(t);
 }
@@ -187,6 +212,7 @@ void IISPH_FluidGrid::part_3(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
@@ -197,6 +223,7 @@ void IISPH_FluidGrid::part_3(float t)
 		}
 		// d(ij)_p(j)
 		dij_pj = pow(t, 2.f) * dij_pj;
+		//cout << "dij_pj: " << dij_pj << endl;
 		// set values
 		p_i->curr.dij_pj = dij_pj;
 	}
@@ -220,6 +247,7 @@ void IISPH_FluidGrid::part_4(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
@@ -234,7 +262,9 @@ void IISPH_FluidGrid::part_4(float t)
 		}
 		// p(i)
 		// set values
-		p_i->curr.p = eq_a + (RELAX_FACTOR * 1.f / p_i->prev.a_ii) * (eq_b - eq_c_sum);
+		p_i->curr.p = eq_a + (RELAX_FACTOR * (1.f / p_i->prev.a_ii)) * (eq_b - eq_c_sum);
+		if (isinf(p_i->curr.p)) p_i->curr.p = 0.f;
+		cout << "p_i: " << p_i->curr.p << endl;
 	}
 	updateValues();
 }
@@ -244,12 +274,8 @@ void IISPH_FluidGrid::PressureSolve(float t)
 	float threshold = 0.1f;
 	while (abs(avgRho - REST_DENS) > threshold)
 	{
-		avgRho = 0.f;
-		part_1(t);
-		part_2(t);
 		part_3(t);
 		part_4(t);
-		Integration(t);
 	}
 }
 
@@ -264,6 +290,7 @@ void IISPH_FluidGrid::Integration(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
+			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
@@ -285,7 +312,8 @@ void IISPH_FluidGrid::Integration(float t)
 void IISPH_FluidGrid::Update(float deltaTime)
 {
 	float t = deltaTime * 0.2f;
-	//PredictAdvection(t);
+	loadNeighborhoods();
+	PredictAdvection(t);
 	PressureSolve(t);
 	//Integration(t);
 }
