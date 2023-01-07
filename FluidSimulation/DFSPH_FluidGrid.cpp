@@ -20,12 +20,6 @@ DFSPH_FluidGrid::~DFSPH_FluidGrid()
 		delete particles[i];
 }
 
-void DFSPH_FluidGrid::updateValues()
-{
-	for (int i = 0; i < particles.size(); ++i)
-		particles[i]->prev = particles[i]->curr;
-}
-
 float DFSPH_FluidGrid::W(float r)
 {
 	return POLY6 * pow(Hrad2 - pow(r, 2), 3.f);
@@ -57,7 +51,7 @@ void DFSPH_FluidGrid::loadNeighborhoods()
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		// store particle index in respective grid cell
-		glm::vec2 pos = particles[i]->prev.pos / Hrad;
+		glm::vec2 pos = particles[i]->pos / Hrad;
 		int x = int(pos.x);
 		int y = int(pos.y);
 		int posIdx = y * xCellsCount + x;
@@ -72,7 +66,7 @@ void DFSPH_FluidGrid::loadNeighborhoods()
 void DFSPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx)
 {
 	neighbors.clear();
-	glm::vec2 pos = particles[currparticleIdx]->prev.pos / Hrad;
+	glm::vec2 pos = particles[currparticleIdx]->pos / Hrad;
 	int xidx = int(pos.x);
 	int yidx = int(pos.y);
 	// we check all adj. + curr grids
@@ -92,7 +86,7 @@ float DFSPH_FluidGrid::getTimeStep(float t)
 	float maxVel = 0.f;
 	for (int i = 0; i < particles.size(); ++i)
 	{
-		float velLen = glm::length(particles[i]->prev.v);
+		float velLen = glm::length(particles[i]->v);
 		if (velLen > maxVel)
 			maxVel = velLen;
 	}
@@ -115,7 +109,7 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute rho(i)
@@ -129,9 +123,9 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 			}
 		}
 		// set values
-		p_i->prev.rho = p_i->curr.rho = rho_i;
-		float a_i = max(rho_i / (pow(a_i_term_1, 2.f) + a_i_term_2), pow(10.f, -6.f));
-		p_i->prev.a = p_i->curr.a = a_i;
+		p_i->rho = rho_i;
+		float a_i = rho_i / max((pow(a_i_term_1, 2.f) + a_i_term_2), pow(10.f, -6.f));
+		p_i->a = a_i;
 		//cout << "rho_i: " << rho_i << endl;
 		//cout << "a_i: " << a_i << endl;
 	}
@@ -159,19 +153,19 @@ void DFSPH_FluidGrid::computeNonPressureForces(float t)
 		{
 			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute viscosity force contributions
-				f_visc += VISC * MASS * (p_j->prev.v - p_i->prev.v) / p_j->prev.rho * VISC_LAP * (Hrad - r);
+				f_visc += VISC * MASS * (p_j->v - p_i->v) / p_j->rho * VISC_LAP * (Hrad - r);
 			}
 		}
 		// compute f_adv(i)
-		glm::vec2 f_grav = glm::vec2(0.f, G) * MASS / p_i->prev.rho;
+		glm::vec2 f_grav = glm::vec2(0.f, G) * MASS / p_i->rho;
 		glm::vec2 f_adv = f_visc + f_grav;
 		//cout << "fadv: " << f_adv.x << ", " << f_adv.y << endl;
 		// set values
-		p_i->prev.f_adv = p_i->curr.f_adv = f_adv;
+		p_i->f_adv = f_adv;
 	}
 }
 
@@ -180,8 +174,7 @@ void DFSPH_FluidGrid::advanceVelocities(float t)
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		DFSPH_Particle* p_i = particles[i];
-		p_i->prev.v_adv = p_i->curr.v_adv = p_i->prev.v + t * p_i->prev.f_adv / MASS;
-		p_i->prev.v_adv_initial = p_i->curr.v_adv_initial = p_i->prev.v_adv;
+		p_i->v_adv = p_i->v + t * p_i->f_adv / MASS;
 		//cout << "v*: " << p_i->prev.v_adv.x << ", " << p_i->prev.v_adv.y << endl;
 	}
 }
@@ -209,25 +202,25 @@ void DFSPH_FluidGrid::predictDensity(float t)
 		{
 			//if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute rho(i)
-				rho_adv_i += MASS * glm::dot((p_i->prev.v_adv - p_j->prev.v_adv), glm::vec2(gradW(r)));
+				rho_adv_i += MASS * glm::dot((p_i->v_adv - p_j->v_adv), glm::vec2(gradW(r)));
 			}
 		}
 		// rho(i)
 		/*if (t * rho_adv_i > 0.f)
 			cout << i << ": " << t * rho_adv_i << endl;*/
-		rho_adv_i = p_i->prev.rho + t * rho_adv_i;
+		rho_adv_i = p_i->rho + t * rho_adv_i;
 		/*if (i == 200)
 			cout << "rho_i: " << rho_i << endl;*/
 		avgRho += rho_adv_i;
 		//cout << "rho_adv_i: " << rho_adv_i << endl;
 		// update values
-		p_i->prev.rho_adv = p_i->curr.rho_adv = rho_adv_i;
+		p_i->rho_adv = rho_adv_i;
 	}
-	avgRho = avgRho / (float)particles.size();
+	avgRho /= (float)particles.size();
 	//cout << "avgRho: " << avgRho << endl;
 }
 
@@ -245,19 +238,19 @@ void DFSPH_FluidGrid::adaptVelocities(float t)
 		{
 			//if (i == neighbors[j]) continue;
 			// compute k(i)
-			float k_i = ((p_i->prev.rho_adv - REST_DEN2) / pow(t, 2.f)) * p_i->prev.a;
+			float k_i = ((p_i->rho_adv - REST_DEN2) / pow(t, 2.f)) * p_i->a;
 			//cout << "p_i->prev.rho: " << p_i->prev.rho << endl;
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute k(j)
-				float k_j = ((p_j->prev.rho_adv - REST_DEN2) / pow(t, 2.f)) * p_j->prev.a;
-				sum += MASS * (k_i / p_i->prev.rho + k_j / p_j->prev.rho) * gradW(r);
+				float k_j = ((p_j->rho_adv - REST_DEN2) / pow(t, 2.f)) * p_j->a;
+				sum += MASS * (k_i / p_i->rho + k_j / p_j->rho) * gradW(r);
 			}
 		}
 		// adapt velocities by advancing with predicted change
-		p_i->prev.v_adv = p_i->curr.v_adv = p_i->prev.v_adv - t * sum;
+		p_i->v_adv -= t * sum;
 		//cout << "v*: " << p_i->prev.v.x << ", " << p_i->prev.v.y << endl;
 	}
 }
@@ -282,7 +275,7 @@ void DFSPH_FluidGrid::UpdatePositions(float t)
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		DFSPH_Particle* p_i = particles[i];
-		p_i->prev.pos = p_i->curr.pos = p_i->prev.pos + t * p_i->prev.v_adv;
+		p_i->pos += t * p_i->v_adv;
 	}
 }
 
@@ -302,15 +295,15 @@ void DFSPH_FluidGrid::computeDensityDivergence(float t)
 		{
 			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute rho_mat(i)
-				sum += MASS * glm::dot((p_i->prev.v_adv - p_j->prev.v_adv), glm::vec2(gradW(r)));
+				sum += MASS * glm::dot((p_i->v_adv - p_j->v_adv), glm::vec2(gradW(r)));
 			}
 		}
 		// adapt velocities
-		p_i->prev.rho_mat = p_i->curr.rho_mat = sum;
+		p_i->rho_mat = sum;
 		avgRhoDivergence += sum;
 		//cout << "rho_mat: " << sum << endl;
 	}
@@ -331,19 +324,19 @@ void DFSPH_FluidGrid::adaptVelocitiesDivSolver(float t)
 		{
 			if (i == neighbors[j]) continue;
 			// compute k(i)
-			float kv_i = (1.f / t) * p_i->prev.rho_mat * p_i->prev.a;
+			float kv_i = (1.f / t) * p_i->rho_mat * p_i->a;
 			//cout << "p_i->prev.rho: " << p_i->prev.rho << endl;
 			p_j = particles[neighbors[j]];
-			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
+			float r = glm::length(p_j->pos - p_i->pos);
 			if (r < Hrad)
 			{
 				// compute k(j)
-				float kv_j = (1.f / t) * p_j->prev.rho_mat * p_j->prev.a;
-				sum += MASS * (kv_i / p_i->prev.rho + kv_j / p_j->prev.rho) * gradW(r);
+				float kv_j = (1.f / t) * p_j->rho_mat * p_j->a;
+				sum += MASS * (kv_i / p_i->rho + kv_j / p_j->rho) * gradW(r);
 			}
 		}
 		// adapt velocities by advancing with predicted change
-		p_i->prev.v_adv = p_i->curr.v_adv = p_i->prev.v_adv - t * sum;
+		p_i->v_adv -= t * sum;
 		//cout << "v*: " << p_i->prev.v.x << ", " << p_i->prev.v.y << endl;
 	}
 }
@@ -362,13 +355,13 @@ void DFSPH_FluidGrid::CorrectDivergenceError(float t)
 void DFSPH_FluidGrid::IntegrateVelocityAndBounds()
 {
 	for (int i = 0; i < particles.size(); ++i)
-		particles[i]->prev.v = particles[i]->curr.v = particles[i]->prev.v_adv;
+		particles[i]->v = particles[i]->v_adv;
 	// boundary handling
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		DFSPH_Particle* p = particles[i];
-		glm::vec2 v = p->prev.v;
-		glm::vec2 pos = p->prev.pos;
+		glm::vec2 v = p->v;
+		glm::vec2 pos = p->pos;
 		if (pos.x - EPS < 0.f)
 		{
 			v.x *= BOUND_DAMPING;
@@ -389,8 +382,8 @@ void DFSPH_FluidGrid::IntegrateVelocityAndBounds()
 			v.y *= BOUND_DAMPING;
 			pos.y = viewHeight - EPS;
 		}
-		p->prev.v = p->curr.v = v;
-		p->prev.pos = p->curr.pos = pos;
+		p->v = v;
+		p->pos = pos;
 	}
 }
 

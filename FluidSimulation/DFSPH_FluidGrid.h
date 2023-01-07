@@ -15,8 +15,6 @@ class DFSPH_FluidGrid
 
 	float avgRho, avgRhoDivergence;
 
-	void updateValues();
-
 	float W(float r);
 	float gradW(float r);
 
