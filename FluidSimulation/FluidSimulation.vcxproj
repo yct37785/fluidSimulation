@@ -140,6 +140,8 @@
     <ClCompile Include="FluidSimulation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GridMesh.cpp" />
+    <ClCompile Include="IISPH_FluidGrid.cpp" />
+    <ClCompile Include="IISPH_Particle.cpp" />
     <ClCompile Include="JacobiMethod.cpp" />
     <ClCompile Include="MathUtility.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -162,6 +164,8 @@
     <ClInclude Include="Eulerian_FluidGrid.h" />
     <ClInclude Include="EulerianFluidScene.h" />
     <ClInclude Include="GridMesh.h" />
+    <ClInclude Include="IISPH_FluidGrid.h" />
+    <ClInclude Include="IISPH_Particle.h" />
     <ClInclude Include="JacobiMethod.h" />
     <ClInclude Include="MathUtility.h" />
     <ClInclude Include="Mesh.h" />

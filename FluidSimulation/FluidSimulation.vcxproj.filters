@@ -49,6 +49,9 @@
     <Filter Include="Fluid\SPH\DFSPH">
       <UniqueIdentifier>{7782c1ff-cebb-4d00-b8b0-81e7d7a507f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fluid\SPH\IISPH">
+      <UniqueIdentifier>{40cf51e7-80c9-4b3c-9987-f1aa82b5d262}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FluidSimulation.cpp">
@@ -117,6 +120,12 @@
     <ClCompile Include="DFSPH_FluidGrid.cpp">
       <Filter>Fluid\SPH\DFSPH</Filter>
     </ClCompile>
+    <ClCompile Include="IISPH_FluidGrid.cpp">
+      <Filter>Fluid\SPH\IISPH</Filter>
+    </ClCompile>
+    <ClCompile Include="IISPH_Particle.cpp">
+      <Filter>Fluid\SPH\IISPH</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -175,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="DFSPH_FluidGrid.h">
       <Filter>Fluid\SPH\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="IISPH_FluidGrid.h">
+      <Filter>Fluid\SPH\IISPH</Filter>
+    </ClInclude>
+    <ClInclude Include="IISPH_Particle.h">
+      <Filter>Fluid\SPH\IISPH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
