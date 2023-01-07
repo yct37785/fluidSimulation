@@ -209,19 +209,13 @@ void DFSPH_FluidGrid::predictDensity(float t)
 				rho_adv_i += MASS * glm::dot((p_i->v_adv - p_j->v_adv), glm::vec2(gradW(r)));
 			}
 		}
-		// rho(i)
-		/*if (t * rho_adv_i > 0.f)
-			cout << i << ": " << t * rho_adv_i << endl;*/
-		rho_adv_i = p_i->rho + t * rho_adv_i;
-		/*if (i == 200)
-			cout << "rho_i: " << rho_i << endl;*/
-		avgRho += rho_adv_i;
-		//cout << "rho_adv_i: " << rho_adv_i << endl;
 		// update values
-		p_i->rho_adv = rho_adv_i;
+		p_i->rho_adv = p_i->rho + t * rho_adv_i;
+		//cout << "rho_adv_i: " << p_i->rho_adv << endl;
+		avgRho += p_i->rho_adv;
 	}
 	avgRho /= (float)particles.size();
-	//cout << "avgRho: " << avgRho << endl;
+	cout << "avgRho: " << avgRho << endl;
 }
 
 // note that we must predict densities without shifting from the curr positions
@@ -251,13 +245,13 @@ void DFSPH_FluidGrid::adaptVelocities(float t)
 		}
 		// adapt velocities by advancing with predicted change
 		p_i->v_adv -= t * sum;
-		//cout << "v*: " << p_i->prev.v.x << ", " << p_i->prev.v.y << endl;
+		//cout << "v_adv: " << p_i->v_adv.x << ", " << p_i->v_adv.y << endl;
 	}
 }
 
 void DFSPH_FluidGrid::CorrectDensityError(float t)
 {
-	float thres = REST_DEN2 * 0.01f;
+	float thres = REST_DEN2 * 0.1f;
 	avgRho = 0.f;
 	while (abs(avgRho - REST_DEN2) > thres)
 	{
