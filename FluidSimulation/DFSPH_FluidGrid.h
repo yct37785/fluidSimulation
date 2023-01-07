@@ -35,6 +35,7 @@ class DFSPH_FluidGrid
 	// correct density
 	void CorrectDensityError(float t);
 	void predictDensity(float t);
+	void adaptVelocities(float t);
 
 
 	//void ComputeParticleValues(float t);
