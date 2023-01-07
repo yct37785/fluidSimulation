@@ -23,6 +23,8 @@ class DFSPH_FluidGrid
 	void loadNeighborhoods();
 	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
 
+	float getTimeStep(float t);
+
 	// predict advection
 	void PredictAdvection(float t);
 	void computeDensitiesAndFactors(float t);
@@ -45,25 +47,8 @@ class DFSPH_FluidGrid
 	void computeDensityDivergence(float t);
 	void adaptVelocitiesDivSolver(float t);
 
-
-	//void ComputeParticleValues(float t);
-	//void loadNeighborhoods();
-	//void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
-	//void computeDensitiesAndFactors(float t, bool factor);
-
-	//// velocity update
-	//void VelocityUpdate(float t);
-	//void computeNonPressureForces(float t);
-	//void predictVelocities(float t);
-
-	//// correct density error
-	//void CorrectDensityError(float t);
-	//void computeUpdatedDensities(float t);
-
-	//// forward particles
-	//void forwardParticles(float t);
-	//float computeDensityMat();	// returns avg
-	//void correctDivergenceError(float t);
+	// integrate + bounds
+	void IntegrateVelocityAndBounds();
 
 public:
 	DFSPH_FluidGrid(int xCellsCount, int yCellsCount);
