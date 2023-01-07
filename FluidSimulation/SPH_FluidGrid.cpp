@@ -117,7 +117,7 @@ void SPH_FluidGrid::computeForces()
 			}
 		}
 		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
-		cout << "fgrav: " << fgrav.x << ", " << fgrav.y << endl;
+		//cout << "fgrav: " << fgrav.x << ", " << fgrav.y << endl;
 		pi->f(fpress + fvisc + fgrav);
 	}
 	for (int i = 0; i < particles.size(); ++i)

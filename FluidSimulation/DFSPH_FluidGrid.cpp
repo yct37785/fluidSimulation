@@ -1,4 +1,5 @@
 #include "DFSPH_FluidGrid.h"
+const float REST_DEN2 = 300.f;
 
 DFSPH_FluidGrid::DFSPH_FluidGrid(int xCellsCount, int yCellsCount)
 {
@@ -101,7 +102,6 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
@@ -109,8 +109,11 @@ void DFSPH_FluidGrid::computeDensitiesAndFactors(float t)
 				// compute rho(i)
 				rho_i += MASS * W(r);
 				// compute a(i)
-				a_i_term_1 += MASS * gradW(r);
-				a_i_term_2 += pow(MASS * gradW(r), 2.f);
+				//if (i != neighbors[j])
+				{
+					a_i_term_1 += MASS * gradW(r);
+					a_i_term_2 += pow(MASS * gradW(r), 2.f);
+				}
 			}
 		}
 		// set values
@@ -152,7 +155,7 @@ void DFSPH_FluidGrid::computeNonPressureForces(float t)
 			}
 		}
 		// compute f_adv(i)
-		glm::vec2 f_grav = glm::vec2(0.f, G) * (MASS / p_i->prev.rho);
+		glm::vec2 f_grav = glm::vec2(0.f, G) * MASS / p_i->prev.rho;
 		glm::vec2 f_adv = f_visc + f_grav;
 		//cout << "fadv: " << f_adv.x << ", " << f_adv.y << endl;
 		// set values
@@ -165,8 +168,9 @@ void DFSPH_FluidGrid::advanceVelocities(float t)
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		DFSPH_Particle* p_i = particles[i];
-		p_i->prev.v = p_i->curr.v = p_i->prev.v + t * (p_i->prev.f_adv / MASS);
-		//cout << "v: " << p_i->prev.v.x << ", " << p_i->prev.v.y << endl;
+		p_i->prev.v_adv = p_i->curr.v_adv = p_i->prev.v + t * p_i->prev.f_adv / MASS;
+		p_i->prev.v_adv_initial = p_i->curr.v_adv_initial = p_i->prev.v_adv;
+		//cout << "v*: " << p_i->prev.v_adv.x << ", " << p_i->prev.v_adv.y << endl;
 	}
 }
 
@@ -186,34 +190,34 @@ void DFSPH_FluidGrid::predictDensity(float t)
 	{
 		DFSPH_Particle* p_i = particles[i];
 		DFSPH_Particle* p_j;
-		float rho_i = 0.f;
+		float rho_adv_i = 0.f;
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			if (i == neighbors[j]) continue;
+			//if (i == neighbors[j]) continue;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
 			{
 				// compute rho(i)
-				float dist = glm::length(p_i->prev.v - p_j->prev.v);
+				float dist = glm::length(p_i->prev.v_adv - p_j->prev.v_adv);
 				if (isnan(dist)) dist = 0.f;
-				rho_i += MASS * dist * gradW(r);
+				rho_adv_i += MASS * dist * gradW(r);
 			}
 		}
 		// rho(i)
-		/*if (t * rho_i > 0.f)
-			cout << i << ": " << t * rho_i << endl;*/
-		rho_i = p_i->prev.rho + t * rho_i;
+		/*if (t * rho_adv_i > 0.f)
+			cout << i << ": " << t * rho_adv_i << endl;*/
+		rho_adv_i = p_i->prev.rho + t * rho_adv_i;
 		/*if (i == 200)
 			cout << "rho_i: " << rho_i << endl;*/
-		avgRho += rho_i;
-		//cout << "rho*i: " << rho_i << endl;
+		avgRho += rho_adv_i;
+		//cout << "rho_adv_i: " << rho_adv_i << endl;
 		// update values
-		p_i->prev.rho = p_i->curr.rho = rho_i;
+		p_i->prev.rho_adv = p_i->curr.rho_adv = rho_adv_i;
 	}
 	avgRho = avgRho / (float)particles.size();
-	//cout << "avgRho: " << avgRho << endl;
+	cout << "avgRho: " << avgRho << endl;
 }
 
 // note that we must predict densities without shifting from the curr positions
@@ -228,32 +232,32 @@ void DFSPH_FluidGrid::adaptVelocities(float t)
 		getNeighborsInclusive(neighbors, i);
 		for (int j = 0; j < neighbors.size(); ++j)
 		{
-			if (i == neighbors[j]) continue;
+			//if (i == neighbors[j]) continue;
 			// compute k(i)
-			float k_i = ((p_i->prev.rho - REST_DENS) / pow(t, 2.f)) * p_i->prev.a;
+			float k_i = ((p_i->prev.rho_adv - REST_DEN2) / pow(t, 2.f)) * p_i->prev.a;
 			//cout << "p_i->prev.rho: " << p_i->prev.rho << endl;
 			p_j = particles[neighbors[j]];
 			float r = glm::length(p_j->prev.pos - p_i->prev.pos);
 			if (r < Hrad)
 			{
 				// compute k(j)
-				float k_j = ((p_j->prev.rho - REST_DENS) / pow(t, 2.f)) * p_j->prev.a;
+				float k_j = ((p_j->prev.rho_adv - REST_DEN2) / pow(t, 2.f)) * p_j->prev.a;
 				sum += MASS * (k_i / p_i->prev.rho + k_j / p_j->prev.rho) * gradW(r);
 			}
 		}
 		// adapt velocities by advancing with predicted change
-		p_i->prev.v = p_i->curr.v = p_i->prev.v - t * sum;
+		p_i->prev.v_adv = p_i->curr.v_adv = p_i->prev.v_adv_initial - t * sum;
 		//cout << "v*: " << p_i->prev.v.x << ", " << p_i->prev.v.y << endl;
 	}
 }
 
 void DFSPH_FluidGrid::CorrectDensityError(float t)
 {
-	float thres = 50.f;
+	float thres = 0.01f;
 	avgRho = 0.f;
-	while (abs(avgRho - REST_DENS) > thres)
+	while (abs(avgRho - REST_DEN2) > thres)
 	{
-		//cout << "Density err: " << abs(avgRho - REST_DENS) << ", " << avgRho << endl;
+		//cout << "Density err: " << abs(avgRho - REST_DEN2) << ", " << avgRho << endl;
 		predictDensity(t);
 		adaptVelocities(t);
 	}
@@ -302,6 +306,7 @@ void DFSPH_FluidGrid::computeDensityDivergence(float t)
 		//cout << "rho_mat: " << sum << endl;
 	}
 	avgRhoDivergence /= (float)particles.size();
+	cout << "avgRhoDivergence: " << avgRhoDivergence << endl;
 }
 
 void DFSPH_FluidGrid::adaptVelocitiesDivSolver(float t)
@@ -358,9 +363,9 @@ void DFSPH_FluidGrid::Update(float deltaTime)
 	}
 	PredictVelocities(t);
 	CorrectDensityError(t);
-	UpdatePositions(t);
+	/*UpdatePositions(t);
 	PredictAdvection(t);
-	CorrectDivergenceError(t);
+	CorrectDivergenceError(t);*/
 }
 
 void DFSPH_FluidGrid::Draw(int mvpHandle, glm::mat4& mvMat)
