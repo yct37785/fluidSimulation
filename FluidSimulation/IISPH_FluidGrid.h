@@ -14,8 +14,6 @@ class IISPH_FluidGrid
 
 	float avgRho;
 
-	void updateValues();
-
 	float W(float r);
 	float gradW(float r);
 

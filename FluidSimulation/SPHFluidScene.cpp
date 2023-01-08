@@ -20,7 +20,7 @@ void SPHFluidScene::Init()
 	projMat = glm::frustum(-Hrad, (float)xCellsCount * Hrad + Hrad * 2, -Hrad, accurateYSpaceHeight * Hrad + Hrad * 2, 3.f, 7.f);
 	quadMesh = MeshBuilder::CreateMesh("quad");
 	shader = new Shader("../Shaders/vertexshader.cpp", "../Shaders/fragmentshader.cpp");
-	fluidGrid = new DFSPH_FluidGrid(xCellsCount, yCellsCount);
+	fluidGrid = new IISPH_FluidGrid(xCellsCount, yCellsCount);
 	spawnParticles = false;
 	fluidGrid->spawnParticles();
 }

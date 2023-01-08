@@ -9,7 +9,7 @@ class SPHFluidScene
 {
 	// fluid
 	int xCellsCount, yCellsCount;
-	DFSPH_FluidGrid* fluidGrid;
+	IISPH_FluidGrid* fluidGrid;
 	// rendering/update
 	glm::mat4 viewMat, projMat;
 	float cursorPosX, cursorPosY = 0.f;
