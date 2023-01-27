@@ -11,10 +11,8 @@ int main()
     Engine::instance()->Run();
     Engine::instance()->Exit();
 
-    // display memory leak report
-    // note that mem leaks may be detected for static resources still unreleased by the CRT
-    // https://stackoverflow.com/questions/898273/memory-leak-sort-of-with-a-static-stdvector
-    _CrtDumpMemoryLeaks();
+    // display memory leak report (on program termination)
+    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF);
     return 0;
 
     //// working 100% basic rendering for quick debugging
