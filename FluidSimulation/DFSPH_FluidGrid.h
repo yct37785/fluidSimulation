@@ -10,8 +10,8 @@ class DFSPH_FluidGrid
 	float viewWidth, viewHeight;
 	bool first;
 
-	vector<DFSPH_Particle*> particles;
-	unordered_map<int, vector<int>> neighborhoods;
+	std::vector<DFSPH_Particle*> particles;
+	std::unordered_map<int, std::vector<int>> neighborhoods;
 
 	float avgRho, avgRhoDivergence;
 
@@ -19,7 +19,7 @@ class DFSPH_FluidGrid
 	float gradW(float r);
 
 	void loadNeighborhoods();
-	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
+	void getNeighborsInclusive(std::vector<int>& neighbors, int currparticleIdx);
 
 	float getTimeStep(float t);
 

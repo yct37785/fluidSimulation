@@ -37,7 +37,7 @@ void Eulerian_FluidGrid::spawnParticles()
 			particles.push_back(new Particle(glm::vec2(x + jitterX, y + jitterY), glm::vec2(0.f)));
 		}
 	}
-	cout << "Total particles: " << particles.size() << endl;
+	std::cout << "Total particles: " << particles.size() << std::endl;
 }
 
 float Eulerian_FluidGrid::getTimestep(float deltaTime)

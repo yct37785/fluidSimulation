@@ -83,7 +83,7 @@ void CGSolver::solve(const matrix& A, const vec& b, vec& x, precon_func precondi
         iterCount++;
     }
     if (iterCount > maxIter)
-        cout << "Iter count: " << iterCount << ", conv: " << (int)conv << endl;
+        std::cout << "Iter count: " << iterCount << ", conv: " << (int)conv << std::endl;
 }
 
 matrix incomplete_cholesky_preconditioner(const matrix& A) {
@@ -97,12 +97,12 @@ matrix incomplete_cholesky_preconditioner(const matrix& A) {
             if (i == j)
             {
                 L[i][i] = sqrt(A[i][i] - sum);
-                cout << "1: " << L[i][i] << endl;
+                std::cout << "1: " << L[i][i] << std::endl;
             }
             else
             {
-                L[i][j] = (A[i][j] - sum) / max(L[j][j], NEARZERO);
-                cout << "2: " << L[i][i] << endl;
+                L[i][j] = (A[i][j] - sum) / std::max(L[j][j], NEARZERO);
+                std::cout << "2: " << L[i][i] << std::endl;
             }
         }
     }
@@ -120,16 +120,16 @@ void CGSolver::UT_CG()
     for (int i = 0; i < A.size(); i++)
         for (int j = 0; j < A[i].size(); j += 2)
             b[i] += A[i][j + 1] * x_ans[A[i][j]];
-    cout << "Expected: [";
+    std::cout << "Expected: [";
     for (int i = 0; i < x_ans.size(); i++)
-        cout << x_ans[i] << (i == x_ans.size() - 1 ? "]" : ", ");
-    cout << endl;
+        std::cout << x_ans[i] << (i == x_ans.size() - 1 ? "]" : ", ");
+    std::cout << std::endl;
     vec x = { 0.0, 0.0, 0.0 };
     init(A.size());
     solve(A, b, x, incomplete_cholesky_preconditioner);
 
-    cout << "Solution: [";
+    std::cout << "Solution: [";
     for (int i = 0; i < x.size(); i++)
-        cout << x[i] << (i == x.size() - 1 ? "]" : ", ");
-    cout << endl;
+        std::cout << x[i] << (i == x.size() - 1 ? "]" : ", ");
+    std::cout << std::endl;
 }

@@ -15,8 +15,8 @@ class Eulerian_FluidGrid
 	PressureSolve* ps;
 
 	// particles
-	vector<Particle*> particles;
-	unordered_map<int, int> liquidCells;
+	std::vector<Particle*> particles;
+	std::unordered_map<int, int> liquidCells;
 
 	// update
 	float getTimestep(float deltaTime);

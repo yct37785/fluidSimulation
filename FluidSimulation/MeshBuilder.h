@@ -8,6 +8,6 @@ public:
 	MeshBuilder();
 	~MeshBuilder();
 
-	static Mesh* CreateMesh(string type);
+	static Mesh* CreateMesh(std::string type);
 	static Mesh* CreateCustomMesh();
 };

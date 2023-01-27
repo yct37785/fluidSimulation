@@ -63,15 +63,15 @@ void JacobiMethod::solve(const matrix& a, const vec& b, vec& x)
             break;
 
         // Print the intermediate solution
-       /* cout << "Iteration " << k << ": ";
+       /* std::cout << "Iteration " << k << ": ";
         for (i = 0; i < n; i++)
-            cout << x[i] << " ";
-        cout << endl;*/
+            std::cout << x[i] << " ";
+        std::cout << std::endl;*/
 
         k++;
     }
     if (k > maxIter)
-        cout << "Iter count: " << k << ", conv: " << (int)conv << endl;
+        std::cout << "Iter count: " << k << ", conv: " << (int)conv << std::endl;
 }
 
 void JacobiMethod::UT_JacobiMethod()
@@ -88,7 +88,7 @@ void JacobiMethod::UT_JacobiMethod()
                 { 0, 2, 1, -1, 2, -10 } };
 
 	// Right-hand side vector
-    cout << "RHS vec: ";
+    std::cout << "RHS vec: ";
     vec x_ans = { 6.3, 2.2, 1.5 };
     vec b = { 0, 0, 0 };
 	for (int i = 0; i < n; i++)
@@ -97,9 +97,9 @@ void JacobiMethod::UT_JacobiMethod()
             b[i] += a[i][j] * x_ans[j];*/
 		for (int j = 0; j < a[i].size(); j += 2)
 			b[i] += a[i][j + 1] * x_ans[a[i][j]];
-		cout << b[i] << " ";
+		std::cout << b[i] << " ";
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 	// Initial guess
     vec x = { 0, 0, 0 };
@@ -108,12 +108,12 @@ void JacobiMethod::UT_JacobiMethod()
 	solve(a, b, x);
 
 	// Print the final solution
-	cout << "Solution: ";
+	std::cout << "Solution: ";
 	for (int i = 0; i < n; i++)
-		cout << x[i] << " ";
+		std::cout << x[i] << " ";
 
 	// Mul x with a
-	cout << "\nCompare: ";
+	std::cout << "\nCompare: ";
 	for (int i = 0; i < n; i++)
 	{
 		double prod = 0.0;
@@ -121,6 +121,6 @@ void JacobiMethod::UT_JacobiMethod()
 			prod += a[i][j] * x[j];*/
         for (int j = 0; j < a[i].size(); j += 2)
             prod += a[i][j + 1] * x[a[i][j]];
-		cout << prod << " ";
+		std::cout << prod << " ";
 	}
 }

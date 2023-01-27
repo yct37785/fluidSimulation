@@ -15,20 +15,20 @@ class PressureSolve
 
 	// utilities
 	bool outOfBounds(int x, int y);
-	bool isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells);
-	void countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid);
-	void addCoefficient(int curr_map_idx, int x, int y, unordered_map<int, int>& liquidCells);
-	float getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells);
+	bool isLiquidCell(int x, int y, std::unordered_map<int, int>& liquidCells);
+	void countSurroundingCellTypes(int x, int y, std::unordered_map<int, int>& liquidCells, int& air, int& liquid);
+	void addCoefficient(int curr_map_idx, int x, int y, std::unordered_map<int, int>& liquidCells);
+	float getLiquidCellPressure(int x, int y, std::unordered_map<int, int>& liquidCells);
 
 	// update
-	void resetContainers(unordered_map<int, int>& liquidCells);
-	void setupLinearEquations(VelocityField* uField, unordered_map<int, int>& liquidCells, float t);
-	void solve(unordered_map<int, int>& liquidCells);
-	void integration(VelocityField* uField, unordered_map<int, int>& liquidCells, float t);
+	void resetContainers(std::unordered_map<int, int>& liquidCells);
+	void setupLinearEquations(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t);
+	void solve(std::unordered_map<int, int>& liquidCells);
+	void integration(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t);
 
 public:
 	PressureSolve(int xCellsCount, int yCellsCount);
 	~PressureSolve();
 
-	void update(VelocityField* uField, unordered_map<int, int>& liquidCells, float t);
+	void update(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t);
 };

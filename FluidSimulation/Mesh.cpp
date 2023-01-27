@@ -2,7 +2,7 @@
 
 Mesh::Mesh() {}
 
-Mesh::Mesh(vector<float>& vertices, vector<int>& indices, int usage)
+Mesh::Mesh(std::vector<float>& vertices, std::vector<int>& indices, int usage)
 {
     initMesh(vertices, indices, usage);
 }
@@ -14,7 +14,7 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::initMesh(vector<float>& vertices, vector<int>& indices, int usage)
+void Mesh::initMesh(std::vector<float>& vertices, std::vector<int>& indices, int usage)
 {
     this->vertices = vertices;
     this->indices = indices;

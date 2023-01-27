@@ -9,8 +9,8 @@ class IISPH_FluidGrid
 	int xCellsCount, yCellsCount;
 	float viewWidth, viewHeight;
 
-	vector<IISPH_Particle*> particles;
-	unordered_map<int, vector<int>> neighborhoods;
+	std::vector<IISPH_Particle*> particles;
+	std::unordered_map<int, std::vector<int>> neighborhoods;
 
 	float avgRho;
 
@@ -18,7 +18,7 @@ class IISPH_FluidGrid
 	float gradW(float r);
 
 	void loadNeighborhoods();
-	void getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx);
+	void getNeighborsInclusive(std::vector<int>& neighbors, int currparticleIdx);
 
 	// predict advection
 	void PredictAdvection(float t);

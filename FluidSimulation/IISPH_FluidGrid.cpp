@@ -40,7 +40,7 @@ void IISPH_FluidGrid::spawnParticles()
 			particles.back()->init(glm::vec2(x + jitter, y), glm::vec2(0.f, 0.f));
 		}
 	}
-	cout << "Total particles: " << particles.size() << endl;
+	std::cout << "Total particles: " << particles.size() << std::endl;
 }
 
 void IISPH_FluidGrid::loadNeighborhoods()
@@ -54,14 +54,14 @@ void IISPH_FluidGrid::loadNeighborhoods()
 		int y = int(pos.y);
 		int posIdx = y * xCellsCount + x;
 		if (!neighborhoods.count(posIdx))
-			neighborhoods[posIdx] = vector<int>();
+			neighborhoods[posIdx] = std::vector<int>();
 		neighborhoods[posIdx].push_back(i);
 	}
 }
 
 // we simply get all the particles in the current + adjacent cells, particles >Hrad away
 // won't affect calculations thanks to the kernel
-void IISPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int currparticleIdx)
+void IISPH_FluidGrid::getNeighborsInclusive(std::vector<int>& neighbors, int currparticleIdx)
 {
 	neighbors.clear();
 	glm::vec2 pos = particles[currparticleIdx]->pos / Hrad;
@@ -84,7 +84,7 @@ void IISPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int currpart
 **************************************************************************************/
 void IISPH_FluidGrid::computeDensity(float t)
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];
@@ -108,7 +108,7 @@ void IISPH_FluidGrid::computeDensity(float t)
 
 void IISPH_FluidGrid::part_1(float t)
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];
@@ -132,13 +132,13 @@ void IISPH_FluidGrid::part_1(float t)
 		// compute f_adv(i)
 		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / p_i->rho;
 		glm::vec2 fadv = fvisc + fgrav;
-		//cout << "fadv: " << fadv.x << ", " << fadv.y << endl;
+		//std::cout << "fadv: " << fadv.x << ", " << fadv.y << std::endl;
 		// predict v_adv(i)
 		glm::vec2 v_adv_i = p_i->v + t * (fadv / MASS);
-		//cout << "v_adv_i: " << v_adv_i.x << ", " << v_adv_i.y << endl;
+		//std::cout << "v_adv_i: " << v_adv_i.x << ", " << v_adv_i.y << std::endl;
 		// d(ii)
 		d_ii = pow(t, 2.f) * d_ii;
-		//cout << "d_ii: " << d_ii << endl;
+		//std::cout << "d_ii: " << d_ii << std::endl;
 		// set values
 		p_i->p_prev = p_i->p;
 		p_i->v_adv = v_adv_i;
@@ -148,7 +148,7 @@ void IISPH_FluidGrid::part_1(float t)
 
 void IISPH_FluidGrid::part_2(float t)
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];
@@ -173,11 +173,11 @@ void IISPH_FluidGrid::part_2(float t)
 		}
 		// rho_adv(i)
 		rho_adv_i = p_i->rho + t * rho_adv_i;
-		//cout << "rho_adv_i: " << rho_adv_i << endl;
+		//std::cout << "rho_adv_i: " << rho_adv_i << std::endl;
 		// rho0(i)
 		float p0_i = 0.5f * p_i->p_prev;
-		//cout << "p0_i: " << p0_i << endl;
-		//cout << "a_ii: " << a_ii << endl;
+		//std::cout << "p0_i: " << p0_i << std::endl;
+		//std::cout << "a_ii: " << a_ii << std::endl;
 		// set values
 		p_i->rho_adv = rho_adv_i;
 		p_i->a_ii = a_ii;
@@ -194,7 +194,7 @@ void IISPH_FluidGrid::PredictAdvection(float t)
 
 void IISPH_FluidGrid::part_3(float t)
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];
@@ -213,7 +213,7 @@ void IISPH_FluidGrid::part_3(float t)
 		}
 		// d(ij)_p(j)
 		dij_pj = pow(t, 2.f) * dij_pj;
-		//cout << "dij_pj: " << dij_pj << endl;
+		//std::cout << "dij_pj: " << dij_pj << std::endl;
 		// set values
 		p_i->dij_pj = dij_pj;
 	}
@@ -222,7 +222,7 @@ void IISPH_FluidGrid::part_3(float t)
 void IISPH_FluidGrid::part_4(float t)
 {
 	const float RELAX_FACTOR = 0.5f;
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];
@@ -252,7 +252,7 @@ void IISPH_FluidGrid::part_4(float t)
 		// set values
 		p_i->p = eq_a + (RELAX_FACTOR * (1.f / p_i->a_ii)) * (eq_b - eq_c_sum);
 		if (isinf(p_i->p)) p_i->p = 0.f;
-		//cout << "p_i: " << p_i->p << endl;
+		//std::cout << "p_i: " << p_i->p << std::endl;
 	}
 }
 
@@ -269,7 +269,7 @@ void IISPH_FluidGrid::PressureSolve(float t)
 
 void IISPH_FluidGrid::Integration(float t)
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		IISPH_Particle* p_i = particles[i];

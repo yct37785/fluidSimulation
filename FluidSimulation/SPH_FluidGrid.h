@@ -11,11 +11,11 @@ class SPH_FluidGrid
 	// max
 	float maxVel, maxA, maxC;
 
-	vector<SPH_Particle*> particles;
-	unordered_map<int, vector<int>> grids;
+	std::vector<SPH_Particle*> particles;
+	std::unordered_map<int, std::vector<int>> grids;
 
 	void spatialPartitioning();
-	void getNeighborsInclusive(vector<int>& neighbors, int curr);
+	void getNeighborsInclusive(std::vector<int>& neighbors, int curr);
 
 	void findDensityPressure();
 	void computeForces();

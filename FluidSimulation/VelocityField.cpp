@@ -20,7 +20,7 @@ VelocityField::~VelocityField()
 	delete vMarker;
 }
 
-void VelocityField::advectSelf_semiLagrangian(float t, unordered_map<int, int>& liquidCells)
+void VelocityField::advectSelf_semiLagrangian(float t, std::unordered_map<int, int>& liquidCells)
 {
 	// get vel at pos(x',y'), trace backwards, get vel at that pos, then apply to (x',y')
 	for (int y = 0; y < yCellsCount + 1; ++y)
@@ -55,7 +55,7 @@ void VelocityField::advectSelf_semiLagrangian(float t, unordered_map<int, int>& 
 	v->postUpdate();
 }
 
-void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquidCells)
+void VelocityField::applyExternalForces(float t, std::unordered_map<int, int>& liquidCells)
 {
 	float maxGravityAcc = 9.81f;
 	float gravScale = 0.1f;
@@ -67,7 +67,7 @@ void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquid
 			if (liquidCells.count((y - 1) * xCellsCount + x) || liquidCells.count(y * xCellsCount + x))
 			{
 				float yVel = v->getQuantityAtIdx(x, y);
-				v->setQuantityAtIdx(x, y, max(-maxGravityAcc, yVel - 0.981f * t));
+				v->setQuantityAtIdx(x, y, std::max(-maxGravityAcc, yVel - 0.981f * t));
 			}
 			// no slip
 			if (y == 0)
@@ -77,7 +77,7 @@ void VelocityField::applyExternalForces(float t, unordered_map<int, int>& liquid
 	v->postUpdate();
 }
 
-void VelocityField::extrapolate(unordered_map<int, int>& liquidCells)
+void VelocityField::extrapolate(std::unordered_map<int, int>& liquidCells)
 {
 	for (int y = 0; y < yCellsCount; ++y)
 	{

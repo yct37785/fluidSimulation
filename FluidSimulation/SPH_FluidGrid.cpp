@@ -29,7 +29,7 @@ void SPH_FluidGrid::spawnParticles()
 			particles.back()->init(glm::vec2(x + jitter, y), glm::vec2(0.f, 0.f));
 		}
 	}
-	cout << "Total particles: " << particles.size() << endl;
+	std::cout << "Total particles: " << particles.size() << std::endl;
 }
 
 void SPH_FluidGrid::spatialPartitioning()
@@ -42,12 +42,12 @@ void SPH_FluidGrid::spatialPartitioning()
 		int y = int(pos.y);
 		int idx = y * xCellsCount + x;
 		if (!grids.count(idx))
-			grids[idx] = vector<int>();
+			grids[idx] = std::vector<int>();
 		grids[idx].push_back(i);
 	}
 }
 
-void SPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
+void SPH_FluidGrid::getNeighborsInclusive(std::vector<int>& neighbors, int curr)
 {
 	neighbors.clear();
 	glm::vec2 pos = particles[curr]->pos() / Hrad;
@@ -67,7 +67,7 @@ void SPH_FluidGrid::getNeighborsInclusive(vector<int>& neighbors, int curr)
 
 void SPH_FluidGrid::findDensityPressure()
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		SPH_Particle* pi = particles[i];
@@ -94,7 +94,7 @@ void SPH_FluidGrid::findDensityPressure()
 
 void SPH_FluidGrid::computeForces()
 {
-	vector<int> neighbors;
+	std::vector<int> neighbors;
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		SPH_Particle* pi = particles[i];
@@ -117,7 +117,7 @@ void SPH_FluidGrid::computeForces()
 			}
 		}
 		glm::vec2 fgrav = glm::vec2(0.f, G) * MASS / pi->rho();
-		//cout << "fgrav: " << fgrav.x << ", " << fgrav.y << endl;
+		//std::cout << "fgrav: " << fgrav.x << ", " << fgrav.y << std::endl;
 		pi->f(fpress + fvisc + fgrav);
 	}
 	for (int i = 0; i < particles.size(); ++i)

@@ -7,15 +7,15 @@ public:
 
 protected:
 	unsigned int VBO, EBO, VAO;
-    vector<float> vertices;
-	vector<int> indices;
+    std::vector<float> vertices;
+	std::vector<int> indices;
     int usage;
 
-	void initMesh(vector<float>& vertices, vector<int>& indices, int usage);
+	void initMesh(std::vector<float>& vertices, std::vector<int>& indices, int usage);
 
 public:
 	Mesh();
-	Mesh(vector<float>& vertices, vector<int>& indices, int usage);
+	Mesh(std::vector<float>& vertices, std::vector<int>& indices, int usage);
 	~Mesh();
 
 	unsigned int getVAO() const;

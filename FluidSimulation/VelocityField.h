@@ -21,9 +21,9 @@ public:
 	// particle-to-grid
 
 	// update
-	void advectSelf_semiLagrangian(float t, unordered_map<int, int>& liquidCells);
-	void applyExternalForces(float t, unordered_map<int, int>& liquidCells);
-	void extrapolate(unordered_map<int, int>& liquidCells);
+	void advectSelf_semiLagrangian(float t, std::unordered_map<int, int>& liquidCells);
+	void applyExternalForces(float t, std::unordered_map<int, int>& liquidCells);
+	void extrapolate(std::unordered_map<int, int>& liquidCells);
 
 	// grid-to-particle
 

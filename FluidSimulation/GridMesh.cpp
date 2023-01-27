@@ -7,8 +7,8 @@ GridMesh::GridMesh(int xCellsCount, int yCellsCount, int xOffset, int yOffset)
 	this->xOffset = xOffset;
 	this->yOffset = yOffset;
 
-	vector<float> vertices(xCellsCount * yCellsCount * 4 * Mesh::COORDS_PER_VERTEX);
-	vector<int> indices(xCellsCount * yCellsCount * 6);
+	std::vector<float> vertices(xCellsCount * yCellsCount * 4 * Mesh::COORDS_PER_VERTEX);
+	std::vector<int> indices(xCellsCount * yCellsCount * 6);
 	// start generating grid cells
 	int indicesCounter = 0;
 	int coordsCounter = 0;
@@ -40,7 +40,7 @@ GridMesh::~GridMesh()
 {
 }
 
-int GridMesh::buildVertex(vector<float>& vertices, int coordsCounter, int x, int y, int cellCounter)
+int GridMesh::buildVertex(std::vector<float>& vertices, int coordsCounter, int x, int y, int cellCounter)
 {
 	// x, y, r, g, b
 	vertices[coordsCounter + 0] = (float)x * H;

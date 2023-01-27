@@ -24,7 +24,7 @@ int main()
     //GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     //if (window == NULL)
     //{
-    //    std::cout << "Failed to create GLFW window" << std::endl;
+    //    std::std::cout << "Failed to create GLFW window" << std::endl;
     //    glfwTerminate();
     //    return -1;
     //}
@@ -32,7 +32,7 @@ int main()
 
     //if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     //{
-    //    std::cout << "Failed to initialize GLAD" << std::endl;
+    //    std::std::cout << "Failed to initialize GLAD" << std::endl;
     //    return -1;
     //}
 

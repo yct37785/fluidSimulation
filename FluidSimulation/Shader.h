@@ -6,7 +6,7 @@ class Shader
 	unsigned int program;
 
 public:
-	Shader(string vertexShaderPath, string fragmentShaderPath);
+	Shader(std::string vertexShaderPath, std::string fragmentShaderPath);
 	~Shader();
 
 	int getProgram();

@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-Shader::Shader(string vertexShaderPath, string fragmentShaderPath)
+Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
 {
     loadAndLinkShaders(vertexShaderPath, fragmentShaderPath, program);
 }

@@ -21,12 +21,12 @@ bool PressureSolve::outOfBounds(int x, int y)
 	return x < 0.f || x >= xCellsCount || y < 0.f || y >= yCellsCount;
 }
 
-bool PressureSolve::isLiquidCell(int x, int y, unordered_map<int, int>& liquidCells)
+bool PressureSolve::isLiquidCell(int x, int y, std::unordered_map<int, int>& liquidCells)
 {
 	return !outOfBounds(x, y) && liquidCells.count(y * xCellsCount + x);
 }
 
-void PressureSolve::countSurroundingCellTypes(int x, int y, unordered_map<int, int>& liquidCells, int& air, int& liquid)
+void PressureSolve::countSurroundingCellTypes(int x, int y, std::unordered_map<int, int>& liquidCells, int& air, int& liquid)
 {
 	air = liquid = 0;
 	int offset[4][2] = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
@@ -42,7 +42,7 @@ void PressureSolve::countSurroundingCellTypes(int x, int y, unordered_map<int, i
 	}
 }
 
-void PressureSolve::addCoefficient(int curr_map_idx, int x, int y, unordered_map<int, int>& liquidCells)
+void PressureSolve::addCoefficient(int curr_map_idx, int x, int y, std::unordered_map<int, int>& liquidCells)
 {
 	if (isLiquidCell(x, y, liquidCells))
 	{
@@ -52,7 +52,7 @@ void PressureSolve::addCoefficient(int curr_map_idx, int x, int y, unordered_map
 	}
 }
 
-float PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, int>& liquidCells)
+float PressureSolve::getLiquidCellPressure(int x, int y, std::unordered_map<int, int>& liquidCells)
 {
 	int idx = y * xCellsCount + x;
 	if (liquidCells.count(idx))
@@ -61,7 +61,7 @@ float PressureSolve::getLiquidCellPressure(int x, int y, unordered_map<int, int>
 		return 0.f;
 }
 
-void PressureSolve::resetContainers(unordered_map<int, int>& liquidCells)
+void PressureSolve::resetContainers(std::unordered_map<int, int>& liquidCells)
 {
 	d.clear();
 	a.clear();
@@ -75,7 +75,7 @@ void PressureSolve::resetContainers(unordered_map<int, int>& liquidCells)
 * Note that density is on both LHS and RHS and plays 0 role in deriving the value of p, this makes sense since 
 * in this Eulerian solver the fluid is 100% incompressible, hence density doesn't change
 */
-void PressureSolve::setupLinearEquations(VelocityField* uField, unordered_map<int, int>& liquidCells, float t)
+void PressureSolve::setupLinearEquations(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t)
 {
 	for (auto cell : liquidCells)
 	{
@@ -100,13 +100,13 @@ void PressureSolve::setupLinearEquations(VelocityField* uField, unordered_map<in
 	}
 }
 
-void PressureSolve::solve(unordered_map<int, int>& liquidCells)
+void PressureSolve::solve(std::unordered_map<int, int>& liquidCells)
 {
 	CGSolver::init(liquidCells.size());
 	CGSolver::solve(a, d, p);
 }
 
-void PressureSolve::integration(VelocityField* uField, unordered_map<int, int>& liquidCells, float t)
+void PressureSolve::integration(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t)
 {
 	// update vel (boundary vels don't update)
 	for (int y = 0; y < yCellsCount; ++y)
@@ -142,7 +142,7 @@ void PressureSolve::integration(VelocityField* uField, unordered_map<int, int>& 
 	uField->postUpdate();
 }
 
-void PressureSolve::update(VelocityField* uField, unordered_map<int, int>& liquidCells, float t)
+void PressureSolve::update(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t)
 {
 	resetContainers(liquidCells);
 	setupLinearEquations(uField, liquidCells, t);
