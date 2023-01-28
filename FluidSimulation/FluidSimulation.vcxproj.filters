@@ -30,9 +30,6 @@
     <Filter Include="Fluid\Solver">
       <UniqueIdentifier>{5046f47f-0271-4c67-97f4-553e85833789}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Fluid\SPH">
-      <UniqueIdentifier>{3e55e03d-dc75-4a4d-bf77-393880e29935}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Fluid\Shared">
       <UniqueIdentifier>{ea4246e8-6fd6-42e4-a5ab-23274bd9bcf7}</UniqueIdentifier>
     </Filter>
@@ -41,12 +38,6 @@
     </Filter>
     <Filter Include="Fluid\Eulerian">
       <UniqueIdentifier>{d0660bc3-5ca5-4b91-9b1e-9386f008984c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Fluid\SPH\DFSPH">
-      <UniqueIdentifier>{7782c1ff-cebb-4d00-b8b0-81e7d7a507f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Fluid\SPH\IISPH">
-      <UniqueIdentifier>{40cf51e7-80c9-4b3c-9987-f1aa82b5d262}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{ea7a8b12-8042-4180-9b14-26f8b24710b1}</UniqueIdentifier>
@@ -87,15 +78,6 @@
     <ClCompile Include="JacobiMethod.cpp">
       <Filter>Fluid\Solver</Filter>
     </ClCompile>
-    <ClCompile Include="SPHFluidScene.cpp">
-      <Filter>FluidScene</Filter>
-    </ClCompile>
-    <ClCompile Include="SPH_Particle.cpp">
-      <Filter>Fluid\SPH</Filter>
-    </ClCompile>
-    <ClCompile Include="SPH_FluidGrid.cpp">
-      <Filter>Fluid\SPH</Filter>
-    </ClCompile>
     <ClCompile Include="VelocityField.cpp">
       <Filter>Fluid\Shared</Filter>
     </ClCompile>
@@ -113,18 +95,6 @@
     </ClCompile>
     <ClCompile Include="Eulerian_FluidGrid.cpp">
       <Filter>Fluid\Eulerian</Filter>
-    </ClCompile>
-    <ClCompile Include="DFSPH_FluidGrid.cpp">
-      <Filter>Fluid\SPH\DFSPH</Filter>
-    </ClCompile>
-    <ClCompile Include="IISPH_FluidGrid.cpp">
-      <Filter>Fluid\SPH\IISPH</Filter>
-    </ClCompile>
-    <ClCompile Include="IISPH_Particle.cpp">
-      <Filter>Fluid\SPH\IISPH</Filter>
-    </ClCompile>
-    <ClCompile Include="DFSPH_Particle.cpp">
-      <Filter>Fluid\SPH\DFSPH</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Platform</Filter>
@@ -164,15 +134,6 @@
     <ClInclude Include="JacobiMethod.h">
       <Filter>Fluid\Solver</Filter>
     </ClInclude>
-    <ClInclude Include="SPHFluidScene.h">
-      <Filter>FluidScene</Filter>
-    </ClInclude>
-    <ClInclude Include="SPH_Particle.h">
-      <Filter>Fluid\SPH</Filter>
-    </ClInclude>
-    <ClInclude Include="SPH_FluidGrid.h">
-      <Filter>Fluid\SPH</Filter>
-    </ClInclude>
     <ClInclude Include="VelocityField.h">
       <Filter>Fluid\Shared</Filter>
     </ClInclude>
@@ -190,18 +151,6 @@
     </ClInclude>
     <ClInclude Include="Eulerian_FluidGrid.h">
       <Filter>Fluid\Eulerian</Filter>
-    </ClInclude>
-    <ClInclude Include="DFSPH_FluidGrid.h">
-      <Filter>Fluid\SPH\DFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="IISPH_FluidGrid.h">
-      <Filter>Fluid\SPH\IISPH</Filter>
-    </ClInclude>
-    <ClInclude Include="IISPH_Particle.h">
-      <Filter>Fluid\SPH\IISPH</Filter>
-    </ClInclude>
-    <ClInclude Include="DFSPH_Particle.h">
-      <Filter>Fluid\SPH\DFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Enums.h">
       <Filter>TopLevel</Filter>
