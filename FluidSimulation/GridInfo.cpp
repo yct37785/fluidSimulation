@@ -15,3 +15,12 @@ void GridInfo::setInfo(int xCells, int yCells)
 	this->xCells = xCells;
 	this->yCells = yCells;
 }
+
+bool GridInfo::inBounds(int x, int y)
+{
+	return (x >= 0 && x < xCells) && (y >= 0 && y < yCells);
+}
+
+bool GridInfo::inBoundsX(int x) { return (x >= 0 && x < xCells); }
+
+bool GridInfo::inBoundsY(int y) { return (y >= 0 && y < yCells); }

@@ -14,14 +14,9 @@ PressureSolve::~PressureSolve()
 {
 }
 
-bool PressureSolve::outOfBounds(int x, int y)
-{
-	return x < 0.f || x >= p_GridInfo->xCells || y < 0.f || y >= p_GridInfo->yCells;
-}
-
 bool PressureSolve::isLiquidCell(int x, int y, std::unordered_map<int, int>& liquidCells)
 {
-	return !outOfBounds(x, y) && liquidCells.count(y * p_GridInfo->xCells + x);
+	return p_GridInfo->inBounds(x, y) && liquidCells.count(y * p_GridInfo->xCells + x);
 }
 
 void PressureSolve::countSurroundingCellTypes(int x, int y, std::unordered_map<int, int>& liquidCells, int& air, int& liquid)
@@ -30,7 +25,7 @@ void PressureSolve::countSurroundingCellTypes(int x, int y, std::unordered_map<i
 	int offset[4][2] = { { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 } };
 	for (int i = 0; i < 4; ++i)
 	{
-		if (!outOfBounds(x + offset[i][0], y + offset[i][1]))
+		if (p_GridInfo->inBounds(x + offset[i][0], y + offset[i][1]))
 		{
 			if (liquidCells.count((y + offset[i][1]) * p_GridInfo->xCells + x + offset[i][0]))
 				liquid += 1;

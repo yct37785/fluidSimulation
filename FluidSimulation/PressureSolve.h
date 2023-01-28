@@ -13,7 +13,6 @@ class PressureSolve
 	matrix a;
 
 	// utilities
-	bool outOfBounds(int x, int y);
 	bool isLiquidCell(int x, int y, std::unordered_map<int, int>& liquidCells);
 	void countSurroundingCellTypes(int x, int y, std::unordered_map<int, int>& liquidCells, int& air, int& liquid);
 	void addCoefficient(int curr_map_idx, int x, int y, std::unordered_map<int, int>& liquidCells);

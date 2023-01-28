@@ -12,6 +12,9 @@ public:
 
 	static std::unique_ptr<GridInfo>& GetInstance();
 	void setInfo(int xCellsCount, int yCellsCount);
+	bool inBounds(int x, int y);
+	bool inBoundsX(int x);
+	bool inBoundsY(int y);
 
 private:
 	static std::unique_ptr<GridInfo> instance;

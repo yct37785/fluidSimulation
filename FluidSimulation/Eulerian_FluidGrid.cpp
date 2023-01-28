@@ -63,7 +63,7 @@ void Eulerian_FluidGrid::updateLiquidCells()
 		int xpos = (int)floor(pos.x / H);
 		int ypos = (int)floor(pos.y / H);
 		int idx = ypos * p_GridInfo->xCells + xpos;
-		if (xpos >= 0 && xpos < p_GridInfo->xCells && ypos >= 0 && ypos < p_GridInfo->yCells && !liquidCells.count(idx))
+		if (p_GridInfo->inBounds(xpos, ypos) && !liquidCells.count(idx))
 		{
 			liquidCells[idx] = count;
 			count++;
