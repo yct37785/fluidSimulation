@@ -11,7 +11,6 @@ class PressureSolve
 	vec d;
 	vec p;
 	matrix a;
-	int xCellsCount, yCellsCount;
 
 	// utilities
 	bool outOfBounds(int x, int y);
@@ -27,7 +26,7 @@ class PressureSolve
 	void integration(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t);
 
 public:
-	PressureSolve(int xCellsCount, int yCellsCount);
+	PressureSolve();
 	~PressureSolve();
 
 	void update(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t);

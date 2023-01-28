@@ -1,13 +1,14 @@
 #include "Eulerian_FluidGrid.h"
 
-Eulerian_FluidGrid::Eulerian_FluidGrid(int xCellsCount, int yCellsCount)
+Eulerian_FluidGrid::Eulerian_FluidGrid()
 {
-	this->xCellsCount = xCellsCount;
-	this->yCellsCount = yCellsCount;
-	gridMesh = new GridMesh(xCellsCount, yCellsCount, 0, 0);
+	gridMesh = new GridMesh(p_GridInfo->xCellsCount, p_GridInfo->yCellsCount, 0, 0);
 	particleMesh = MeshBuilder::CreateMesh("blue_marker");
-	uField = new VelocityField(xCellsCount, yCellsCount);
-	ps = new PressureSolve(xCellsCount, yCellsCount);
+	uField = new VelocityField();
+	ps = new PressureSolve();
+	cellType = new CELL_TYPES * [p_GridInfo->yCellsCount];
+	for (int i = 0; i < p_GridInfo->yCellsCount; ++i)
+		cellType[i] = new CELL_TYPES[p_GridInfo->xCellsCount];
 }
 
 Eulerian_FluidGrid::~Eulerian_FluidGrid()
@@ -18,6 +19,9 @@ Eulerian_FluidGrid::~Eulerian_FluidGrid()
 	delete particleMesh;
 	delete uField;
 	delete ps;
+	for (int i = 0; i < p_GridInfo->yCellsCount; ++i)
+		delete[] cellType[i];
+	delete[] cellType;
 }
 
 void Eulerian_FluidGrid::spawnParticles()
@@ -28,9 +32,9 @@ void Eulerian_FluidGrid::spawnParticles()
 	float ymin = 0.6f;
 	float ymax = 0.8f;
 	float space = 0.4f;
-	for (float y = 0.f + (float)yCellsCount * H * ymin; y < (float)yCellsCount * H * ymax; y += space * H)
+	for (float y = 0.f + (float)p_GridInfo->yCellsCount * H * ymin; y < (float)p_GridInfo->yCellsCount * H * ymax; y += space * H)
 	{
-		for (float x = 0.f + (float)xCellsCount * H * xmin; x < (float)xCellsCount * H * xmax; x += space * H)
+		for (float x = 0.f + (float)p_GridInfo->xCellsCount * H * xmin; x < (float)p_GridInfo->xCellsCount * H * xmax; x += space * H)
 		{
 			float jitterX = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
 			float jitterY = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
@@ -47,6 +51,10 @@ float Eulerian_FluidGrid::getTimestep(float deltaTime)
 
 void Eulerian_FluidGrid::updateLiquidCells()
 {
+	// reset all to air
+	/*for (int y = 0; y < yCellsCount; ++y)
+		for (int x = 0; x < xCellsCount; ++x)
+			cellType[y][x] = CELL_AIR;*/
 	liquidCells.clear();
 	int count = 0;
 	for (int i = 0; i < particles.size(); ++i)
@@ -54,8 +62,8 @@ void Eulerian_FluidGrid::updateLiquidCells()
 		glm::vec2 pos = particles[i]->get_pos();
 		int xpos = (int)floor(pos.x / H);
 		int ypos = (int)floor(pos.y / H);
-		int idx = ypos * xCellsCount + xpos;
-		if (xpos >= 0 && xpos < xCellsCount && ypos >= 0 && ypos < yCellsCount && !liquidCells.count(idx))
+		int idx = ypos * p_GridInfo->xCellsCount + xpos;
+		if (xpos >= 0 && xpos < p_GridInfo->xCellsCount && ypos >= 0 && ypos < p_GridInfo->yCellsCount && !liquidCells.count(idx))
 		{
 			liquidCells[idx] = count;
 			count++;

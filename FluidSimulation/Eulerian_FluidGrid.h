@@ -6,7 +6,6 @@ class Eulerian_FluidGrid
 {
 	GridMesh* gridMesh;
 	Mesh* particleMesh;
-	int xCellsCount, yCellsCount;
 
 	// quantities
 	VelocityField* uField;
@@ -16,6 +15,7 @@ class Eulerian_FluidGrid
 
 	// particles
 	std::vector<Particle*> particles;
+	CELL_TYPES** cellType;
 	std::unordered_map<int, int> liquidCells;
 
 	// update
@@ -24,7 +24,7 @@ class Eulerian_FluidGrid
 	void advectParticles_Eulerian(float t);
 
 public:
-	Eulerian_FluidGrid(int xCellsCount, int yCellsCount);
+	Eulerian_FluidGrid();
 	~Eulerian_FluidGrid();
 
 	void spawnParticles();

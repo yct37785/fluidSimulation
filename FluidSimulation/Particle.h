@@ -1,5 +1,6 @@
 #pragma once
 #include "MeshBuilder.h"
+#include "GridInfo.h"
 
 /*
 * Can be used for:

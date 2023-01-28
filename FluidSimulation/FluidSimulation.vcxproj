@@ -138,6 +138,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Eulerian_FluidGrid.cpp" />
     <ClCompile Include="EulerianFluidScene.cpp" />
+    <ClCompile Include="GridInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GridMesh.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Eulerian_FluidGrid.h" />
     <ClInclude Include="EulerianFluidScene.h" />
+    <ClInclude Include="GridInfo.h" />
     <ClInclude Include="GridMesh.h" />
     <ClInclude Include="IISPH_FluidGrid.h" />
     <ClInclude Include="IISPH_Particle.h" />

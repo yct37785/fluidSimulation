@@ -132,6 +132,9 @@
     <ClCompile Include="glad.c">
       <Filter>Platform</Filter>
     </ClCompile>
+    <ClCompile Include="GridInfo.cpp">
+      <Filter>Fluid\Eulerian</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="Includes.h">
       <Filter>TopLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="GridInfo.h">
+      <Filter>Fluid\Eulerian</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

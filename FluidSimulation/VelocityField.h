@@ -11,11 +11,10 @@
 class VelocityField
 {
 	QuantityField* u, * v;
-	int xCellsCount, yCellsCount;
 	Mesh* uMarker, * vMarker;
 
 public:
-	VelocityField(int xCellsCount, int yCellsCount);
+	VelocityField();
 	~VelocityField();
 
 	// particle-to-grid
