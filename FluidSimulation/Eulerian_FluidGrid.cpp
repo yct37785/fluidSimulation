@@ -2,13 +2,13 @@
 
 Eulerian_FluidGrid::Eulerian_FluidGrid()
 {
-	gridMesh = new GridMesh(p_GridInfo->xCellsCount, p_GridInfo->yCellsCount, 0, 0);
+	gridMesh = new GridMesh(p_GridInfo->xCells, p_GridInfo->yCells, 0, 0);
 	particleMesh = MeshBuilder::CreateMesh("blue_marker");
 	uField = new VelocityField();
 	ps = new PressureSolve();
-	cellType = new CELL_TYPES * [p_GridInfo->yCellsCount];
-	for (int i = 0; i < p_GridInfo->yCellsCount; ++i)
-		cellType[i] = new CELL_TYPES[p_GridInfo->xCellsCount];
+	cellType = new CELL_TYPES * [p_GridInfo->yCells];
+	for (int i = 0; i < p_GridInfo->yCells; ++i)
+		cellType[i] = new CELL_TYPES[p_GridInfo->xCells];
 }
 
 Eulerian_FluidGrid::~Eulerian_FluidGrid()
@@ -19,7 +19,7 @@ Eulerian_FluidGrid::~Eulerian_FluidGrid()
 	delete particleMesh;
 	delete uField;
 	delete ps;
-	for (int i = 0; i < p_GridInfo->yCellsCount; ++i)
+	for (int i = 0; i < p_GridInfo->yCells; ++i)
 		delete[] cellType[i];
 	delete[] cellType;
 }
@@ -32,9 +32,9 @@ void Eulerian_FluidGrid::spawnParticles()
 	float ymin = 0.6f;
 	float ymax = 0.8f;
 	float space = 0.4f;
-	for (float y = 0.f + (float)p_GridInfo->yCellsCount * H * ymin; y < (float)p_GridInfo->yCellsCount * H * ymax; y += space * H)
+	for (float y = 0.f + (float)p_GridInfo->yCells * H * ymin; y < (float)p_GridInfo->yCells * H * ymax; y += space * H)
 	{
-		for (float x = 0.f + (float)p_GridInfo->xCellsCount * H * xmin; x < (float)p_GridInfo->xCellsCount * H * xmax; x += space * H)
+		for (float x = 0.f + (float)p_GridInfo->xCells * H * xmin; x < (float)p_GridInfo->xCells * H * xmax; x += space * H)
 		{
 			float jitterX = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
 			float jitterY = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * H;
@@ -62,8 +62,8 @@ void Eulerian_FluidGrid::updateLiquidCells()
 		glm::vec2 pos = particles[i]->get_pos();
 		int xpos = (int)floor(pos.x / H);
 		int ypos = (int)floor(pos.y / H);
-		int idx = ypos * p_GridInfo->xCellsCount + xpos;
-		if (xpos >= 0 && xpos < p_GridInfo->xCellsCount && ypos >= 0 && ypos < p_GridInfo->yCellsCount && !liquidCells.count(idx))
+		int idx = ypos * p_GridInfo->xCells + xpos;
+		if (xpos >= 0 && xpos < p_GridInfo->xCells && ypos >= 0 && ypos < p_GridInfo->yCells && !liquidCells.count(idx))
 		{
 			liquidCells[idx] = count;
 			count++;

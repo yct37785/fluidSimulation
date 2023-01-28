@@ -8,7 +8,7 @@
 class GridInfo
 {
 public:
-	int xCellsCount, yCellsCount;
+	int xCells, yCells;
 
 	static std::unique_ptr<GridInfo>& GetInstance();
 	void setInfo(int xCellsCount, int yCellsCount);

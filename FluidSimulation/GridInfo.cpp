@@ -10,8 +10,8 @@ std::unique_ptr<GridInfo>& GridInfo::GetInstance()
 	return instance;
 }
 
-void GridInfo::setInfo(int xCellsCount, int yCellsCount)
+void GridInfo::setInfo(int xCells, int yCells)
 {
-	this->xCellsCount = xCellsCount;
-	this->yCellsCount = yCellsCount;
+	this->xCells = xCells;
+	this->yCells = yCells;
 }

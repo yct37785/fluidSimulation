@@ -5,9 +5,9 @@ const float EULERIAN_DEN_AIR = 1.f;	// air density = 1 kg/m^3
 PressureSolve::PressureSolve()
 {
 	// max size to 
-	d.reserve(p_GridInfo->xCellsCount * p_GridInfo->yCellsCount);
-	p.reserve(p_GridInfo->xCellsCount * p_GridInfo->yCellsCount);
-	a.reserve(p_GridInfo->xCellsCount * p_GridInfo->yCellsCount);
+	d.reserve(p_GridInfo->xCells * p_GridInfo->yCells);
+	p.reserve(p_GridInfo->xCells * p_GridInfo->yCells);
+	a.reserve(p_GridInfo->xCells * p_GridInfo->yCells);
 }
 
 PressureSolve::~PressureSolve()
@@ -16,12 +16,12 @@ PressureSolve::~PressureSolve()
 
 bool PressureSolve::outOfBounds(int x, int y)
 {
-	return x < 0.f || x >= p_GridInfo->xCellsCount || y < 0.f || y >= p_GridInfo->yCellsCount;
+	return x < 0.f || x >= p_GridInfo->xCells || y < 0.f || y >= p_GridInfo->yCells;
 }
 
 bool PressureSolve::isLiquidCell(int x, int y, std::unordered_map<int, int>& liquidCells)
 {
-	return !outOfBounds(x, y) && liquidCells.count(y * p_GridInfo->xCellsCount + x);
+	return !outOfBounds(x, y) && liquidCells.count(y * p_GridInfo->xCells + x);
 }
 
 void PressureSolve::countSurroundingCellTypes(int x, int y, std::unordered_map<int, int>& liquidCells, int& air, int& liquid)
@@ -32,7 +32,7 @@ void PressureSolve::countSurroundingCellTypes(int x, int y, std::unordered_map<i
 	{
 		if (!outOfBounds(x + offset[i][0], y + offset[i][1]))
 		{
-			if (liquidCells.count((y + offset[i][1]) * p_GridInfo->xCellsCount + x + offset[i][0]))
+			if (liquidCells.count((y + offset[i][1]) * p_GridInfo->xCells + x + offset[i][0]))
 				liquid += 1;
 			else
 				air += 1;
@@ -44,7 +44,7 @@ void PressureSolve::addCoefficient(int curr_map_idx, int x, int y, std::unordere
 {
 	if (isLiquidCell(x, y, liquidCells))
 	{
-		int map_idx = liquidCells[y * p_GridInfo->xCellsCount + x];
+		int map_idx = liquidCells[y * p_GridInfo->xCells + x];
 		a[curr_map_idx].push_back(map_idx);
 		a[curr_map_idx].push_back(1.f);
 	}
@@ -52,7 +52,7 @@ void PressureSolve::addCoefficient(int curr_map_idx, int x, int y, std::unordere
 
 float PressureSolve::getLiquidCellPressure(int x, int y, std::unordered_map<int, int>& liquidCells)
 {
-	int idx = y * p_GridInfo->xCellsCount + x;
+	int idx = y * p_GridInfo->xCells + x;
 	if (liquidCells.count(idx))
 		return p[liquidCells[idx]];
 	else
@@ -78,8 +78,8 @@ void PressureSolve::setupLinearEquations(VelocityField* uField, std::unordered_m
 	for (auto cell : liquidCells)
 	{
 		int map_idx = cell.second;
-		int x = cell.first % p_GridInfo->xCellsCount;
-		int y = cell.first / p_GridInfo->xCellsCount;
+		int x = cell.first % p_GridInfo->xCells;
+		int y = cell.first / p_GridInfo->xCells;
 		int solidNeighbors = 0, liquidNeighbors = 0, airNeighbors = 0;
 		countSurroundingCellTypes(x, y, liquidCells, airNeighbors, liquidNeighbors);
 		// find divergence for center of cell
@@ -107,9 +107,9 @@ void PressureSolve::solve(std::unordered_map<int, int>& liquidCells)
 void PressureSolve::integration(VelocityField* uField, std::unordered_map<int, int>& liquidCells, float t)
 {
 	// update vel (boundary vels don't update)
-	for (int y = 0; y < p_GridInfo->yCellsCount; ++y)
+	for (int y = 0; y < p_GridInfo->yCells; ++y)
 	{
-		for (int x = 0; x < p_GridInfo->xCellsCount; ++x)
+		for (int x = 0; x < p_GridInfo->xCells; ++x)
 		{
 			// x
 			if (x > 0)
