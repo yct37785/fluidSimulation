@@ -27,7 +27,7 @@ public:
 	Eulerian_FluidGrid();
 	~Eulerian_FluidGrid();
 
-	void spawnParticles();
+	void spawnParticles(float xmin, float xmax, float ymin, float ymax, float space);
 	void Update(float deltaTime);
 	void Draw(glm::mat4& mvMat, int mvpHandle);
 };

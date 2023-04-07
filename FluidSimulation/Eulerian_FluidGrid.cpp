@@ -24,14 +24,9 @@ Eulerian_FluidGrid::~Eulerian_FluidGrid()
 	delete[] cellType;
 }
 
-void Eulerian_FluidGrid::spawnParticles()
+void Eulerian_FluidGrid::spawnParticles(float xmin, float xmax, float ymin, float ymax, float space)
 {
 	// [Bridson 2007] 2 x 2 particles per grid cell
-	float xmin = 0.3f;
-	float xmax = 0.6f;
-	float ymin = 0.6f;
-	float ymax = 0.8f;
-	float space = 0.4f;
 	for (float y = 0.f + (float)p_GridInfo->yCells * H * ymin; y < (float)p_GridInfo->yCells * H * ymax; y += space * H)
 	{
 		for (float x = 0.f + (float)p_GridInfo->xCells * H * xmin; x < (float)p_GridInfo->xCells * H * xmax; x += space * H)
@@ -97,7 +92,7 @@ void Eulerian_FluidGrid::Draw(glm::mat4& mvMat, int mvpHandle)
 	uField->draw(mvMat, mvpHandle);
 
 	glm::mat4 mvpMat;
-	for (int i = 0; i < particles.size(); ++i)
+	for (int i = 0; i < particles.size(); i += 1)
 	{
 		glm::vec2 pos = particles[i]->get_pos();
 		mvpMat = mvMat * glm::translate(glm::mat4(1.f), glm::vec3(pos.x, pos.y, 0.f));

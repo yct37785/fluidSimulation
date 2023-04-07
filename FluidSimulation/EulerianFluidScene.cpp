@@ -28,7 +28,12 @@ void EulerianFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 	{
 		if (inputList[INPUT_UNFREEZE_FLUID])
 		{
-			fluidGrid->spawnParticles();
+			fluidGrid->spawnParticles(.3f, .6f, .6f, .8f, .4f);
+			spawnParticlesTimer = 0.0;
+		}
+		else if (inputList[INPUT_UNFREEZE_FLUID_2])
+		{
+			fluidGrid->spawnParticles(.3f, .35f, .6f, .65f, .4f);
 			spawnParticlesTimer = 0.0;
 		}
 	}
