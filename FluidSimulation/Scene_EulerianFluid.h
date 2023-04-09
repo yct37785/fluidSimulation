@@ -1,9 +1,8 @@
 #pragma once
-#include "MeshBuilder.h"
-#include "Shader.h"
+#include "Scene.h"
 #include "Eulerian_FluidGrid.h"
 
-class EulerianFluidScene
+class Scene_EulerianFluid : public Scene
 {
 	// fluid
 	int xCellsCount, yCellsCount;
@@ -15,8 +14,8 @@ class EulerianFluidScene
 	double spawnParticlesTimer;
 
 public:
-	EulerianFluidScene();
-	~EulerianFluidScene();
+	Scene_EulerianFluid();
+	~Scene_EulerianFluid();
 
 	void Init();
 	void Update(bool inputList[INPUT_TOTAL], float deltaTime);

@@ -2,6 +2,9 @@
 #include <STB/stb_image.h>
 Engine* Engine::engine = NULL;
 GLFWwindow* Engine::window = NULL;
+// insert scenes here
+#include "Scene_EulerianFluid.h"
+#include "Scene_SpatialHashing.h"
 
 void Engine::initGlfw()
 {
@@ -79,11 +82,11 @@ void Engine::renderLoop()
 		processInput(window);
 
 		// engine update
-		fluidScene->Update(inputList, deltaTime);
+		scene->Update(inputList, deltaTime);
 		// draw
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		fluidScene->Draw();
+		scene->Draw();
 
 		// read: double buffers to prevent flickering issues due to physical constraints of drawing a buffer to screen
 		// resulting in flickering
@@ -106,7 +109,7 @@ void Engine::framebuffer_size_callback(GLFWwindow* window, int width, int height
 {
 	glViewport(0, 0, width, height);
 	//Engine::instance()->onWindowSizeUpdate(width, height);
-	engine->fluidScene->windowsResize(width, height);
+	engine->scene->windowsResize(width, height);
 }
 
 void Engine::processInput(GLFWwindow* window)
@@ -151,7 +154,7 @@ void Engine::processInput(GLFWwindow* window)
 
 void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	engine->fluidScene->mouseCallback(xpos, ypos);
+	engine->scene->mouseCallback(xpos, ypos);
 }
 
 Engine::Engine()
@@ -187,8 +190,8 @@ void Engine::Init()
 	{
 		inputList[i] = false;
 	}
-	fluidScene = new EulerianFluidScene();
-	fluidScene->Init();
+	scene = new Scene_EulerianFluid();
+	scene->Init();
 }
 
 void Engine::Run()
@@ -198,6 +201,6 @@ void Engine::Run()
 
 void Engine::Exit()
 {
-	delete fluidScene;
+	delete scene;
 	terminateOpenGL();
 }

@@ -135,7 +135,7 @@
     <ClCompile Include="CGSolver.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Eulerian_FluidGrid.cpp" />
-    <ClCompile Include="EulerianFluidScene.cpp" />
+    <ClCompile Include="Scene_EulerianFluid.cpp" />
     <ClCompile Include="GridInfo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="glad.c" />
@@ -147,6 +147,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PressureSolve.cpp" />
     <ClCompile Include="QuantityField.cpp" />
+    <ClCompile Include="Scene_SpatialHashing.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Utility.cpp" />
@@ -157,7 +158,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Eulerian_FluidGrid.h" />
-    <ClInclude Include="EulerianFluidScene.h" />
+    <ClInclude Include="Scene_EulerianFluid.h" />
     <ClInclude Include="GridInfo.h" />
     <ClInclude Include="GridMesh.h" />
     <ClInclude Include="Includes.h" />
@@ -168,6 +169,8 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PressureSolve.h" />
     <ClInclude Include="QuantityField.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Scene_SpatialHashing.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="VelocityField.h" />

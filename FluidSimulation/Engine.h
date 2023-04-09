@@ -1,11 +1,11 @@
 #pragma once
-#include "EulerianFluidScene.h"
+#include "Scene.h"
 
 class Engine {
 	static Engine* engine;
 	static GLFWwindow* window;
 
-	EulerianFluidScene* fluidScene;
+	Scene* scene;
 
 	bool inputList[INPUT_TOTAL];
 	float deltaTime, lastFrame;

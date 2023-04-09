@@ -1,16 +1,16 @@
-#include "EulerianFluidScene.h"
+#include "Scene_EulerianFluid.h"
 
-EulerianFluidScene::EulerianFluidScene()
+Scene_EulerianFluid::Scene_EulerianFluid()
 {
 }
 
-EulerianFluidScene::~EulerianFluidScene()
+Scene_EulerianFluid::~Scene_EulerianFluid()
 {
 	delete shader;
 	delete fluidGrid;
 }
 
-void EulerianFluidScene::Init()
+void Scene_EulerianFluid::Init()
 {
 	xCellsCount = 30;
 	float accurateYSpaceHeight = (float)xCellsCount * ((float)WINDOWS_HEIGHT / (float)WINDOWS_WIDTH);
@@ -22,7 +22,7 @@ void EulerianFluidScene::Init()
 	fluidGrid = new Eulerian_FluidGrid();
 }
 
-void EulerianFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
+void Scene_EulerianFluid::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 {
 	if (spawnParticlesTimer > 0.2)
 	{
@@ -42,7 +42,7 @@ void EulerianFluidScene::Update(bool inputList[INPUT_TOTAL], float deltaTime)
 	fluidGrid->Update(deltaTime);
 }
 
-void EulerianFluidScene::Draw()
+void Scene_EulerianFluid::Draw()
 {
 	glUseProgram(shader->getProgram());
 	int mvpHandle = glGetUniformLocation(shader->getProgram(), "uMVPMatrix");
@@ -52,10 +52,10 @@ void EulerianFluidScene::Draw()
 	fluidGrid->Draw(mvMat, mvpHandle);
 }
 
-void EulerianFluidScene::windowsResize(int width, int height)
+void Scene_EulerianFluid::windowsResize(int width, int height)
 {
 }
 
-void EulerianFluidScene::mouseCallback(double xpos, double ypos)
+void Scene_EulerianFluid::mouseCallback(double xpos, double ypos)
 {
 }
